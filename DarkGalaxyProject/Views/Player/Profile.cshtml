@@ -1,0 +1,18 @@
+﻿@model ProfileViewModel
+
+@{
+    ViewData["Title"] = $"{Model.UserName}'s profile";
+}
+
+<h1>
+    @Model.UserName
+</h1>
+
+<ul>
+    <li>
+        <span>Alliance: @(Model.AllianceName == null ? "none" : Model.AllianceName) </span>
+    </li>
+    <li>
+        <span>Systems: @Model.Systems</span>
+    </li>
+</ul>

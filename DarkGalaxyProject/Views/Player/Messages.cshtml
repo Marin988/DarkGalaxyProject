@@ -1,0 +1,23 @@
+﻿@using DarkGalaxyProject.Models.Player
+@model List<MessageListingViewModel>
+
+@{
+    ViewData["Title"] = "Messages";
+}
+
+<h1>
+    Messages
+</h1>
+
+<ul>
+    @foreach (var message in Model)
+    {
+        <li>
+            <span>@message.ReceiverName: @message.Title</span><br>
+            <span>Time: @message.Time</span><br>
+            <a href="Message?messageId=@message.Id">Read</a>
+        </li>
+    }
+</ul>
+
+<a class="nav-link text-dark" asp-area="" asp-controller="Player" asp-action="SendMessage">Write a new message</a>

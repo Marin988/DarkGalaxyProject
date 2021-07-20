@@ -1,0 +1,30 @@
+﻿@using DarkGalaxyProject.Data.Enums
+@model DarkGalaxyProject.Models.SystemViewModel
+
+@{
+    ViewData["Title"] = "BuildShip";
+}
+
+<h1>System @Model.Position - @Model.Type</h1>
+
+<h4>Planets</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <span>Planet @Model.PopulatedPlanet.Name:</span><br />
+        <span>Population: @Model.PopulatedPlanet.Population</span><br />
+        <span>Position @Model.PopulatedPlanet.Position</span><br />
+        <span>Type @Model.PopulatedPlanet.Type</span><br />
+        <span>Population capacity: @Model.PopulatedPlanet.Amenity.CulturalIncrement</span><br />
+        <span>Amenity level: @Model.PopulatedPlanet.Amenity.Level</span><br />
+        <span>Amenity level upgrade cost: @Model.PopulatedPlanet.Amenity.EnergyCost</span><br />
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

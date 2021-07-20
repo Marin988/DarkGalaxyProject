@@ -1,0 +1,56 @@
+﻿@using DarkGalaxyProject.Models.Alliance
+
+@model List<DarkGalaxyProject.Models.Alliance.AllianceViewModel>
+
+@{
+    ViewData["Title"] = "All Alliances";
+}
+
+@foreach (var alliance in Model)
+{
+    <h1>@alliance.Name</h1>
+
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <ul>
+                <li>
+                    <span>Alliance type: @alliance.Type</span>
+                </li>
+                <li>
+                    @if (alliance.Leader != null)
+                    {
+                        <span>Leader: @alliance.Leader</span>
+                    }
+                    else if (alliance.Leaders.Count != 0)
+                    {
+                        <span>Leaders: @string.Join(", ", alliance.Leaders)</span>
+                    }
+                </li>
+                <li>
+                    <span>Members: @alliance.MembersCount</span>
+                </li>
+                <li class="bs-popover-left">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Members" asp-route-allianceId="@alliance.Id">Members</a>
+                </li>
+                <li class="bs-popover-left">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Chat" asp-route-allianceId="@alliance.Id">Chat</a>
+                </li>
+            </ul>
+            <form asp-action="Apply">
+                <div class="form-group">
+                    <input type="text" id="allianceId" name="allianceId" hidden value=@alliance.Id class="form-control" />
+                    <input type="submit" value="Apply" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

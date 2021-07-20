@@ -1,0 +1,27 @@
+﻿@using DarkGalaxyProject.Data.Enums
+@model DarkGalaxyProject.Models.AllianceViewModel
+
+@{
+    ViewData["Title"] = "AlliancePage";
+}
+
+<h1>@Model.Type @Model.Name</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @if (Model.LeaderName != null)
+        {
+        <span>Leader: @Model.LeaderName</span><br />
+        }
+        <span>Members: @(Model.MembersCount + 1)</span><br />
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

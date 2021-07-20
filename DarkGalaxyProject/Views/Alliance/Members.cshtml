@@ -1,0 +1,61 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using DarkGalaxyProject.Data.Models
+@using DarkGalaxyProject.Models.Alliance
+@model MembersCandidatesViewModel
+@inject UserManager<Player> UserManager
+
+@{
+    ViewData["Title"] = "Members";
+}
+
+<h2>Members:</h2>
+
+<ul>
+    @foreach (var member in Model.Members)
+    {
+    <li>
+        <span>Player @member.UserName with @member.Systems systems</span>
+        @if (member.Id == UserManager.GetUserId(User))
+        {
+            <form asp-action="Leave">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <input type="text" id="playerId" name="playerId" hidden value=@member.Id class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Leave" class="btn btn-primary" />
+                </div>
+            </form>
+        }
+        <form asp-action="PromoteToLeader">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="text" id="playerId" name="playerId" hidden value=@member.Id class="form-control" />
+                <input type="text" id="allianceId" name="allianceId" hidden value=@Model.allianceId class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Promote to leader" class="btn btn-primary" />
+            </div>
+        </form>
+    </li>
+    }
+</ul>
+        --------------------------------Candidates------------------------------------------ -
+<ul>
+    @foreach (var candidate in Model.Candidates)
+    {
+        <li>
+            <span>Player @candidate.UserName with @candidate.Systems systems</span>
+            <form asp-action="AcceptCandidate">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <input type="text" id="allianceId" name="allianceId" hidden value=@Model.allianceId class="form-control" />
+                    <input type="text" id="candidateId" name="candidateId" hidden value=@candidate.Id class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Accept" class="btn btn-primary" />
+                </div>
+            </form>
+        </li>
+    }
+</ul>

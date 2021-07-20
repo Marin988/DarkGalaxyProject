@@ -1,0 +1,46 @@
+﻿@model List<SystemViewModel>
+
+@{
+    ViewData["Title"] = "Systems of the Dark Galaxy";
+}
+
+<h1>
+    All systems
+</h1>
+
+<ul>
+    @foreach (var system in Model)
+    {
+    <li>
+        <span>Position: @system.Position</span><br>
+        <span>Type: @system.Type</span><br>
+        @foreach (var ship in system.Ships)
+        {
+            <span>HP: @ship.HP---------</span>
+            <span>Damage: @ship.Damage---------</span>
+            <span>Speed: @ship.Speed---------</span>
+            <span>Storage: @ship.Storage---------</span>
+            <span>Type: @ship.Type</span><br>
+        }
+        <span>Energy planet: @system.EnergyPlanet.Name---------</span>
+        <span>Position: @system.EnergyPlanet.Position---------</span>
+        <span>Type: @system.EnergyPlanet.Type---------</span>
+        <span>FuelToEnergyCenter level: @system.EnergyPlanet.FuelToEnergyCenter.Level</span> <br />
+        <form action="LevelUp" method="post">
+            <input type="hidden" name="Name" value=@system.EnergyPlanet.Name>
+            <div class="form-group">
+                <input type="submit" value="Level up" class="btn btn-primary" />
+            </div>
+        </form>
+        <form action="Colonize" method="post">
+            <input type="hidden" name="systemId" value=@system.Id>
+            <div class="form-group">
+                <input type="submit" value="Colonize" class="btn btn-primary" />
+            </div>
+        </form>
+        <a href="/Test/BuildShip?@system.Id" class="btn btn-block btn-primary">BuildShip</a>
+        <a href="/Test/SendShip?@system.Id" class="btn btn-block btn-primary">SendShip</a>
+        <a href="/Test/ViewSystem?@system.Id" class="btn btn-block btn-primary">ViewSystem</a>
+    </li>
+    }
+</ul>

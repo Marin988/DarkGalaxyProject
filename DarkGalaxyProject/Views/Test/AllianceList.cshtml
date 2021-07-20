@@ -1,0 +1,30 @@
+﻿@using DarkGalaxyProject.Models
+@model List<AllianceViewModel>
+
+@{
+    ViewData["Title"] = "AllAliances";
+}
+
+
+@foreach (var alliance in Model)
+{
+    <h1>@alliance.Type @alliance.Name</h1>
+
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            @if (alliance.LeaderName != null)
+            {
+                <span>Leader: @alliance.LeaderName</span><br />
+            }
+            <span>Members: @(alliance.MembersCount + 1)</span><br />
+        </div>
+    </div>
+}
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,46 @@
+﻿@using DarkGalaxyProject.Data.Enums
+@model DarkGalaxyProject.Models.Alliance.AllianceViewModel
+
+@{
+    ViewData["Title"] = "AlliancePage";
+}
+
+<h1>@Model.Name</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <ul>
+            <li>
+                <span>Alliance type: @Model.Type</span>
+            </li>
+            <li>
+                @if (Model.Leader != null)
+                {
+                    <span>Leader: @Model.Leader</span>
+                }
+                else if (Model.Leaders.Count != 0)
+                {
+                    <span>Leaders: @string.Join(", ", Model.Leaders)</span>
+                }
+            </li>
+            <li>
+                <span>Members: @Model.MembersCount</span>
+            </li>
+            <li class="bs-popover-left">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Members" asp-route-allianceId="@Model.Id">Members</a>
+            </li>
+            <li class="bs-popover-left">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Chat" asp-route-allianceId="@Model.Id">Chat</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

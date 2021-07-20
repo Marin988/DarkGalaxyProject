@@ -1,0 +1,43 @@
+﻿@model DarkGalaxyProject.Models.PopulatedPlanetViewModel
+
+@{
+    ViewData["Title"] = "BuildShip";
+}
+
+<h1>System @Model.Position - @Model.Type</h1>
+
+<h4>Populated planet</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <span>Planet name: @Model.Name</span><br />
+        <span>Position: @Model.Position</span><br />
+        <span>Type: @Model.Type</span><br />
+        <span>Amenities ------> Level: @Model.Amenity.Level, CulturalIncrement -----> @Model.Amenity.CulturalIncrement , Energy Cost -----> @Model.Amenity.EnergyCost</span><br />
+        <form action="LevelUp" method="post">
+            <input type="hidden" name="buildingId" value=@Model.Amenity.Id>
+            <input type="hidden" name="systemId" value=@Model.SystemId>
+            <input type="hidden" name="planetType" value=@Model.PlanetType>
+            <div class="form-group">
+                <input type="submit" value="Level Up" class="btn btn-primary" />
+            </div>
+        </form>
+        <span>LivingQuarters -----> Level: @Model.LivingQuarters.Level, PopulationCapacity -----> @Model.LivingQuarters.PopulationCapacity , Upgrade Cost -----> @Model.LivingQuarters.UpgradeCost</span><br />
+        <form action="LevelUp" method="post">
+            <input type="hidden" name="buildingId" value=@Model.LivingQuarters.Id>
+            <input type="hidden" name="systemId" value=@Model.SystemId>
+            <input type="hidden" name="planetType" value=@Model.PlanetType>
+            <div class="form-group">
+                <input type="submit" value="Level Up" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

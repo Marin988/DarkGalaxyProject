@@ -1,0 +1,12 @@
+﻿@using DarkGalaxyProject.Models.Player
+@model MessageViewModel
+
+@{
+    ViewData["Title"] = "Message";
+}
+
+<h1>
+    From: @Model.SenderName      Title: @Model.Title
+</h1>
+
+    <span>@Model.Content</span>
