@@ -11,9 +11,6 @@ namespace DarkGalaxyProject.Data.Models.Others
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
-        [Required]
-        public ResearchType Type { get; set; }
-
         public int Cost { get; set; }
 
 

@@ -10,21 +10,9 @@ namespace DarkGalaxyProject.Data.Models.Others
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
-        public bool Discovery { get; set; }
+        public bool Goliath { get; set; }
 
-        public bool Shields { get; set; }
-
-        public bool ReadyForBattle { get; set; }
-
-        public bool FuelOptimization { get; set; }
-
-        public bool EnergyBarriers { get; set; }
-
-        public bool SpaceCascades { get; set; }
-
-        public bool BattleShips { get; set; }
-
-        public bool SpaceMonster { get; set; }
+        public bool Vengeance { get; set; }
 
         [Required]
         public string PlayerId { get; set; }

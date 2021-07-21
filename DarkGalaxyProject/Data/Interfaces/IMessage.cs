@@ -9,6 +9,6 @@ namespace DarkGalaxyProject.Data.Interfaces
     {
         public string Content { get; set; }
 
-        public DateTime? TimeOfSending { get; }
+        public DateTime TimeOfSending { get; }
     }
 }

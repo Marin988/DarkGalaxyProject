@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DarkGalaxyProject.Data.Models.BaseModels
+namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
     public class DefensiveStructure
     {
@@ -27,8 +27,5 @@ namespace DarkGalaxyProject.Data.Models.BaseModels
         [Required]
         public string SystemId { get; set; }
         public System System { get; set; }
-
-        public string AllianceId { get; set; }
-        public Alliance Alliance { get; set; }
     }
 }

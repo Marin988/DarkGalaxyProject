@@ -13,8 +13,6 @@ namespace DarkGalaxyProject.Data.Interfaces
 
         public string Name { get; set; }
 
-        public Coordinates Coord { get; init; }
-
         public int SystemId { get; set; }
 
     }

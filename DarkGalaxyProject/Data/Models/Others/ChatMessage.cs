@@ -1,6 +1,5 @@
 ﻿using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Interfaces;
-using DarkGalaxyProject.Data.Models.BaseModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models.Others
 {
-    public class ChatMessage 
+    public class ChatMessage : IMessage
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 

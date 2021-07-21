@@ -12,17 +12,7 @@
     <div class="col-md-4">
         <ul>
             <li>
-                <span>Alliance type: @Model.Type</span>
-            </li>
-            <li>
-                @if (Model.Leader != null)
-                {
-                    <span>Leader: @Model.Leader</span>
-                }
-                else if (Model.Leaders.Count != 0)
-                {
-                    <span>Leaders: @string.Join(", ", Model.Leaders)</span>
-                }
+                <span>Leader: @Model.Leader</span>
             </li>
             <li>
                 <span>Members: @Model.MembersCount</span>

@@ -11,11 +11,7 @@ namespace DarkGalaxyProject.Models.Alliance
 
         public string Name { get; set; }
 
-        public string Type { get; set; }
-
         public string Leader { get; set; }
-
-        public List<string> Leaders { get; set; }
 
         public int MembersCount { get; set; }
     }

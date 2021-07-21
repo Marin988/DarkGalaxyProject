@@ -13,7 +13,6 @@ namespace DarkGalaxyProject.Data.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
                     LeaderId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -36,27 +35,17 @@ namespace DarkGalaxyProject.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Debrises",
+                name: "Technologies",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Timer = table.Column<int>(type: "int", nullable: false),
-                    SizeType = table.Column<int>(type: "int", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    KnowledgeCost = table.Column<int>(type: "int", nullable: false),
+                    Level = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Debrises", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ResearchBuildings",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ResearchBuildings", x => x.Id);
+                    table.PrimaryKey("PK_Technologies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,7 +57,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AllianceLeaderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    AllianceLeadersId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AllianceCandidateId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -103,12 +91,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Alliances_AllianceLeaderId",
                         column: x => x.AllianceLeaderId,
-                        principalTable: "Alliances",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Alliances_AllianceLeadersId",
-                        column: x => x.AllianceLeadersId,
                         principalTable: "Alliances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -279,10 +261,8 @@ namespace DarkGalaxyProject.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
                     Cost = table.Column<int>(type: "int", nullable: false),
-                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ResearchBuildingId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -293,12 +273,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Research_ResearchBuildings_ResearchBuildingId",
-                        column: x => x.ResearchBuildingId,
-                        principalTable: "ResearchBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -306,14 +280,8 @@ namespace DarkGalaxyProject.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Discovery = table.Column<bool>(type: "bit", nullable: false),
-                    Shields = table.Column<bool>(type: "bit", nullable: false),
-                    ReadyForBattle = table.Column<bool>(type: "bit", nullable: false),
-                    FuelOptimization = table.Column<bool>(type: "bit", nullable: false),
-                    EnergyBarriers = table.Column<bool>(type: "bit", nullable: false),
-                    SpaceCascades = table.Column<bool>(type: "bit", nullable: false),
-                    BattleShips = table.Column<bool>(type: "bit", nullable: false),
-                    SpaceMonster = table.Column<bool>(type: "bit", nullable: false),
+                    Goliath = table.Column<bool>(type: "bit", nullable: false),
+                    Vengeance = table.Column<bool>(type: "bit", nullable: false),
                     PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -328,112 +296,6 @@ namespace DarkGalaxyProject.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Technologies",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KnowledgeCost = table.Column<int>(type: "int", nullable: false),
-                    Level = table.Column<int>(type: "int", nullable: false),
-                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Technologies", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Technologies_AspNetUsers_PlayerId",
-                        column: x => x.PlayerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DefensiveStructures",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    SystemId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DefensiveStructures", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DefensiveStructures_Alliances_AllianceId",
-                        column: x => x.AllianceId,
-                        principalTable: "Alliances",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Resources",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    BlackHoleId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    DebrisId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    SystemId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Resources", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Resources_Alliances_AllianceId",
-                        column: x => x.AllianceId,
-                        principalTable: "Alliances",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Resources_AspNetUsers_PlayerId",
-                        column: x => x.PlayerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Resources_Debrises_DebrisId",
-                        column: x => x.DebrisId,
-                        principalTable: "Debrises",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Ships",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    HP = table.Column<int>(type: "int", nullable: false),
-                    Storage = table.Column<int>(type: "int", nullable: false),
-                    SystemId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ships", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Ships_Alliances_AllianceId",
-                        column: x => x.AllianceId,
-                        principalTable: "Alliances",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Ships_AspNetUsers_PlayerId",
-                        column: x => x.PlayerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Systems",
                 columns: table => new
                 {
@@ -442,11 +304,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     Position = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    PopulatedPlanetId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ResourcePlanetId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ResearchPlanetId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    EnergyPlanetId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -466,25 +324,105 @@ namespace DarkGalaxyProject.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BlackHoles",
+                name: "DefensiveStructures",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    Size = table.Column<int>(type: "int", nullable: false),
-                    Storage = table.Column<int>(type: "int", nullable: false),
                     SystemId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BlackHoles", x => x.Id);
+                    table.PrimaryKey("PK_DefensiveStructures", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BlackHoles_Systems_SystemId",
+                        name: "FK_DefensiveStructures_Systems_SystemId",
                         column: x => x.SystemId,
                         principalTable: "Systems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Planets",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Position = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    SystemId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Planets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Planets_Systems_SystemId",
+                        column: x => x.SystemId,
+                        principalTable: "Systems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Resources",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SystemId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Resources", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Resources_AspNetUsers_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Resources_Systems_SystemId",
+                        column: x => x.SystemId,
+                        principalTable: "Systems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ships",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    HP = table.Column<int>(type: "int", nullable: false),
+                    Storage = table.Column<int>(type: "int", nullable: false),
+                    SystemId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ships", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ships_Alliances_AllianceId",
+                        column: x => x.AllianceId,
+                        principalTable: "Alliances",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Ships_AspNetUsers_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ships_Systems_SystemId",
+                        column: x => x.SystemId,
+                        principalTable: "Systems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -509,151 +447,25 @@ namespace DarkGalaxyProject.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Amenities",
+                name: "Factories",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Level = table.Column<int>(type: "int", nullable: false),
+                    Income = table.Column<int>(type: "int", nullable: false),
+                    UpgradeCost = table.Column<int>(type: "int", nullable: false),
                     PlanetId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Amenities", x => x.Id);
+                    table.PrimaryKey("PK_Factories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Factories_Planets_PlanetId",
+                        column: x => x.PlanetId,
+                        principalTable: "Planets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateTable(
-                name: "LivingQuarters",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Level = table.Column<int>(type: "int", nullable: false),
-                    PlanetId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LivingQuarters", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ResourceBuildings",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Level = table.Column<int>(type: "int", nullable: false),
-                    PlanetId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ResourceBuildings", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StorageBuildings",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Level = table.Column<int>(type: "int", nullable: false),
-                    PlanetId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StorageBuildings", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Planet",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Position = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    SystemId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SolarPanelId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    GeothermalPlantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FuelToEnergyCenterId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Population = table.Column<int>(type: "int", nullable: true),
-                    ResearchBuildingId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CrystalMineId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FuelGeneratorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    TitaniumMineId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CrystalStorageId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FuelStorageId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    TitaniumStorageId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Planet", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Planet_ResearchBuildings_ResearchBuildingId",
-                        column: x => x.ResearchBuildingId,
-                        principalTable: "ResearchBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_ResourceBuildings_CrystalMineId",
-                        column: x => x.CrystalMineId,
-                        principalTable: "ResourceBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_ResourceBuildings_FuelGeneratorId",
-                        column: x => x.FuelGeneratorId,
-                        principalTable: "ResourceBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_ResourceBuildings_FuelToEnergyCenterId",
-                        column: x => x.FuelToEnergyCenterId,
-                        principalTable: "ResourceBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_ResourceBuildings_GeothermalPlantId",
-                        column: x => x.GeothermalPlantId,
-                        principalTable: "ResourceBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_ResourceBuildings_SolarPanelId",
-                        column: x => x.SolarPanelId,
-                        principalTable: "ResourceBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_ResourceBuildings_TitaniumMineId",
-                        column: x => x.TitaniumMineId,
-                        principalTable: "ResourceBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_StorageBuildings_CrystalStorageId",
-                        column: x => x.CrystalStorageId,
-                        principalTable: "StorageBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_StorageBuildings_FuelStorageId",
-                        column: x => x.FuelStorageId,
-                        principalTable: "StorageBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Planet_StorageBuildings_TitaniumStorageId",
-                        column: x => x.TitaniumStorageId,
-                        principalTable: "StorageBuildings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Amenities_PlanetId",
-                table: "Amenities",
-                column: "PlanetId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -705,21 +517,11 @@ namespace DarkGalaxyProject.Data.Migrations
                 filter: "[AllianceLeaderId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_AllianceLeadersId",
-                table: "AspNetUsers",
-                column: "AllianceLeadersId");
-
-            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BlackHoles_SystemId",
-                table: "BlackHoles",
-                column: "SystemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_AllianceId",
@@ -732,18 +534,13 @@ namespace DarkGalaxyProject.Data.Migrations
                 column: "PlayerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DefensiveStructures_AllianceId",
-                table: "DefensiveStructures",
-                column: "AllianceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DefensiveStructures_SystemId",
                 table: "DefensiveStructures",
                 column: "SystemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LivingQuarters_PlanetId",
-                table: "LivingQuarters",
+                name: "IX_Factories_PlanetId",
+                table: "Factories",
                 column: "PlanetId",
                 unique: true);
 
@@ -758,54 +555,9 @@ namespace DarkGalaxyProject.Data.Migrations
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Planet_CrystalMineId",
-                table: "Planet",
-                column: "CrystalMineId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_CrystalStorageId",
-                table: "Planet",
-                column: "CrystalStorageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_FuelGeneratorId",
-                table: "Planet",
-                column: "FuelGeneratorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_FuelStorageId",
-                table: "Planet",
-                column: "FuelStorageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_FuelToEnergyCenterId",
-                table: "Planet",
-                column: "FuelToEnergyCenterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_GeothermalPlantId",
-                table: "Planet",
-                column: "GeothermalPlantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_ResearchBuildingId",
-                table: "Planet",
-                column: "ResearchBuildingId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_SolarPanelId",
-                table: "Planet",
-                column: "SolarPanelId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_TitaniumMineId",
-                table: "Planet",
-                column: "TitaniumMineId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planet_TitaniumStorageId",
-                table: "Planet",
-                column: "TitaniumStorageId");
+                name: "IX_Planets_SystemId",
+                table: "Planets",
+                column: "SystemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Research_PlayerId",
@@ -813,35 +565,10 @@ namespace DarkGalaxyProject.Data.Migrations
                 column: "PlayerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Research_ResearchBuildingId",
-                table: "Research",
-                column: "ResearchBuildingId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ResearchTrees_PlayerId",
                 table: "ResearchTrees",
                 column: "PlayerId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ResourceBuildings_PlanetId",
-                table: "ResourceBuildings",
-                column: "PlanetId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Resources_AllianceId",
-                table: "Resources",
-                column: "AllianceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Resources_BlackHoleId",
-                table: "Resources",
-                column: "BlackHoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Resources_DebrisId",
-                table: "Resources",
-                column: "DebrisId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Resources_PlayerId",
@@ -869,11 +596,6 @@ namespace DarkGalaxyProject.Data.Migrations
                 column: "SystemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StorageBuildings_PlanetId",
-                table: "StorageBuildings",
-                column: "PlanetId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Suns_SystemId",
                 table: "Suns",
                 column: "SystemId");
@@ -884,153 +606,13 @@ namespace DarkGalaxyProject.Data.Migrations
                 column: "AllianceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Systems_EnergyPlanetId",
-                table: "Systems",
-                column: "EnergyPlanetId",
-                unique: true,
-                filter: "[EnergyPlanetId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Systems_PopulatedPlanetId",
-                table: "Systems",
-                column: "PopulatedPlanetId",
-                unique: true,
-                filter: "[PopulatedPlanetId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Systems_ResearchPlanetId",
-                table: "Systems",
-                column: "ResearchPlanetId",
-                unique: true,
-                filter: "[ResearchPlanetId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Systems_ResourcePlanetId",
-                table: "Systems",
-                column: "ResourcePlanetId",
-                unique: true,
-                filter: "[ResourcePlanetId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Systems_UserId",
                 table: "Systems",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Technologies_PlayerId",
-                table: "Technologies",
-                column: "PlayerId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_DefensiveStructures_Systems_SystemId",
-                table: "DefensiveStructures",
-                column: "SystemId",
-                principalTable: "Systems",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Resources_BlackHoles_BlackHoleId",
-                table: "Resources",
-                column: "BlackHoleId",
-                principalTable: "BlackHoles",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Resources_Systems_SystemId",
-                table: "Resources",
-                column: "SystemId",
-                principalTable: "Systems",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Ships_Systems_SystemId",
-                table: "Ships",
-                column: "SystemId",
-                principalTable: "Systems",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Systems_Planet_EnergyPlanetId",
-                table: "Systems",
-                column: "EnergyPlanetId",
-                principalTable: "Planet",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Systems_Planet_PopulatedPlanetId",
-                table: "Systems",
-                column: "PopulatedPlanetId",
-                principalTable: "Planet",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Systems_Planet_ResearchPlanetId",
-                table: "Systems",
-                column: "ResearchPlanetId",
-                principalTable: "Planet",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Systems_Planet_ResourcePlanetId",
-                table: "Systems",
-                column: "ResourcePlanetId",
-                principalTable: "Planet",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Amenities_Planet_PlanetId",
-                table: "Amenities",
-                column: "PlanetId",
-                principalTable: "Planet",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_LivingQuarters_Planet_PlanetId",
-                table: "LivingQuarters",
-                column: "PlanetId",
-                principalTable: "Planet",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ResourceBuildings_Planet_PlanetId",
-                table: "ResourceBuildings",
-                column: "PlanetId",
-                principalTable: "Planet",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_StorageBuildings_Planet_PlanetId",
-                table: "StorageBuildings",
-                column: "PlanetId",
-                principalTable: "Planet",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_ResourceBuildings_Planet_PlanetId",
-                table: "ResourceBuildings");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_StorageBuildings_Planet_PlanetId",
-                table: "StorageBuildings");
-
-            migrationBuilder.DropTable(
-                name: "Amenities");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -1053,7 +635,7 @@ namespace DarkGalaxyProject.Data.Migrations
                 name: "DefensiveStructures");
 
             migrationBuilder.DropTable(
-                name: "LivingQuarters");
+                name: "Factories");
 
             migrationBuilder.DropTable(
                 name: "Messages");
@@ -1080,10 +662,7 @@ namespace DarkGalaxyProject.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "BlackHoles");
-
-            migrationBuilder.DropTable(
-                name: "Debrises");
+                name: "Planets");
 
             migrationBuilder.DropTable(
                 name: "Systems");
@@ -1093,18 +672,6 @@ namespace DarkGalaxyProject.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Alliances");
-
-            migrationBuilder.DropTable(
-                name: "Planet");
-
-            migrationBuilder.DropTable(
-                name: "ResearchBuildings");
-
-            migrationBuilder.DropTable(
-                name: "ResourceBuildings");
-
-            migrationBuilder.DropTable(
-                name: "StorageBuildings");
         }
     }
 }

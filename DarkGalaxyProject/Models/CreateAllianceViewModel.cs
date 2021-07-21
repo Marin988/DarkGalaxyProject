@@ -9,7 +9,5 @@ namespace DarkGalaxyProject.Models
     public class CreateAllianceViewModel
     {
         public string Name { get; set; }
-
-        public AllianceType Type { get; set; }
     }
 }

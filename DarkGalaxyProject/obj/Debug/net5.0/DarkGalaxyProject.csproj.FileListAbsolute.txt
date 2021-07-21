@@ -459,7 +459,6 @@ D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Planet\EnergyPlanet.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Planet\PopulatedPlanet.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Planet\ResourcePlanet.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\DarkGalaxyProject.csproj.AssemblyReference.cache
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Player\Messages.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Player\SendMessage.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Player\Message.cshtml.g.cs

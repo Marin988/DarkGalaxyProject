@@ -18,7 +18,7 @@ namespace DarkGalaxyProject.Data.Models.Others
         [Required]
         public string Content { get; set; }
 
-        public DateTime? TimeOfSending { get; } = DateTime.UtcNow;
+        public DateTime TimeOfSending { get; } = DateTime.UtcNow;
 
         [Required]
         public string SenderId { get; set; }

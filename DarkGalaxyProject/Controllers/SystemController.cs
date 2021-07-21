@@ -1,7 +1,6 @@
 ﻿using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
-using DarkGalaxyProject.Data.Models.BaseModels;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using DarkGalaxyProject.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -67,17 +66,7 @@ namespace DarkGalaxyProject.Controllers
                         Storage = sh.Storage,
                         Type = sh.Type.ToString()
                     })
-                    .ToList(),
-                    EnergyPlanet = new EnergyPlanetViewModel
-                    {
-                        Name = s.EnergyPlanet.Name,
-                        Position = s.EnergyPlanet.Position,
-                        Type = s.EnergyPlanet.Type.ToString(),
-                        FuelToEnergyCenter = new ResourceBuildingViewModel
-                        {
-                            Level = s.EnergyPlanet.FuelToEnergyCenter.Level
-                        }
-                    }
+                    .ToList()
                 })
                 .ToList();
 
@@ -102,17 +91,7 @@ namespace DarkGalaxyProject.Controllers
                        Storage = sh.Storage,
                        Type = sh.Type.ToString()
                    })
-                   .ToList(),
-                   EnergyPlanet = new EnergyPlanetViewModel
-                   {
-                       Name = s.EnergyPlanet.Name,
-                       Position = s.EnergyPlanet.Position,
-                       Type = s.EnergyPlanet.Type.ToString(),
-                       FuelToEnergyCenter = new ResourceBuildingViewModel
-                       {
-                           Level = s.EnergyPlanet.FuelToEnergyCenter.Level
-                       }
-                   }
+                   .ToList()
                })
                .ToList();
 

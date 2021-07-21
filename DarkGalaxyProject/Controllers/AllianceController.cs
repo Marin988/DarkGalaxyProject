@@ -1,7 +1,6 @@
 ﻿using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
-using DarkGalaxyProject.Data.Models.BaseModels;
 using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Models.Alliance;
 using Microsoft.AspNetCore.Authorization;
@@ -35,10 +34,8 @@ namespace DarkGalaxyProject.Controllers
                 {
                     Id = a.Id,
                     Leader = a.Leader.UserName,
-                    Leaders = a.Leaders.Select(l => l.UserName).ToList(),
                     MembersCount = a.Members.Count(),
                     Name = a.Name,
-                    Type = a.Type.ToString()
                 })
                 .ToList();
 
@@ -62,8 +59,6 @@ namespace DarkGalaxyProject.Controllers
                     Id = a.Id,
                     Name = a.Name,
                     Leader = a.Leader == null ? null : a.Leader.UserName,
-                    Leaders = a.Leaders.Select(l => l.UserName).ToList(),
-                    Type = a.Type.ToString(),
                     MembersCount = a.Members.Count()
                 })
                 .First();
@@ -166,8 +161,6 @@ namespace DarkGalaxyProject.Controllers
 
             var alliance = new Alliance(allianceModel.Name);
 
-            alliance.Type = allianceModel.Type;
-
             alliance.Members.ToList().Add(player);
 
             data.Alliances.Add(alliance);
@@ -176,17 +169,8 @@ namespace DarkGalaxyProject.Controllers
 
             player.AllianceId = alliance.Id;
 
-            if (alliance.Type == AllianceType.Authoritorian || alliance.Type == AllianceType.Republic)
-            {
-                alliance.LeaderId = userManager.GetUserId(User);
-                player.AllianceLeaderId = alliance.Id;
-
-            }
-            else if (alliance.Type == AllianceType.OligarchyAuthoritorian || alliance.Type == AllianceType.OligarchyRepublic)
-            {
-                alliance.Leaders.ToList().Add(player);
-                player.AllianceLeadersId = alliance.Id;
-            }
+            alliance.LeaderId = userManager.GetUserId(User);
+            player.AllianceLeaderId = alliance.Id;
 
             data.SaveChanges();
 

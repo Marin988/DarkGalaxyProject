@@ -19,7 +19,7 @@ namespace DarkGalaxyProject.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.BaseModels.Alliance", b =>
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.Alliance", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -31,66 +31,9 @@ namespace DarkGalaxyProject.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Alliances");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.BaseModels.DefensiveStructure", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AllianceId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SystemId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AllianceId");
-
-                    b.HasIndex("SystemId");
-
-                    b.ToTable("DefensiveStructures");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.BaseModels.Planet", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SystemId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Planet");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Planet");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Others.ChatMessage", b =>
@@ -163,17 +106,9 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("PlayerId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ResearchBuildingId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PlayerId");
-
-                    b.HasIndex("ResearchBuildingId");
 
                     b.ToTable("Research");
                 });
@@ -183,32 +118,14 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("BattleShips")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Discovery")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("EnergyBarriers")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("FuelOptimization")
+                    b.Property<bool>("Goliath")
                         .HasColumnType("bit");
 
                     b.Property<string>("PlayerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("ReadyForBattle")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Shields")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("SpaceCascades")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("SpaceMonster")
+                    b.Property<bool>("Vengeance")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
@@ -234,12 +151,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PlayerId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("PlayerId");
 
                     b.ToTable("Technologies");
                 });
@@ -252,24 +164,12 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("AllianceId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("EnergyPlanetId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("PopulatedPlanetId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Position")
                         .HasColumnType("int");
-
-                    b.Property<string>("ResearchPlanetId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ResourcePlanetId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -281,28 +181,57 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.HasIndex("AllianceId");
 
-                    b.HasIndex("EnergyPlanetId")
-                        .IsUnique()
-                        .HasFilter("[EnergyPlanetId] IS NOT NULL");
-
-                    b.HasIndex("PopulatedPlanetId")
-                        .IsUnique()
-                        .HasFilter("[PopulatedPlanetId] IS NOT NULL");
-
-                    b.HasIndex("ResearchPlanetId")
-                        .IsUnique()
-                        .HasFilter("[ResearchPlanetId] IS NOT NULL");
-
-                    b.HasIndex("ResourcePlanetId")
-                        .IsUnique()
-                        .HasFilter("[ResourcePlanetId] IS NOT NULL");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Systems");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.BlackHole", b =>
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.DefensiveStructure", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SystemId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SystemId");
+
+                    b.ToTable("DefensiveStructures");
+                });
+
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Factories", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Income")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlanetId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("UpgradeCost")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanetId")
+                        .IsUnique();
+
+                    b.ToTable("Factories");
+                });
+
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planet", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -311,10 +240,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Size")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Storage")
+                    b.Property<int>("Position")
                         .HasColumnType("int");
 
                     b.Property<string>("SystemId")
@@ -328,131 +254,12 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.HasIndex("SystemId");
 
-                    b.ToTable("BlackHoles");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.Amenity", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PlanetId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanetId")
-                        .IsUnique();
-
-                    b.ToTable("Amenities");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.LivingQuarters", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PlanetId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanetId")
-                        .IsUnique();
-
-                    b.ToTable("LivingQuarters");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResearchBuilding", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ResearchBuildings");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResourceBuilding", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PlanetId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanetId");
-
-                    b.ToTable("ResourceBuildings");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.StorageBuilding", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PlanetId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanetId");
-
-                    b.ToTable("StorageBuildings");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Debris", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("SizeType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Timer")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Debrises");
+                    b.ToTable("Planets");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Resource", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AllianceId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("BlackHoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("DebrisId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PlayerId")
@@ -468,12 +275,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AllianceId");
-
-                    b.HasIndex("BlackHoleId");
-
-                    b.HasIndex("DebrisId");
 
                     b.HasIndex("PlayerId");
 
@@ -494,13 +295,13 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PlayerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Storage")
                         .HasColumnType("int");
 
                     b.Property<string>("SystemId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Type")
@@ -745,87 +546,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.EnergyPlanet", b =>
-                {
-                    b.HasBaseType("DarkGalaxyProject.Data.Models.BaseModels.Planet");
-
-                    b.Property<string>("FuelToEnergyCenterId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("GeothermalPlantId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SolarPanelId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasIndex("FuelToEnergyCenterId");
-
-                    b.HasIndex("GeothermalPlantId");
-
-                    b.HasIndex("SolarPanelId");
-
-                    b.HasDiscriminator().HasValue("EnergyPlanet");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.PopulatedPlanet", b =>
-                {
-                    b.HasBaseType("DarkGalaxyProject.Data.Models.BaseModels.Planet");
-
-                    b.Property<int>("Population")
-                        .HasColumnType("int");
-
-                    b.HasDiscriminator().HasValue("PopulatedPlanet");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.ResearchPlanet", b =>
-                {
-                    b.HasBaseType("DarkGalaxyProject.Data.Models.BaseModels.Planet");
-
-                    b.Property<string>("ResearchBuildingId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasIndex("ResearchBuildingId");
-
-                    b.HasDiscriminator().HasValue("ResearchPlanet");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.ResourcePlanet", b =>
-                {
-                    b.HasBaseType("DarkGalaxyProject.Data.Models.BaseModels.Planet");
-
-                    b.Property<string>("CrystalMineId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CrystalStorageId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FuelGeneratorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FuelStorageId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TitaniumMineId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TitaniumStorageId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasIndex("CrystalMineId");
-
-                    b.HasIndex("CrystalStorageId");
-
-                    b.HasIndex("FuelGeneratorId");
-
-                    b.HasIndex("FuelStorageId");
-
-                    b.HasIndex("TitaniumMineId");
-
-                    b.HasIndex("TitaniumStorageId");
-
-                    b.HasDiscriminator().HasValue("ResourcePlanet");
-                });
-
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Player", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -837,9 +557,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AllianceLeaderId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AllianceLeadersId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Password")
@@ -854,31 +571,12 @@ namespace DarkGalaxyProject.Data.Migrations
                         .IsUnique()
                         .HasFilter("[AllianceLeaderId] IS NOT NULL");
 
-                    b.HasIndex("AllianceLeadersId");
-
                     b.HasDiscriminator().HasValue("Player");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.BaseModels.DefensiveStructure", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", "Alliance")
-                        .WithMany()
-                        .HasForeignKey("AllianceId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.System", "System")
-                        .WithMany("DefensiveStructures")
-                        .HasForeignKey("SystemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Alliance");
-
-                    b.Navigation("System");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Others.ChatMessage", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", "Alliance")
+                    b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
                         .WithMany("Messages")
                         .HasForeignKey("AllianceId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -920,10 +618,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         .WithMany("Researches")
                         .HasForeignKey("PlayerId");
 
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResearchBuilding", null)
-                        .WithMany("Researches")
-                        .HasForeignKey("ResearchBuildingId");
-
                     b.Navigation("Player");
                 });
 
@@ -938,34 +632,11 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("Player");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.Others.Technology", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.Player", null)
-                        .WithMany("Technologies")
-                        .HasForeignKey("PlayerId");
-                });
-
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.System", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", "Alliance")
-                        .WithMany("Systems")
+                    b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
+                        .WithMany()
                         .HasForeignKey("AllianceId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planets.EnergyPlanet", "EnergyPlanet")
-                        .WithOne("System")
-                        .HasForeignKey("DarkGalaxyProject.Data.Models.System", "EnergyPlanetId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planets.PopulatedPlanet", "PopulatedPlanet")
-                        .WithOne("System")
-                        .HasForeignKey("DarkGalaxyProject.Data.Models.System", "PopulatedPlanetId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planets.ResearchPlanet", "ResearchPlanet")
-                        .WithOne("System")
-                        .HasForeignKey("DarkGalaxyProject.Data.Models.System", "ResearchPlanetId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planets.ResourcePlanet", "ResourcePlanet")
-                        .WithOne("System")
-                        .HasForeignKey("DarkGalaxyProject.Data.Models.System", "ResourcePlanetId");
 
                     b.HasOne("DarkGalaxyProject.Data.Models.Player", "User")
                         .WithMany("Systems")
@@ -974,21 +645,13 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.Navigation("Alliance");
 
-                    b.Navigation("EnergyPlanet");
-
-                    b.Navigation("PopulatedPlanet");
-
-                    b.Navigation("ResearchPlanet");
-
-                    b.Navigation("ResourcePlanet");
-
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.BlackHole", b =>
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.DefensiveStructure", b =>
                 {
                     b.HasOne("DarkGalaxyProject.Data.Models.System", "System")
-                        .WithMany("BlackHoles")
+                        .WithMany("DefensiveStructures")
                         .HasForeignKey("SystemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -996,64 +659,30 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("System");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.Amenity", b =>
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Factories", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planets.PopulatedPlanet", "Planet")
-                        .WithOne("Amenities")
-                        .HasForeignKey("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.Amenity", "PlanetId")
+                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planet", "Planet")
+                        .WithOne("Factories")
+                        .HasForeignKey("DarkGalaxyProject.Data.Models.WithinSystem.Factories", "PlanetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Planet");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.LivingQuarters", b =>
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planet", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planets.PopulatedPlanet", "Planet")
-                        .WithOne("LivingQuarters")
-                        .HasForeignKey("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.LivingQuarters", "PlanetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("DarkGalaxyProject.Data.Models.System", "System")
+                        .WithMany("Planets")
+                        .HasForeignKey("SystemId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Planet");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResourceBuilding", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Planet", "Planet")
-                        .WithMany()
-                        .HasForeignKey("PlanetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Planet");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.StorageBuilding", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Planet", "Planet")
-                        .WithMany()
-                        .HasForeignKey("PlanetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Planet");
+                    b.Navigation("System");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Resource", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", null)
-                        .WithMany("Resources")
-                        .HasForeignKey("AllianceId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.BlackHole", null)
-                        .WithMany("Resources")
-                        .HasForeignKey("BlackHoleId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Debris", null)
-                        .WithMany("Resources")
-                        .HasForeignKey("DebrisId");
-
                     b.HasOne("DarkGalaxyProject.Data.Models.Player", null)
                         .WithMany("Resources")
                         .HasForeignKey("PlayerId");
@@ -1065,19 +694,19 @@ namespace DarkGalaxyProject.Data.Migrations
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Ship", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", "Alliance")
-                        .WithMany("Ships")
+                    b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
+                        .WithMany()
                         .HasForeignKey("AllianceId");
 
                     b.HasOne("DarkGalaxyProject.Data.Models.Player", "Player")
                         .WithMany()
-                        .HasForeignKey("PlayerId");
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DarkGalaxyProject.Data.Models.System", "System")
                         .WithMany("Ships")
-                        .HasForeignKey("SystemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SystemId");
 
                     b.Navigation("Alliance");
 
@@ -1148,94 +777,20 @@ namespace DarkGalaxyProject.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.EnergyPlanet", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResourceBuilding", "FuelToEnergyCenter")
-                        .WithMany()
-                        .HasForeignKey("FuelToEnergyCenterId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResourceBuilding", "GeothermalPlant")
-                        .WithMany()
-                        .HasForeignKey("GeothermalPlantId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResourceBuilding", "SolarPanel")
-                        .WithMany()
-                        .HasForeignKey("SolarPanelId");
-
-                    b.Navigation("FuelToEnergyCenter");
-
-                    b.Navigation("GeothermalPlant");
-
-                    b.Navigation("SolarPanel");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.ResearchPlanet", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResearchBuilding", "ResearchBuilding")
-                        .WithMany()
-                        .HasForeignKey("ResearchBuildingId");
-
-                    b.Navigation("ResearchBuilding");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.ResourcePlanet", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResourceBuilding", "CrystalMine")
-                        .WithMany()
-                        .HasForeignKey("CrystalMineId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.StorageBuilding", "CrystalStorage")
-                        .WithMany()
-                        .HasForeignKey("CrystalStorageId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResourceBuilding", "FuelGenerator")
-                        .WithMany()
-                        .HasForeignKey("FuelGeneratorId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.StorageBuilding", "FuelStorage")
-                        .WithMany()
-                        .HasForeignKey("FuelStorageId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResourceBuilding", "TitaniumMine")
-                        .WithMany()
-                        .HasForeignKey("TitaniumMineId");
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.StorageBuilding", "TitaniumStorage")
-                        .WithMany()
-                        .HasForeignKey("TitaniumStorageId");
-
-                    b.Navigation("CrystalMine");
-
-                    b.Navigation("CrystalStorage");
-
-                    b.Navigation("FuelGenerator");
-
-                    b.Navigation("FuelStorage");
-
-                    b.Navigation("TitaniumMine");
-
-                    b.Navigation("TitaniumStorage");
-                });
-
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Player", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", "AllianceCandidate")
+                    b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "AllianceCandidate")
                         .WithMany("Candidates")
                         .HasForeignKey("AllianceCandidateId");
 
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", "Alliance")
+                    b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
                         .WithMany("Members")
                         .HasForeignKey("AllianceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", "AllianceLeader")
+                    b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "AllianceLeader")
                         .WithOne("Leader")
                         .HasForeignKey("DarkGalaxyProject.Data.Models.Player", "AllianceLeaderId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.BaseModels.Alliance", "AllianceLeaders")
-                        .WithMany("Leaders")
-                        .HasForeignKey("AllianceLeadersId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Alliance");
@@ -1243,34 +798,24 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("AllianceCandidate");
 
                     b.Navigation("AllianceLeader");
-
-                    b.Navigation("AllianceLeaders");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.BaseModels.Alliance", b =>
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.Alliance", b =>
                 {
                     b.Navigation("Candidates");
 
                     b.Navigation("Leader");
 
-                    b.Navigation("Leaders");
-
                     b.Navigation("Members");
 
                     b.Navigation("Messages");
-
-                    b.Navigation("Resources");
-
-                    b.Navigation("Ships");
-
-                    b.Navigation("Systems");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.System", b =>
                 {
-                    b.Navigation("BlackHoles");
-
                     b.Navigation("DefensiveStructures");
+
+                    b.Navigation("Planets");
 
                     b.Navigation("Resources");
 
@@ -1279,43 +824,9 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("Suns");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.BlackHole", b =>
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planet", b =>
                 {
-                    b.Navigation("Resources");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Buildings.ResearchBuilding", b =>
-                {
-                    b.Navigation("Researches");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Debris", b =>
-                {
-                    b.Navigation("Resources");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.EnergyPlanet", b =>
-                {
-                    b.Navigation("System");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.PopulatedPlanet", b =>
-                {
-                    b.Navigation("Amenities");
-
-                    b.Navigation("LivingQuarters");
-
-                    b.Navigation("System");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.ResearchPlanet", b =>
-                {
-                    b.Navigation("System");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planets.ResourcePlanet", b =>
-                {
-                    b.Navigation("System");
+                    b.Navigation("Factories");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Player", b =>
@@ -1331,8 +842,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("SentMessages");
 
                     b.Navigation("Systems");
-
-                    b.Navigation("Technologies");
                 });
 #pragma warning restore 612, 618
         }

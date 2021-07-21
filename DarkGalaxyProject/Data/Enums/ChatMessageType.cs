@@ -8,9 +8,6 @@ namespace DarkGalaxyProject.Data.Enums
     public enum ChatMessageType
     {
         Chat = 1,
-        News = 2,
-        HigherCommandChat = 3,
-        AnonymousSuggestionsChat = 4,
-        Elections = 5,
+        News = 2
     }
 }

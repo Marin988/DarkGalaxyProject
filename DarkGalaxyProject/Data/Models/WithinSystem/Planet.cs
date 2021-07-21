@@ -3,31 +3,22 @@ using DarkGalaxyProject.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
-    public class BlackHole 
+    public class Planet : IPlanet
     {
-        public BlackHole()
-        {
-            Resources = new List<Resource>();
-        }
-
         public string Id { get; init; } = Guid.NewGuid().ToString();
+
+        public int Position { get; set; }
 
         [Required]
         public string Name { get; set; }
 
         [Required]
-        public BlackHoleType Type { get; set; }
+        public PlanetType Type { get; set; }
 
-        public int Size { get; set; }
-
-        public int Storage { get; set; }
-
-        public IEnumerable<Resource> Resources { get; set; }
+        public Factories Factories { get; set; }    
 
         [Required]
         public string SystemId { get; set; }

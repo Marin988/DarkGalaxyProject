@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using DarkGalaxyProject.Data.Enums;
-using DarkGalaxyProject.Data.Models.BaseModels;
 using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using Microsoft.AspNetCore.Identity;
@@ -19,17 +18,12 @@ namespace DarkGalaxyProject.Data.Models
         {
             Resources = new List<Resource>()
             {
-                new Resource { Quantity = 0, Type = ResourceType.Culture },
-                new Resource { Quantity = 0, Type = ResourceType.Energy },
-                new Resource { Quantity = 0, Type = ResourceType.Fuel },
-                new Resource { Quantity = 0, Type = ResourceType.Knowledge },
-                new Resource { Quantity = 0, Type = ResourceType.MilkyCoin },
-                new Resource { Quantity = 0, Type = ResourceType.Titanium }
+                new Resource { Quantity = 1000, Type = ResourceType.Fuel },
+                new Resource { Quantity = 1000, Type = ResourceType.MilkyCoin },
             };
             Systems = new List<System>();
             SentMessages = new List<Message>();
             ReceivedMessages = new List<Message>();
-            Technologies = new List<Technology>();
             Researches = new List<Research>();
 
         }
@@ -47,10 +41,6 @@ namespace DarkGalaxyProject.Data.Models
 
         public Alliance AllianceLeader { get; set; }
 
-        public string AllianceLeadersId { get; set; }
-
-        public Alliance AllianceLeaders { get; set; }
-
         public string AllianceCandidateId { get; set; }
         public Alliance AllianceCandidate { get; set; }
 
@@ -61,8 +51,6 @@ namespace DarkGalaxyProject.Data.Models
         public IEnumerable<Message> SentMessages { get; set; }
 
         public IEnumerable<Message> ReceivedMessages { get; set; }
-
-        public IEnumerable<Technology> Technologies { get; set; }
 
         public IEnumerable<Research> Researches { get; set; }
     }

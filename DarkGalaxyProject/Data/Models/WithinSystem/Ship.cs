@@ -1,5 +1,4 @@
 ﻿using DarkGalaxyProject.Data.Enums;
-using DarkGalaxyProject.Data.Models.BaseModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -33,12 +32,12 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int Speed => (int)Type * 20;
 
-        [Required]
+        
         public string SystemId { get; set; }
 
         public System System { get; set; }
 
-        //[Required]
+        [Required]
         public string PlayerId { get; set; }
         public Player Player { get; set; }
 

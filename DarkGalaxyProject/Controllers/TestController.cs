@@ -1,7 +1,6 @@
 ﻿using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
-using DarkGalaxyProject.Data.Models.BaseModels;
 using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using DarkGalaxyProject.Models;
@@ -78,17 +77,7 @@ namespace DarkGalaxyProject.Controllers
                         Storage = sh.Storage,
                         Type = sh.Type.ToString()
                     })
-                    .ToList(),
-                    EnergyPlanet = new EnergyPlanetViewModel
-                    {
-                        Name = s.EnergyPlanet.Name,
-                        Position = s.EnergyPlanet.Position,
-                        Type = s.EnergyPlanet.Type.ToString(),
-                        FuelToEnergyCenter = new ResourceBuildingViewModel
-                        {
-                            Level = s.EnergyPlanet.FuelToEnergyCenter.Level
-                        }
-                    }
+                    .ToList()
                 })
                 .ToList();
 
@@ -113,17 +102,7 @@ namespace DarkGalaxyProject.Controllers
                         Storage = sh.Storage,
                         Type = sh.Type.ToString()
                     })
-                    .ToList(),
-                    EnergyPlanet = new EnergyPlanetViewModel
-                    {
-                        Name = s.EnergyPlanet.Name,
-                        Position = s.EnergyPlanet.Position,
-                        Type = s.EnergyPlanet.Type.ToString(),
-                        FuelToEnergyCenter = new ResourceBuildingViewModel
-                        {
-                            Level = s.EnergyPlanet.FuelToEnergyCenter.Level
-                        }
-                    }
+                    .ToList()
                 })
                 .ToList();
 
@@ -383,9 +362,9 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult LevelUp(string name)
         {
-            var fueltoEnergyCenter = data.ResourceBuildings.FirstOrDefault(rb => rb.Planet.Name == name);
+            //var fueltoEnergyCenter = data.ResourceBuildings.FirstOrDefault(rb => rb.Planet.Name == name);
 
-            fueltoEnergyCenter.Level += 1;
+            //fueltoEnergyCenter.Level += 1;
 
             data.SaveChanges();
 
