@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210721124120_DarkGalaxy")]
+    [Migration("20210721124742_DarkGalaxy")]
     partial class DarkGalaxy
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -237,6 +237,10 @@ namespace DarkGalaxyProject.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FactoriesId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -666,7 +670,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planet", "Planet")
                         .WithOne("Factories")
                         .HasForeignKey("DarkGalaxyProject.Data.Models.WithinSystem.Factories", "PlanetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Planet");

@@ -236,6 +236,10 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("FactoriesId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -664,7 +668,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Planet", "Planet")
                         .WithOne("Factories")
                         .HasForeignKey("DarkGalaxyProject.Data.Models.WithinSystem.Factories", "PlanetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Planet");

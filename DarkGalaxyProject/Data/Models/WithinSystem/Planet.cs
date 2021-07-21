@@ -18,6 +18,9 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public PlanetType Type { get; set; }
 
+        [Required]
+        public string FactoriesId { get; set; }
+
         public Factories Factories { get; set; }    
 
         [Required]

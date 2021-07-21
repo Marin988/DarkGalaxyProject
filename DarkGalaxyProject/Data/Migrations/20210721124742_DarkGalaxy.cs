@@ -350,6 +350,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     Position = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
+                    FactoriesId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SystemId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -464,7 +465,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         column: x => x.PlanetId,
                         principalTable: "Planets",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
