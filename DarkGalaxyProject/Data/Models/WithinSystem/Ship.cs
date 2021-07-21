@@ -32,7 +32,10 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int Speed => (int)Type * 20;
 
-        
+        public DateTime? SentOnMission { get; set; }
+
+        public int FlyingDuration { get; set; }
+
         public string SystemId { get; set; }
 
         public System System { get; set; }

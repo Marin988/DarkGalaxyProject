@@ -399,6 +399,8 @@ namespace DarkGalaxyProject.Data.Migrations
                     Type = table.Column<int>(type: "int", nullable: false),
                     HP = table.Column<int>(type: "int", nullable: false),
                     Storage = table.Column<int>(type: "int", nullable: false),
+                    SentOnMission = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FlyingDuration = table.Column<int>(type: "int", nullable: false),
                     SystemId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PlayerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -455,6 +457,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     Level = table.Column<int>(type: "int", nullable: false),
                     Income = table.Column<int>(type: "int", nullable: false),
                     UpgradeCost = table.Column<int>(type: "int", nullable: false),
+                    UpgradeTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PlanetId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>

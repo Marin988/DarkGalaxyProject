@@ -16,6 +16,8 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int UpgradeCost { get; set; }
 
+        public DateTime? UpgradeTime { get; set; }
+
         [Required]
         public string PlanetId { get; set; }
 

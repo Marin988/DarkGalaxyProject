@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210721124742_DarkGalaxy")]
+    [Migration("20210721125747_DarkGalaxy")]
     partial class DarkGalaxy
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -225,6 +225,9 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<int>("UpgradeCost")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("UpgradeTime")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PlanetId")
@@ -297,12 +300,18 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("AllianceId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("FlyingDuration")
+                        .HasColumnType("int");
+
                     b.Property<int>("HP")
                         .HasColumnType("int");
 
                     b.Property<string>("PlayerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("SentOnMission")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Storage")
                         .HasColumnType("int");
