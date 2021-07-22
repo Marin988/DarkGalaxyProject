@@ -8,6 +8,10 @@
 
         public int HP { get; set; }
 
+        public int MaxHP { get; set; }
+
+        public int MaxStorage { get; set; }
+
         public int Storage { get; set; }
 
         public int Speed { get; set; }

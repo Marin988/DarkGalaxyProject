@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DarkGalaxyProject.Models
+namespace DarkGalaxyProject.Models.Planet
 {
     public class PlanetViewModel
     {
@@ -15,8 +15,6 @@ namespace DarkGalaxyProject.Models
 
         public string Type { get; set; }
 
-        public string SystemId { get; set; }
-
-        public string PlanetType => this.GetType().Name.Replace("ViewModel", "");
+        public FactoriesViewModel Factories { get; set; }
     }
 }

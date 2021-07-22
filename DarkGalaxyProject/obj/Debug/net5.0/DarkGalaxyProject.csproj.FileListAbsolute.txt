@@ -392,7 +392,6 @@ D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\ref\DarkGala
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\DarkGalaxyProject.pdb
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\DarkGalaxyProject.genruntimeconfig.cache
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Home\Test.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\All.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\bin\Debug\net5.0\Microsoft.Bcl.AsyncInterfaces.dll
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\bin\Debug\net5.0\Microsoft.CodeAnalysis.CSharp.Workspaces.dll
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\bin\Debug\net5.0\Microsoft.CodeAnalysis.Workspaces.dll
@@ -437,14 +436,6 @@ D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\bin\Debug\net5.0\zh-Hans\Micr
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\bin\Debug\net5.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\bin\Debug\net5.0\runtimes\win-arm\lib\net5.0\dotnet-aspnet-codegenerator-design.exe
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\bin\Debug\net5.0\runtimes\win-arm64\lib\net5.0\dotnet-aspnet-codegenerator-design.exe
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\BuildShip.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\SendShip.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\ViewSystem.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\MySystems.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\CreateAlliance.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\Alliance.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\AllianceList.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Test\AllianceChat.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\bin\Debug\net5.0\libman.json
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\System\AllSystems.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\System\ViewSystem.cshtml.g.cs
@@ -456,9 +447,9 @@ D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Alliance\Chat.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Alliance\All.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\System\PlayerSystems.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Planet\EnergyPlanet.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Planet\PopulatedPlanet.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Planet\ResourcePlanet.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Player\Messages.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Player\SendMessage.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Player\Message.cshtml.g.cs
+D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Planet\ViewPlanet.cshtml.g.cs
+D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\DarkGalaxyProject.csproj.AssemblyReference.cache
+D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\System\Fleet.cshtml.g.cs

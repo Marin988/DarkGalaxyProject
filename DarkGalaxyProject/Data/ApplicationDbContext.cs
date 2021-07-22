@@ -9,7 +9,7 @@ using System.Text;
 
 namespace DarkGalaxyProject.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<Player> 
     {
 
         public DbSet<Player> Players { get; set; }
@@ -24,6 +24,7 @@ namespace DarkGalaxyProject.Data
         public DbSet<Models.System> Systems { get; set; }
         public DbSet<Ship> Ships { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<Factories> Factories { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

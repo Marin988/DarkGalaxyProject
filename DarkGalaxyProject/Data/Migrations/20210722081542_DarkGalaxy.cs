@@ -53,8 +53,6 @@ namespace DarkGalaxyProject.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AllianceId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AllianceLeaderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AllianceCandidateId = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -350,7 +348,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     Position = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    FactoriesId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FactoriesId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SystemId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -455,8 +453,6 @@ namespace DarkGalaxyProject.Data.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Level = table.Column<int>(type: "int", nullable: false),
-                    Income = table.Column<int>(type: "int", nullable: false),
-                    UpgradeCost = table.Column<int>(type: "int", nullable: false),
                     UpgradeTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PlanetId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },

@@ -1,5 +1,5 @@
 ﻿@using DarkGalaxyProject.Data.Enums
-@using DarkGalaxyProject.Models 
+@using DarkGalaxyProject.Models
 @model SystemViewModel
 
 @{
@@ -12,10 +12,13 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Planet" asp-action="PopulatedPlanet" asp-route-systemId="@Model.Id">PopulatedPlanet</a>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Planet" asp-action="ResourcePlanet" asp-route-systemId="@Model.Id">ResourcePlanet</a>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Planet" asp-action="EnergyPlanet" asp-route-systemId="@Model.Id">EnergyPlanet</a>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Planet" asp-action="ResearchPlanet" asp-route-systemId="@Model.Id">ResearchPlanet</a>
+        @foreach (var planet in Model.Planets)
+        {
+            <a class="nav-link text-dark" asp-area="" asp-controller="Planet" asp-action="ViewPlanet" asp-route-planetId="@planet.Id">Planet @planet.Name</a>
+        }
+
+        <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Fleet" asp-route-systemId="@Model.Id">Fleet</a>
+
         <span>Build ship</span>
         <form asp-action="BuildShip">
             <div class="form-group">

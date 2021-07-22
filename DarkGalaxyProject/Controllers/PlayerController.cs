@@ -64,7 +64,7 @@ namespace DarkGalaxyProject.Controllers
                     Time = m.TimeOfSending
                 })
                 .ToList()
-                .OrderBy(m => m.Time)
+                .OrderByDescending(m => m.Time)
                 .ToList();
 
             return View(messages);
@@ -94,7 +94,8 @@ namespace DarkGalaxyProject.Controllers
                 Content = message.Content,
                 ReceiverId = data.Players.First(p => p.UserName == message.ReceiverName).Id,
                 SenderId = message.SenderId,
-                Title = message.Title
+                Title = message.Title,
+                TimeOfSending = DateTime.Now
             });
 
             data.SaveChanges();

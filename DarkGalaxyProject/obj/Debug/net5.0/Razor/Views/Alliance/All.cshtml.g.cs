@@ -27,6 +27,13 @@ using DarkGalaxyProject.Models;
 #line hidden
 #nullable disable
 #nullable restore
+#line 3 "D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\Views\_ViewImports.cshtml"
+using DarkGalaxyProject.Data.Models;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
 #line 1 "D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\Views\Alliance\All.cshtml"
 using DarkGalaxyProject.Models.Alliance;
 
@@ -34,7 +41,7 @@ using DarkGalaxyProject.Models.Alliance;
 #line hidden
 #nullable disable
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f9", @"/Views/Alliance/All.cshtml")]
-    [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"8c3dc50ee04f6b71ac87ad788b1384ab4f3a7461", @"/Views/_ViewImports.cshtml")]
+    [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"c87d1cb92b99a860fa765e763e61c97a7eab4136", @"/Views/_ViewImports.cshtml")]
     public class Views_Alliance_All : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<List<DarkGalaxyProject.Models.Alliance.AllianceViewModel>>
     {
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_0 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("class", new global::Microsoft.AspNetCore.Html.HtmlString("nav-link text-dark"), global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
@@ -115,7 +122,7 @@ using DarkGalaxyProject.Models.Alliance;
 #line hidden
 #nullable disable
             WriteLiteral("</span>\r\n                </li>\r\n                <li class=\"bs-popover-left\">\r\n                    ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f97380", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f97575", async() => {
                 WriteLiteral("Members");
             }
             );
@@ -151,7 +158,7 @@ using DarkGalaxyProject.Models.Alliance;
             Write(__tagHelperExecutionContext.Output);
             __tagHelperExecutionContext = __tagHelperScopeManager.End();
             WriteLiteral("\r\n                </li>\r\n                <li class=\"bs-popover-left\">\r\n                    ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f910227", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f910422", async() => {
                 WriteLiteral("Chat");
             }
             );
@@ -187,7 +194,7 @@ using DarkGalaxyProject.Models.Alliance;
             Write(__tagHelperExecutionContext.Output);
             __tagHelperExecutionContext = __tagHelperScopeManager.End();
             WriteLiteral("\r\n                </li>\r\n            </ul>\r\n            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f913032", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f913227", async() => {
                 WriteLiteral("\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" id=\"allianceId\" name=\"allianceId\" hidden");
                 BeginWriteAttribute("value", " value=", 1160, "", 1179, 1);
 #nullable restore
@@ -223,7 +230,7 @@ WriteAttributeValue("", 1167, alliance.Id, 1167, 12, false);
 #line hidden
 #nullable disable
             WriteLiteral("\r\n<div>\r\n    ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f915365", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "48a5f4d2008ec71fabeddddc6f39ebc33d9fe0f915560", async() => {
                 WriteLiteral("Back to List");
             }
             );

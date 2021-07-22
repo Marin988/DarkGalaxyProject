@@ -3,6 +3,7 @@ using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using DarkGalaxyProject.Models;
+using DarkGalaxyProject.Models.Planet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -41,11 +42,37 @@ namespace DarkGalaxyProject.Controllers
                     Speed = sh.Speed,
                     Storage = sh.Storage,
                     Type = sh.Type.ToString()
+                }),
+                Planets = s.Planets.Select(p => new PlanetListViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name
                 })
+                .ToList()
             })
             .FirstOrDefault();
 
             return View(system);
+        }
+
+        [Authorize]
+        public IActionResult Fleet(string systemId)
+        {
+            var ships = data.Ships
+                .Where(s => s.SystemId == systemId)
+                .Select(s => new ShipViewModel
+                {
+                    HP = s.HP,
+                    MaxHP = s.MaxHP,
+                    Damage = s.Damage,
+                    Speed = s.Speed,
+                    MaxStorage = s.MaxStorage,
+                    Storage = s.Storage,
+                    Type = s.Type.ToString()
+                })
+                .ToList();
+
+            return View(ships);
         }
 
         [Authorize]
@@ -65,6 +92,12 @@ namespace DarkGalaxyProject.Controllers
                         Speed = sh.Speed,
                         Storage = sh.Storage,
                         Type = sh.Type.ToString()
+                    })
+                    .ToList(),
+                    Planets = s.Planets.Select(p => new PlanetListViewModel
+                    {
+                        Id = p.Id,
+                        Name = p.Name
                     })
                     .ToList()
                 })

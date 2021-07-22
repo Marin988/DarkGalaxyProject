@@ -28,8 +28,8 @@ namespace DarkGalaxyProject.Data.Models
 
         }
 
-        [Required]
-        public string Password { get; set; }
+        //[Required]
+        //public string Password { get; set; }
 
         public ResearchTree ResearchTree { get; set; }
 

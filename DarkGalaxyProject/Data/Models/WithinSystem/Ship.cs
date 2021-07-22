@@ -13,6 +13,7 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         {
             Type = type;
             SystemId = systemId;
+            HP = MaxHP;
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();

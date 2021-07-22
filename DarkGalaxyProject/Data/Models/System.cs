@@ -20,6 +20,7 @@ namespace DarkGalaxyProject.Data.Models
             Suns = new List<Sun>();
             DefensiveStructures = new List<DefensiveStructure>();
             Planets = new List<Planet>();
+            Ships = new List<Ship>();
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();

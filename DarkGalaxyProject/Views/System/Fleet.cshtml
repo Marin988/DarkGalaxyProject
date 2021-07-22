@@ -1,0 +1,24 @@
+﻿@model List<ShipViewModel>
+
+@{
+    ViewData["Title"] = "Systems of the Dark Galaxy";
+}
+
+<h1>
+    Fleet
+</h1>
+
+<ul>
+    @foreach (var ship in Model)
+    {
+    <li>
+        <span>Type: @ship.Type,</span>
+        <span>MaxHP: @ship.MaxHP,</span>
+        <span>HP: @ship.HP,</span>
+        <span>Damage: @ship.Damage,</span>
+        <span>Speed: @ship.Speed,</span>
+        <span>MaxStorage: @ship.MaxStorage,</span>
+        <span>Storage: @ship.Storage</span>
+    </li>
+    }
+</ul>

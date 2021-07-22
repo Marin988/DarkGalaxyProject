@@ -27,15 +27,37 @@ namespace DarkGalaxyProject.Seeders
 
             for (int i = 1; i <= 100; i++)
             {
-                var system = new Data.Models.System { Position = i, Type = SystemType.Medium };
+                var random = new Random();
 
-                var sun = new Sun { Name = system.Position.ToString() + "-01S", Size = 5000, Type = SunType.Dwarf, SystemId = system.Id };
+                var systemType = random.Next(0, 2);
 
-                var Planet = new Planet { Position = 2, Name = system.Position.ToString() + "-01", Type = PlanetType.Medium, SystemId = system.Id };
+                var system = new Data.Models.System { Position = i, Type = (SystemType)systemType };
+
+                var sunType = random.Next(1, 2);
+
+                var sun = new Sun { Name = system.Position.ToString() + "-01S", Size = 5000, Type = (SunType)sunType, SystemId = system.Id };
+
+                var planets = new Planet[4];
+
+                var factories = new Factories[4];
+
+                for (int j = 0; j < 4; j++)
+                {
+                    var planetType = random.Next(1, 3);
+
+                    var planet = new Planet { Position = j + 1, Name = system.Position.ToString() + $"-0{j}", Type = (PlanetType)planetType, SystemId = system.Id };
+
+                    var factory = new Factories { PlanetId = planet.Id };
+
+                    planets[j] = planet;
+                    factories[j] = factory;
+                }
 
 
                 data.Systems.Add(system);
                 data.Suns.Add(sun);
+                data.Planets.AddRange(planets);
+                data.Factories.AddRange(factories);
 
                 data.SaveChanges();
             }

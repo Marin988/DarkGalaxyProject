@@ -22,16 +22,6 @@
                 <span>Storage: @ship.Storage---------</span>
                 <span>Type: @ship.Type</span><br>
             }
-            <span>Energy planet: @system.EnergyPlanet.Name---------</span>
-            <span>Position: @system.EnergyPlanet.Position---------</span>
-            <span>Type: @system.EnergyPlanet.Type---------</span>
-            <span>FuelToEnergyCenter level: @system.EnergyPlanet.FuelToEnergyCenter.Level</span> <br />
-            <form action="LevelUp" method="post">
-                <input type="hidden" name="Name" value=@system.EnergyPlanet.Name>
-                <div class="form-group">
-                    <input type="submit" value="Level up" class="btn btn-primary" />
-                </div>
-            </form>
             <form action="Colonize" method="post">
                 <input type="hidden" name="systemId" value=@system.Id>
                 <div class="form-group">
