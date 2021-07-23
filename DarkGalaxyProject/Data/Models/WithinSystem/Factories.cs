@@ -23,7 +23,9 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int UpgradeTimeLength => Level * 10;
 
-        public DateTime? UpgradeTime { get; set; }
+        public DateTime? UpgradeStartTime { get; set; }
+
+        public DateTime? UpgradeFinishTime { get; set; }
 
         [Required]
         public string PlanetId { get; set; }

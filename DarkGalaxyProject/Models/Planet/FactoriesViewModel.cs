@@ -15,7 +15,9 @@ namespace DarkGalaxyProject.Models.Planet
 
         public int UpgradeCost { get; set; }
 
-        public DateTime? UpgradeTime { get; set; }
+        public DateTime? UpgradeFinishTime { get; set; }
+
+        public DateTime? UpgradeStartTime { get; set; }
 
         public int UpgradeTimeLength { get; set; }
     }

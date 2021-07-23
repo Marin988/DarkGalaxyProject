@@ -42,6 +42,8 @@ namespace DarkGalaxyProject.Controllers
                         Income = p.Factories.Income,
                         Level = p.Factories.Level,
                         UpgradeCost = p.Factories.UpgradeCost,
+                        UpgradeFinishTime = p.Factories.UpgradeFinishTime,
+                        UpgradeStartTime = p.Factories.UpgradeStartTime,
                         UpgradeTimeLength = p.Factories.UpgradeTimeLength
                     }
                 })
@@ -49,7 +51,7 @@ namespace DarkGalaxyProject.Controllers
 
             return View(planet);
         }
-
+        
         [Authorize]
         [HttpPost]
         public IActionResult LevelUp(string buildingId, string planetId)
@@ -66,11 +68,24 @@ namespace DarkGalaxyProject.Controllers
 
         [Authorize]
         [HttpPost]
+        public IActionResult StartUpgrade(string buildingId, string planetId)
+        {
+            var factory = data.Factories.First(f => f.Id == buildingId);
+
+            factory.UpgradeStartTime = DateTime.Now;
+
+            data.SaveChanges();
+
+            return Redirect($"ViewPlanet?planetId={planetId}");
+        }
+
+        [Authorize]
+        [HttpPost]
         public IActionResult SetUpgradeTime(string buildingId, string planetId)
         {
             var factory = data.Factories.First(f => f.Id == buildingId);
 
-            factory.UpgradeTime = DateTime.Now.AddSeconds(factory.UpgradeTimeLength);
+            factory.UpgradeFinishTime = DateTime.Now.AddSeconds(factory.UpgradeTimeLength);
 
             data.SaveChanges();
 
@@ -83,7 +98,8 @@ namespace DarkGalaxyProject.Controllers
         {
             var factory = data.Factories.First(f => f.Id == buildingId);
 
-            factory.UpgradeTime = null;
+            factory.UpgradeFinishTime = null;
+            factory.UpgradeStartTime = null;
 
             data.SaveChanges();
 

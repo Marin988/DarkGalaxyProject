@@ -1,7 +1,7 @@
 ﻿
 var counter = 0;
 
-function setup() {
+function upgrade() {
 
     $('#timer').text(counter);
 
