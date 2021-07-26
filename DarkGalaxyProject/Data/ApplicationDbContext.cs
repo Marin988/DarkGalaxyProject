@@ -26,6 +26,8 @@ namespace DarkGalaxyProject.Data
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<Factories> Factories { get; set; }
 
+        public DbSet<ShipBuilder> ShipBuilders { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

@@ -15,5 +15,7 @@
         public int Storage { get; set; }
 
         public int Speed { get; set; }
+
+        public bool OnMission { get; set; }
     }
 }

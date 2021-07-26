@@ -9,11 +9,12 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
     public class Ship
     {
-        public Ship(ShipType type, string systemId)
+        public Ship(ShipType type, string systemId, string playerId)
         {
             Type = type;
             SystemId = systemId;
             HP = MaxHP;
+            PlayerId = playerId;
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();
@@ -33,6 +34,8 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int Speed => (int)Type * 20;
 
+        public int BuildTime => (int)Type * 10;
+
         public DateTime? SentOnMission { get; set; }
 
         public int FlyingDuration { get; set; }
@@ -40,6 +43,8 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         public string SystemId { get; set; }
 
         public System System { get; set; }
+
+        public bool OnMission { get; set; }
 
         [Required]
         public string PlayerId { get; set; }

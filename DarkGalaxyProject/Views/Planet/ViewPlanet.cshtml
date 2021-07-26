@@ -33,18 +33,14 @@
     <script>
         window.onload = function () {
             if ('@Model.Factories.UpgradeFinishTime' != '') {
-                console.log('UpgradeTime is not null');
                 upgrade();
             }
             else {
-                console.log('UpgradeTime is null');
             }
         }
 
         function SetUpgradeTime() {
             $(document).ready(function () {
-                console.log('SetUpgradeTime');
-                console.log(new Date().getTime());
                 var buildingId = $("#buildingId").val();
                 var planetId = $("#planetId").val();
                 var datastring = "buildingId=" + buildingId + "&planetId=" + planetId;

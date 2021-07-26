@@ -4,14 +4,16 @@ using DarkGalaxyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210724123609_FleetMissions")]
+    partial class FleetMissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -239,30 +241,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.ShipBuilder", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("FinishedBuildingTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ShipType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SystemId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SystemId");
-
-                    b.ToTable("ShipBuilders");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.System", b =>
@@ -689,13 +667,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("AllianceLeader");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.ShipBuilder", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.System", null)
-                        .WithMany("ShipBuildingQueue")
-                        .HasForeignKey("SystemId");
-                });
-
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.System", b =>
                 {
                     b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
@@ -874,8 +845,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("Planets");
 
                     b.Navigation("Resources");
-
-                    b.Navigation("ShipBuildingQueue");
 
                     b.Navigation("Ships");
 

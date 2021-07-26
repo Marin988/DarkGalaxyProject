@@ -1,6 +1,7 @@
 ﻿using DarkGalaxyProject.Contracts;
 using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
+using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using System;
 using System.Collections.Generic;
@@ -53,11 +54,34 @@ namespace DarkGalaxyProject.Seeders
                     factories[j] = factory;
                 }
 
+                var GoliathBuilder = new ShipBuilder
+                {
+                    FinishedBuildingTime = null,
+                    ShipType = ShipType.Goliath,
+                    SystemId = system.Id,
+                    Count = 0
+                };
+                var VengeanceBuilder = new ShipBuilder
+                {
+                    FinishedBuildingTime = null,
+                    ShipType = ShipType.Vengeance,
+                    SystemId = system.Id,
+                    Count = 0
+                };
+                var LeonovBuilder = new ShipBuilder
+                {
+                    FinishedBuildingTime = null,
+                    ShipType = ShipType.Leonov,
+                    SystemId = system.Id,
+                    Count = 0
+                };
+
 
                 data.Systems.Add(system);
                 data.Suns.Add(sun);
                 data.Planets.AddRange(planets);
                 data.Factories.AddRange(factories);
+                data.ShipBuilders.AddRange(GoliathBuilder, VengeanceBuilder, LeonovBuilder);
 
                 data.SaveChanges();
             }

@@ -1,0 +1,148 @@
+﻿@using DarkGalaxyProject.Models.System
+@using DarkGalaxyProject.Data.Enums
+@using System.Text
+@model List<BuildShipFormViewModel>
+
+@{
+    ViewData["Title"] = "Shipyard";
+    string shipType = "s";
+}
+
+<h1>
+    Build Ships
+</h1>
+
+<span>Build ship</span>
+<form>
+    <div class="form-group">
+        <select id="shipType" class="form-control" asp-items="Html.GetEnumSelectList<ShipType>()"></select>
+    </div>
+    <div class="form-group">
+        <input id="count" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input id="systemId" hidden value=@Model.First().systemId class="form-control" />
+    </div>
+    <div class="form-group">
+        <input onclick="startBuilding()" value="Build" class="btn btn-primary" />
+    </div>
+</form>
+
+<p id="timer"></p>
+
+@section Scripts {
+    <script>
+        @shipType = $("#shipType").val().toString();
+
+        @*if('@Model.Any(p => p.FinishedBuildingTime.HasValue)' == 'True')
+        {
+            @shipType = '@Model.FirstOrDefault(p => p.FinishedBuildingTime.HasValue).ShipType';//(p => p.FinishedBuildingTime.HasValue).ShipType
+        }*@
+
+        @if(Model.Any(p => p.FinishedBuildingTime.HasValue))
+        {
+            shipType = Model.FirstOrDefault(p => p.FinishedBuildingTime.HasValue).ShipType;
+        }
+
+
+
+        @{
+            var Ship = Model.FirstOrDefault(p => p.ShipType == shipType);
+            if(Ship == null)
+            {
+                Ship = Model.FirstOrDefault();
+            }
+        }
+
+        //var count = Model.First(s => s.ShipType.ToString() == shipType).j;
+
+        window.onload = function () {
+            if ('@Ship.FinishedBuildingTime.HasValue' != 'False') {
+                 buildShip();
+            }
+            else {
+            }
+        }
+
+        function convertSeconds(s) {
+            var min = Math.floor(s / 60);
+            var sec = Math.floor(s % 60);
+            if (min < 10) {
+                min = '0' + min;
+            }
+            if (sec < 10) {
+                sec = '0' + sec;
+            }
+            return min + ':' + sec;
+        }
+
+        var dateString = '@(Ship.FinishedBuildingTime.HasValue ? Ship.FinishedBuildingTime.Value : null)';
+
+        function startBuilding() {
+            if (dateString == '') {
+                    $(document).ready(function () {
+                        var shipType = $("#shipType").val().toString();
+                        var systemId = $("#systemId").val();
+                        var count = $("#count").val();
+                        var datastring = "shipType=" + shipType + "&systemId=" + systemId + "&count=" + count;
+                        $.ajax({
+                            type: "post",
+                            url: "StartBuilding", // set the count, set the building finish time for the whole count (for the corresponding ship type)
+                            data: datastring
+                        });
+                        setTimeout(function () { location.reload(); }, 200);
+                    });
+                    //buildShip();//is that ever happening? it is right after the location.reload()... Oh yeah it is, even before the new datetime sets...
+
+            }
+        }
+
+        function buildShip() {
+            var counter = 0;
+            var timeleft = 0;
+
+                var oneSplit = dateString.split(' ');
+                var year = oneSplit[0].split('/')[2];
+                var month = oneSplit[0].split('/')[1];
+                var day = oneSplit[0].split('/')[0];
+                var hour = oneSplit[1].split(':')[0];
+                var minutes = oneSplit[1].split(':')[1];
+                var seconds = oneSplit[1].split(':')[2];
+
+                var buildingFinishTime = new Date(year, month - 1, day, hour, minutes, seconds);
+
+            timeleft = (buildingFinishTime.getTime() - new Date().getTime()) / 1000;
+
+            if (timeleft - counter > 0) {
+
+                document.getElementById('timer').innerText = convertSeconds(timeleft);
+
+                var _tick = setInterval(function () {
+                    counter++;
+                    document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
+                    if (timeleft - counter <= 0) {
+                        clearInterval(_tick);
+                        build();
+                    }
+                }, 1000);
+            } else {
+                build();
+            }
+        }
+
+        function build() {
+            $(document).ready(function () {
+                var shipType = '@shipType';//!!!!!!
+                var systemId = $("#systemId").val();
+                var datastring = "shipType=" + shipType + "&systemId=" + systemId;
+                $.ajax({
+                    type: "post",
+                    url: "BuildShip", //set count to 0, set buildingfinishtime to null
+                    data: datastring
+                });
+                setTimeout(function () { location.reload(); }, 200);
+            });
+        }
+
+    </script>
+}

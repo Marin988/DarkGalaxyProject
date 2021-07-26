@@ -13,7 +13,7 @@ namespace DarkGalaxyProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext db;
+       // private readonly ApplicationDbContext db;
 
         public HomeController(ILogger<HomeController> logger)
         {

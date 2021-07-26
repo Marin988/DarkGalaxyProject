@@ -19,18 +19,7 @@
 
         <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Fleet" asp-route-systemId="@Model.Id">Fleet</a>
 
-        <span>Build ship</span>
-        <form asp-action="BuildShip">
-            <div class="form-group">
-                <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList<ShipType>()"></select>
-            </div>
-            <div class="form-group">
-                <input asp-for="Id" hidden value=@Model.Id class="form-control" />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Build" class="btn btn-primary" />
-            </div>
-        </form>
+        <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Shipyard" asp-route-systemId="@Model.Id">Shipyard</a>
 
         <span>Build Defence</span>
         <form asp-action="BuildDefence">

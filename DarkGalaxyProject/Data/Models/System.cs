@@ -21,6 +21,7 @@ namespace DarkGalaxyProject.Data.Models
             DefensiveStructures = new List<DefensiveStructure>();
             Planets = new List<Planet>();
             Ships = new List<Ship>();
+            ShipBuildingQueue = new List<ShipBuilder>();
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();
@@ -51,5 +52,15 @@ namespace DarkGalaxyProject.Data.Models
         public IEnumerable<DefensiveStructure> DefensiveStructures { get; set; }
 
         public IEnumerable<Ship> Ships { get; set; }
+
+        public IEnumerable<ShipBuilder> ShipBuildingQueue { get; set; }
+
+        public int DestinationSystemPoistion { get; set; }
+
+        public DateTime? ArrivalTime { get; set; }
+
+        public DateTime? DepartureTime { get; set; }
+
+        public bool Outgoing { get; set; }
     }
 }

@@ -1,4 +1,7 @@
-﻿@model List<ShipViewModel>
+﻿@using DarkGalaxyProject.Models.System
+@using DarkGalaxyProject.Data.Enums
+@using System.Text 
+@model FleetViewFormModel
 
 @{
     ViewData["Title"] = "Systems of the Dark Galaxy";
@@ -9,16 +12,216 @@
 </h1>
 
 <ul>
-    @foreach (var ship in Model)
+    @foreach (var ship in Model.Ships.Where(s => !s.OnMission).ToList())
     {
-    <li>
-        <span>Type: @ship.Type,</span>
-        <span>MaxHP: @ship.MaxHP,</span>
-        <span>HP: @ship.HP,</span>
-        <span>Damage: @ship.Damage,</span>
-        <span>Speed: @ship.Speed,</span>
-        <span>MaxStorage: @ship.MaxStorage,</span>
-        <span>Storage: @ship.Storage</span>
-    </li>
+        <li>
+            <span>Type: @ship.Type,</span>
+            <span>MaxHP: @ship.MaxHP,</span>
+            <span>HP: @ship.HP,</span>
+            <span>Damage: @ship.Damage,</span>
+            <span>Speed: @ship.Speed,</span>
+            <span>MaxStorage: @ship.MaxStorage,</span>
+            <span>Storage: @ship.Storage</span>
+        </li>
     }
 </ul>
+
+<form>
+    <div class="form-group">
+        <label asp-for="GoliathCount" class="control-label">Goliath</label>
+        <input id="goliathCount" class="form-control" />
+        <span asp-validation-for="GoliathCount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="VengeanceCount" class="control-label">Vengeance</label>
+        <input id="vengeanceCount" class="form-control" />
+        <span asp-validation-for="VengeanceCount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="LeonovCount" class="control-label">Leonov</label>
+        <input id="leonovCount" class="form-control" />
+        <span asp-validation-for="LeonovCount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DestinationSystemPosition" class="control-label">Targeted system's position</label>
+        <input id="destinationSystemPosition" class="form-control" />
+        <span asp-validation-for="DestinationSystemPosition" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input id="systemId" hidden value=@Model.HostSystemId class="form-control" />
+    </div>
+    <div class="form-group">
+        <input id="hostSystemPosition" hidden value=@Model.HostSystemPosition class="form-control" />
+    </div>
+    <div class="form-group">
+        <input id="arrivalTime" hidden value=@Model.ArrivalTime class="form-control" />
+    </div>
+    <div class="form-group">
+        <input id="departureTime" hidden value=@Model.DepartureTime class="form-control" />
+    </div>
+    <div class="form-group">
+        <input id="outgoing" hidden value=@Model.Outgoing class="form-control" />
+    </div>
+    <div class="form-group">
+        <input value="Send" onclick="SendFleet()" class="btn btn-primary" />
+    </div>
+    <p id="timer"></p>
+</form>
+
+@section Scripts {
+    <script>
+        window.onload = function () {
+            if ('@Model.ArrivalTime' != '') {
+                console.log('on load - ' + '@Model.ArrivalTime');
+                console.log('Fleet is on the move!');
+                moveTheFleet();
+            }
+            else {
+                console.log('The fleet is stationary.');
+            }
+        }
+
+        function SetArrivalTime() {
+            $(document).ready(function () {
+                console.log('SetArrivalTime');
+                var systemId = $("#systemId").val();
+                var datastring = "systemId=" + systemId;
+                $.ajax({
+                    type: "post",
+                    url: "SetArrivalTime",
+                    data: datastring
+                })
+            })
+        }
+
+        var counter = 0;
+        //If i refresh the page though the time would still disappear and nothing will happen when the UpgradeTime == Date.now()
+        //I need another function activating on page load checking if the property UpgradeTime is not null
+        function convertSeconds(s) {
+            var min = Math.floor(s / 60);
+            var sec = Math.floor(s % 60);
+            if (min < 10) {
+                min = '0' + min;
+            }
+            if (sec < 10) {
+                sec = '0' + sec;
+            }
+            return min + ':' + sec;
+        }
+        var ArrivalTime = '@(Model.ArrivalTime.HasValue ? Model.ArrivalTime.Value : null)';
+        var departureTime = '@(Model.DepartureTime.HasValue ? Model.DepartureTime.Value : null)';
+
+        function SendFleet() {
+            if (ArrivalTime == '' && departureTime == '') {
+                $(document).ready(function () {
+                    var goliathCount = $("#goliathCount").val();
+                    var vengeanceCount = $("#vengeanceCount").val();
+                    var leonovCount = $("#leonovCount").val();
+                    var destinationSystemPosition = $("#destinationSystemPosition").val();
+                    var systemId = $("#systemId").val();
+                    var datastring = "goliathCount=" + goliathCount + "&vengeanceCount=" + vengeanceCount + "&leonovCount=" + leonovCount + "&destinationSystemPosition=" + destinationSystemPosition + "&systemId=" + systemId;
+                    $.ajax({
+                        type: "post",
+                        url: "SendFleet", //here I have to load the fleet and set the departure time
+                        data: datastring //experimenting - setting arrival time here
+                    });
+                    //SetArrivalTime();
+                    moveTheFleet();
+                });
+               //setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the timer still isn't out
+            }
+        }
+
+        function moveTheFleet() {
+            setTimeout(function () { location.reload(); }, 200);
+            ArrivalTime = '@(Model.ArrivalTime.HasValue ? Model.ArrivalTime.Value : null)';
+            departureTime = '@(Model.DepartureTime.HasValue ? Model.DepartureTime.Value : null)';
+            var timeleft = 0;
+            console.log('ArrivalTime - ' + ArrivalTime);
+            console.log('@(Model.Outgoing)');
+            if (ArrivalTime != '') {
+                var oneSplit = ArrivalTime.split(' ');
+                var year = oneSplit[0].split('/')[2];
+                var month = oneSplit[0].split('/')[1];
+                var day = oneSplit[0].split('/')[0];
+                var hour = oneSplit[1].split(':')[0];
+                var minutes = oneSplit[1].split(':')[1];
+                var seconds = oneSplit[1].split(':')[2];
+
+                var arrivalDate = new Date(year, month - 1, day, hour, minutes, seconds);
+
+                //oneSplit = departureTime.split(' ');
+                //year = oneSplit[0].split('/')[2];
+                //month = oneSplit[0].split('/')[1];
+                //day = oneSplit[0].split('/')[0];
+                //hour = oneSplit[1].split(':')[0];
+                //minutes = oneSplit[1].split(':')[1];
+                //seconds = oneSplit[1].split(':')[2];
+
+                //var departureDate = new Date(year, month - 1, day, hour, minutes, seconds);
+
+                timeleft = (arrivalDate.getTime() - new Date().getTime()) / 1000;
+                console.log('Movethefleet() arrivalDate' + arrivalDate);
+                console.log(timeleft);
+            }
+
+            if (timeleft > 0) {
+                document.getElementById('timer').innerText = convertSeconds(timeleft);
+                var _tick = setInterval(function () {
+                    counter++;
+                    document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
+                    if (timeleft <= 0) {
+                        clearInterval(_tick);
+                        if ('@(Model.Outgoing)' === '@true') {
+                            //method  chaning outgoing to false and setting the new arrival and departure times
+                            console.log('the fleet has reached their destination and is coming back');
+                            fleetReturn();
+                            moveTheFleet();
+                        } else {
+                            console.log('the fleet has returned > 0');
+                            fleetBoarding();
+                        }
+                    }
+                }, 1000);
+            }
+
+            if (timeleft <= 0) { //|| ArrivalTime != '' || departureTime != ''
+                if ('@(Model.Outgoing)' === '@true') {
+                    console.log('the fucking shithole');
+                    fleetReturn();//method  changing outgoing to false
+                    moveTheFleet();
+                } else {
+                    console.log('the fleet has returned');
+                    fleetBoarding();
+                }
+            }
+
+            function fleetReturn() {
+                $(document).ready(function () {
+                    var systemId = $("#systemId").val();
+                    var destinationSystemPosition = $("#destinationSystemPosition").val();
+                    var datastring = "systemId=" + systemId + "&destinationSystemPosition=" + destinationSystemPosition;
+                    $.ajax({
+                        type: "post",
+                        url: "FleetReturn",
+                        data: datastring
+                    });
+                    //setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the level still shows the same
+                });
+            }
+
+            function fleetBoarding() {
+                $(document).ready(function () {
+                    var systemId = $("#systemId").val();
+                    var datastring = "systemId=" + systemId;
+                    $.ajax({
+                        type: "post",
+                        url: "FleetBoarding",
+                        data: datastring
+                    });
+                   //setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the level still shows the same
+                });
+            }
+        }
+    </script>
+}
