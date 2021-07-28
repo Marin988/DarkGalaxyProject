@@ -1,12 +1,16 @@
 ﻿@using DarkGalaxyProject.Data.Enums
 @using DarkGalaxyProject.Models
+@using Microsoft.AspNetCore.Identity
 @model SystemViewModel
+@inject UserManager<Player> UserManager
 
 @{
     ViewData["Title"] = $"System {Model.Position}";
 }
 
 <h1>System @Model.Position - @Model.Type</h1>
+
+<h4>Belongs to: @(Model.UserName == null ? "No one" : Model.UserName)</h4>
 
 <h4>Planets</h4>
 <hr />
@@ -19,20 +23,16 @@
 
         <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Fleet" asp-route-systemId="@Model.Id">Fleet</a>
 
-        <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Shipyard" asp-route-systemId="@Model.Id">Shipyard</a>
+        @if (Model.PlayerId == UserManager.GetUserId(User))
+        {
+            <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Shipyard" asp-route-systemId="@Model.Id">Shipyard</a>
 
-        <span>Build Defence</span>
-        <form asp-action="BuildDefence">
-            <div class="form-group">
-                <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList<DefensiveStructureType>()"></select>
-            </div>
-            <div class="form-group">
-                <input asp-for="Id" hidden value=@Model.Id class="form-control" />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Build" class="btn btn-primary" />
-            </div>
-        </form>
+            <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="DefensiveStructureBuilder" asp-route-systemId="@Model.Id">DefensiveStructureBuilder</a>
+        }
+        else
+        {
+            //colonize here
+        }
     </div>
 </div>
 

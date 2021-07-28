@@ -1,7 +1,9 @@
-﻿@using DarkGalaxyProject.Models.System
+﻿@using Microsoft.AspNetCore.Identity
+@using DarkGalaxyProject.Models.System
 @using DarkGalaxyProject.Data.Enums
-@using System.Text 
+@using System.Text
 @model FleetViewFormModel
+@inject UserManager<Player> UserManager
 
 @{
     ViewData["Title"] = "Systems of the Dark Galaxy";
@@ -26,6 +28,8 @@
     }
 </ul>
 
+@if (Model.PlayerId == UserManager.GetUserId(User))
+{
 <form>
     <div class="form-group">
         <label asp-for="GoliathCount" class="control-label">Goliath</label>
@@ -63,38 +67,36 @@
         <input id="outgoing" hidden value=@Model.Outgoing class="form-control" />
     </div>
     <div class="form-group">
+        <label for"colonize">Colonize</label>
+        <input type="checkbox" id="colonize" value=@Model.Colonizer class="form-control" />
+    </div>
+    <div class="form-group">
         <input value="Send" onclick="SendFleet()" class="btn btn-primary" />
     </div>
     <p id="timer"></p>
+    @if (Model.ArrivalTime.HasValue)
+    {
+        if (Model.Outgoing)
+        {
+            <p>Outgoing</p>
+        }
+        else
+        {
+            <p>Incoming</p>
+        }
+    }
 </form>
+}
 
 @section Scripts {
     <script>
         window.onload = function () {
-            if ('@Model.ArrivalTime' != '') {
-                console.log('on load - ' + '@Model.ArrivalTime');
-                console.log('Fleet is on the move!');
+            if ('@Model.ArrivalTime.HasValue' == 'True') {
                 moveTheFleet();
             }
             else {
-                console.log('The fleet is stationary.');
             }
         }
-
-        function SetArrivalTime() {
-            $(document).ready(function () {
-                console.log('SetArrivalTime');
-                var systemId = $("#systemId").val();
-                var datastring = "systemId=" + systemId;
-                $.ajax({
-                    type: "post",
-                    url: "SetArrivalTime",
-                    data: datastring
-                })
-            })
-        }
-
-        var counter = 0;
         //If i refresh the page though the time would still disappear and nothing will happen when the UpgradeTime == Date.now()
         //I need another function activating on page load checking if the property UpgradeTime is not null
         function convertSeconds(s) {
@@ -112,34 +114,32 @@
         var departureTime = '@(Model.DepartureTime.HasValue ? Model.DepartureTime.Value : null)';
 
         function SendFleet() {
-            if (ArrivalTime == '' && departureTime == '') {
+            if (ArrivalTime == '') {
                 $(document).ready(function () {
                     var goliathCount = $("#goliathCount").val();
                     var vengeanceCount = $("#vengeanceCount").val();
                     var leonovCount = $("#leonovCount").val();
+                    var colonizer = false;
+                    if ($("#colonize").is(":checked")) {
+                        colonizer = true;
+                    }
                     var destinationSystemPosition = $("#destinationSystemPosition").val();
+                    console.log(colonizer);
                     var systemId = $("#systemId").val();
-                    var datastring = "goliathCount=" + goliathCount + "&vengeanceCount=" + vengeanceCount + "&leonovCount=" + leonovCount + "&destinationSystemPosition=" + destinationSystemPosition + "&systemId=" + systemId;
+                    var datastring = "goliathCount=" + goliathCount + "&vengeanceCount=" + vengeanceCount + "&leonovCount=" + leonovCount + "&colonizer=" + colonizer + "&destinationSystemPosition=" + destinationSystemPosition + "&systemId=" + systemId;
                     $.ajax({
                         type: "post",
-                        url: "SendFleet", //here I have to load the fleet and set the departure time
-                        data: datastring //experimenting - setting arrival time here
+                        url: "SendFleet", 
+                        data: datastring 
                     });
-                    //SetArrivalTime();
-                    moveTheFleet();
+                    setTimeout(function () { location.reload(); }, 200);
                 });
-               //setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the timer still isn't out
             }
         }
 
         function moveTheFleet() {
-            setTimeout(function () { location.reload(); }, 200);
-            ArrivalTime = '@(Model.ArrivalTime.HasValue ? Model.ArrivalTime.Value : null)';
-            departureTime = '@(Model.DepartureTime.HasValue ? Model.DepartureTime.Value : null)';
+            var counter = 0;
             var timeleft = 0;
-            console.log('ArrivalTime - ' + ArrivalTime);
-            console.log('@(Model.Outgoing)');
-            if (ArrivalTime != '') {
                 var oneSplit = ArrivalTime.split(' ');
                 var year = oneSplit[0].split('/')[2];
                 var month = oneSplit[0].split('/')[1];
@@ -150,63 +150,44 @@
 
                 var arrivalDate = new Date(year, month - 1, day, hour, minutes, seconds);
 
-                //oneSplit = departureTime.split(' ');
-                //year = oneSplit[0].split('/')[2];
-                //month = oneSplit[0].split('/')[1];
-                //day = oneSplit[0].split('/')[0];
-                //hour = oneSplit[1].split(':')[0];
-                //minutes = oneSplit[1].split(':')[1];
-                //seconds = oneSplit[1].split(':')[2];
+               timeleft = (arrivalDate.getTime() - new Date().getTime()) / 1000;
 
-                //var departureDate = new Date(year, month - 1, day, hour, minutes, seconds);
 
-                timeleft = (arrivalDate.getTime() - new Date().getTime()) / 1000;
-                console.log('Movethefleet() arrivalDate' + arrivalDate);
-                console.log(timeleft);
-            }
-
-            if (timeleft > 0) {
+            if (timeleft - counter > 0) {
                 document.getElementById('timer').innerText = convertSeconds(timeleft);
                 var _tick = setInterval(function () {
                     counter++;
                     document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
-                    if (timeleft <= 0) {
+                    if (timeleft - counter <= 0) {
+                        console.log('am I here?');
                         clearInterval(_tick);
                         if ('@(Model.Outgoing)' === '@true') {
                             //method  chaning outgoing to false and setting the new arrival and departure times
-                            console.log('the fleet has reached their destination and is coming back');
                             fleetReturn();
-                            moveTheFleet();
                         } else {
-                            console.log('the fleet has returned > 0');
                             fleetBoarding();
                         }
+                        setTimeout(function () { location.reload(); }, 200);
                     }
                 }, 1000);
-            }
-
-            if (timeleft <= 0) { //|| ArrivalTime != '' || departureTime != ''
-                if ('@(Model.Outgoing)' === '@true') {
-                    console.log('the fucking shithole');
+            } else  { //|| ArrivalTime != '' || departureTime != ''
+                if ('@(Model.Outgoing)' == 'True') {
                     fleetReturn();//method  changing outgoing to false
-                    moveTheFleet();
                 } else {
-                    console.log('the fleet has returned');
                     fleetBoarding();
                 }
+                setTimeout(function () { location.reload(); }, 200);
             }
 
             function fleetReturn() {
                 $(document).ready(function () {
                     var systemId = $("#systemId").val();
-                    var destinationSystemPosition = $("#destinationSystemPosition").val();
-                    var datastring = "systemId=" + systemId + "&destinationSystemPosition=" + destinationSystemPosition;
+                    var datastring = "systemId=" + systemId;
                     $.ajax({
                         type: "post",
                         url: "FleetReturn",
                         data: datastring
                     });
-                    //setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the level still shows the same
                 });
             }
 
@@ -219,7 +200,6 @@
                         url: "FleetBoarding",
                         data: datastring
                     });
-                   //setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the level still shows the same
                 });
             }
         }

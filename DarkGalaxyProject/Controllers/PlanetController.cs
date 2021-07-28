@@ -28,6 +28,10 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult ViewPlanet(string planetId)
         {
+            var systemId = data.Planets.First(p => p.Id == planetId).SystemId;
+
+            var playerId = data.Systems.First(s => s.Id == systemId).UserId;
+
             var planet = data.Planets
                 .Where(p => p.Id == planetId)
                 .Select(p => new PlanetViewModel
@@ -45,7 +49,8 @@ namespace DarkGalaxyProject.Controllers
                         UpgradeFinishTime = p.Factories.UpgradeFinishTime,
                         UpgradeStartTime = p.Factories.UpgradeStartTime,
                         UpgradeTimeLength = p.Factories.UpgradeTimeLength
-                    }
+                    },
+                    PlayerId = playerId
                 })
                 .First();
 
@@ -71,6 +76,18 @@ namespace DarkGalaxyProject.Controllers
         public IActionResult StartUpgrade(string buildingId, string planetId)
         {
             var factory = data.Factories.First(f => f.Id == buildingId);
+
+            var planet = data.Planets.First(p => p.Id == planetId);
+
+            var systemId = planet.SystemId;
+
+            var system = data.Systems.First(s => s.Id == systemId);
+
+            if(system.UserId != userManager.GetUserId(User))
+            {
+                Console.WriteLine("Hello?!");
+                return BadRequest("You cannot upgrade other players' buildings!");
+            }
 
             factory.UpgradeStartTime = DateTime.Now;
 

@@ -7,7 +7,7 @@ namespace DarkGalaxyProject.Data.Enums
 {
     public enum DefensiveStructureType
     {
-        SpaceStation = 1,
-        Satelite = 2
+        Satelite = 1,
+        SpaceStation = 10
     }
 }

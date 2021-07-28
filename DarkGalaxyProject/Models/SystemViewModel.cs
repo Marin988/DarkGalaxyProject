@@ -10,6 +10,10 @@ namespace DarkGalaxyProject.Models
     {
         public string Id { get; set; }
 
+        public string PlayerId { get; set; }
+
+        public string UserName { get; set; }
+
         public int Position { get; set; }
 
         public string Type { get; set; }

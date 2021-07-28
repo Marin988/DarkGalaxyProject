@@ -45,6 +45,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Player" asp-action="Messages" asp-route-playerId="@UserManager.GetUserId(User)">Messages</a>
                             </li>
+                            <li class="nav-item">
+                                <p>@UserManager.GetUserAsync(User).Result.Resources.ToList()[1].Type.ToString() - @UserManager.GetUserAsync(User).Result.Resources.ToList()[1].Quantity</p>
+                            </li>
                         }
                     </ul>
                     <partial name="_LoginPartial" />

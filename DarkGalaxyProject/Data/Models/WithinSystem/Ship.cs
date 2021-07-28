@@ -36,10 +36,6 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int BuildTime => (int)Type * 10;
 
-        public DateTime? SentOnMission { get; set; }
-
-        public int FlyingDuration { get; set; }
-
         public string SystemId { get; set; }
 
         public System System { get; set; }
@@ -49,8 +45,5 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public string PlayerId { get; set; }
         public Player Player { get; set; }
-
-        public string AllianceId { get; set; }
-        public Alliance Alliance { get; set; }
     }
 }

@@ -54,8 +54,9 @@ namespace DarkGalaxyProject.Data.Models
         public IEnumerable<Ship> Ships { get; set; }
 
         public IEnumerable<ShipBuilder> ShipBuildingQueue { get; set; }
+        public IEnumerable<DefenceBuilder> DefenceBuildingQueue { get; set; }
 
-        public int DestinationSystemPoistion { get; set; }
+        public int? DestinationSystemPoistion { get; set; }
 
         public DateTime? ArrivalTime { get; set; }
 

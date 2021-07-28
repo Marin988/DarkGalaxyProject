@@ -4,14 +4,16 @@ using DarkGalaxyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210727124744_nullableDestination")]
+    partial class nullableDestination
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -436,6 +438,12 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AllianceId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("FlyingDuration")
+                        .HasColumnType("int");
+
                     b.Property<int>("HP")
                         .HasColumnType("int");
 
@@ -445,6 +453,9 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("PlayerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("SentOnMission")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Storage")
                         .HasColumnType("int");
@@ -456,6 +467,8 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AllianceId");
 
                     b.HasIndex("PlayerId");
 
@@ -778,6 +791,10 @@ namespace DarkGalaxyProject.Data.Migrations
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Ship", b =>
                 {
+                    b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
+                        .WithMany()
+                        .HasForeignKey("AllianceId");
+
                     b.HasOne("DarkGalaxyProject.Data.Models.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId")
@@ -787,6 +804,8 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasOne("DarkGalaxyProject.Data.Models.System", "System")
                         .WithMany("Ships")
                         .HasForeignKey("SystemId");
+
+                    b.Navigation("Alliance");
 
                     b.Navigation("Player");
 

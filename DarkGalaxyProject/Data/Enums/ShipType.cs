@@ -10,5 +10,6 @@ namespace DarkGalaxyProject.Data.Enums
         Leonov = 1,
         Vengeance = 2,
         Goliath = 3,
+        Colonizer = 4
     }
 }

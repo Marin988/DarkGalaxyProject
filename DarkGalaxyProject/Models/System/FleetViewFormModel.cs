@@ -19,12 +19,16 @@ namespace DarkGalaxyProject.Models.System
 
         public int HostSystemPosition { get; set; }
 
-        public int DestinationSystemPosition { get; set; }
+        public int? DestinationSystemPosition { get; set; }
 
         public DateTime? DepartureTime { get; set; }
 
         public DateTime? ArrivalTime { get; set; }
 
         public bool Outgoing { get; set; }
+
+        public string PlayerId { get; set; }
+
+        public bool Colonizer { get; set; }
     }
 }

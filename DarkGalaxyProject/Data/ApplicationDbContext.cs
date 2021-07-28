@@ -28,6 +28,8 @@ namespace DarkGalaxyProject.Data
 
         public DbSet<ShipBuilder> ShipBuilders { get; set; }
 
+        public DbSet<DefenceBuilder> DefenceBuilders { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

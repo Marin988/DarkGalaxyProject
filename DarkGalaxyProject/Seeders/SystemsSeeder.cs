@@ -30,11 +30,11 @@ namespace DarkGalaxyProject.Seeders
             {
                 var random = new Random();
 
-                var systemType = random.Next(0, 2);
+                var systemType = random.Next(1, 4);
 
                 var system = new Data.Models.System { Position = i, Type = (SystemType)systemType };
 
-                var sunType = random.Next(1, 2);
+                var sunType = random.Next(1, 3);
 
                 var sun = new Sun { Name = system.Position.ToString() + "-01S", Size = 5000, Type = (SunType)sunType, SystemId = system.Id };
 
@@ -44,7 +44,7 @@ namespace DarkGalaxyProject.Seeders
 
                 for (int j = 0; j < 4; j++)
                 {
-                    var planetType = random.Next(1, 3);
+                    var planetType = random.Next(1, 4);
 
                     var planet = new Planet { Position = j + 1, Name = system.Position.ToString() + $"-0{j}", Type = (PlanetType)planetType, SystemId = system.Id };
 
@@ -54,34 +54,53 @@ namespace DarkGalaxyProject.Seeders
                     factories[j] = factory;
                 }
 
-                var GoliathBuilder = new ShipBuilder
-                {
-                    FinishedBuildingTime = null,
-                    ShipType = ShipType.Goliath,
-                    SystemId = system.Id,
-                    Count = 0
-                };
-                var VengeanceBuilder = new ShipBuilder
-                {
-                    FinishedBuildingTime = null,
-                    ShipType = ShipType.Vengeance,
-                    SystemId = system.Id,
-                    Count = 0
-                };
-                var LeonovBuilder = new ShipBuilder
-                {
-                    FinishedBuildingTime = null,
-                    ShipType = ShipType.Leonov,
-                    SystemId = system.Id,
-                    Count = 0
-                };
+                var defences = new List<DefensiveStructure>();
 
+                defences.Add(new DefensiveStructure(DefensiveStructureType.SpaceStation, system.Id));
+
+                for (int z = 0; z < (int)system.Type * 5; z++)
+                {
+                    defences.Add(new DefensiveStructure(DefensiveStructureType.Satelite, system.Id));
+                }
+
+                foreach (var resource in system.Resources)
+                {
+                    resource.Quantity = 10000 * (int)system.Type;
+                }
+
+                var shipBuilders = new List<ShipBuilder>();
+
+                foreach (var item in Enum.GetValues(typeof(ShipType)))
+                {
+                    shipBuilders.Add(new ShipBuilder
+                    {
+                        Count = 0,
+                        FinishedBuildingTime = null,
+                        ShipType = (ShipType)item,
+                        SystemId = system.Id
+                    });
+                }
+
+                var defenceBuilders = new List<DefenceBuilder>();
+
+                foreach (var item in Enum.GetValues(typeof(DefensiveStructureType)))
+                {
+                    defenceBuilders.Add(new DefenceBuilder
+                    {
+                        FinishedBuildingTime = null,
+                        DefensiveStructureType = (DefensiveStructureType)item,
+                        SystemId = system.Id,
+                        Count = 0
+                    });
+                }
 
                 data.Systems.Add(system);
                 data.Suns.Add(sun);
                 data.Planets.AddRange(planets);
                 data.Factories.AddRange(factories);
-                data.ShipBuilders.AddRange(GoliathBuilder, VengeanceBuilder, LeonovBuilder);
+                data.DefenceBuilders.AddRange(defenceBuilders);
+                data.ShipBuilders.AddRange(shipBuilders);
+                data.DefensiveStructures.AddRange(defences);
 
                 data.SaveChanges();
             }

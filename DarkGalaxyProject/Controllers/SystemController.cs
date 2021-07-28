@@ -35,6 +35,8 @@ namespace DarkGalaxyProject.Controllers
             var system = data.Systems.Where(s => s.Id == Id).Select(s => new SystemViewModel
             {
                 Id = s.Id,
+                PlayerId = s.UserId,
+                UserName = s.User.UserName,
                 Position = s.Position,
                 Type = s.Type.ToString(),
                 Ships = s.Ships.Select(sh => new ShipViewModel
@@ -75,6 +77,8 @@ namespace DarkGalaxyProject.Controllers
                 })
                 .ToList();
 
+            bool colonize = ships.FirstOrDefault(s => s.Type == ShipType.Colonizer.ToString()) != null;
+
             var fleet = data.Systems
                 .Where(s => s.Id == systemId)
                 .Select(s => new FleetViewFormModel
@@ -85,7 +89,9 @@ namespace DarkGalaxyProject.Controllers
                     DestinationSystemPosition = s.DestinationSystemPoistion,
                     ArrivalTime = s.ArrivalTime,
                     DepartureTime = s.DepartureTime,
-                    Outgoing = s.Outgoing
+                    Outgoing = s.Outgoing,
+                    PlayerId = s.UserId,
+                    Colonizer = colonize
                 })
                 .First();
 
@@ -167,6 +173,24 @@ namespace DarkGalaxyProject.Controllers
         }
 
         [Authorize]
+        public IActionResult DefensiveStructureBuilder(string systemId)
+        {
+            var defenceBuilders = data.DefenceBuilders
+                .Where(sp => sp.SystemId == systemId)
+                .Select(sp => new BuildDefenceFormViewModel
+                {
+                    BuildTime = sp.BuildTime,
+                    FinishedBuildingTime = sp.FinishedBuildingTime,
+                    systemId = sp.SystemId,
+                    DefenceType = sp.DefensiveStructureType.ToString(),
+                    Count = sp.Count
+                })
+                .ToList();
+
+            return View(defenceBuilders);
+        }
+
+        [Authorize]
         [HttpPost]
         public IActionResult Colonize(string systemId)
         {
@@ -179,34 +203,9 @@ namespace DarkGalaxyProject.Controllers
             return Redirect($"PlayerSystems?PlayerId={userManager.GetUserId(User)}");
         }
 
-        //[Authorize]
-        //[HttpPost]
-        //public IActionResult BuildShip(SystemViewModel badPractice)
-        //{
-        //    data.Ships.Add(new Ship((ShipType)Enum.Parse(typeof(ShipType), badPractice.Type), badPractice.Id)
-        //    {
-        //        PlayerId = userManager.GetUserId(User)
-        //    });
-
-        //    data.SaveChanges();
-
-        //    return Redirect($"ViewSystem/{badPractice.Id}");
-        //}
-
         [Authorize]
         [HttpPost]
-        public IActionResult BuildDefence(SystemViewModel badPractice)
-        {
-            data.DefensiveStructures.Add(new DefensiveStructure((DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), badPractice.Type), badPractice.Id));
-
-            data.SaveChanges();
-
-            return Redirect($"ViewSystem/{badPractice.Id}");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult SendFleet(int goliathCount, int vengeanceCount, int leonovCount, int destinationSystemPosition, string systemId)
+        public IActionResult SendFleet(int goliathCount, int vengeanceCount, int leonovCount, bool colonizer, int destinationSystemPosition, string systemId)
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
@@ -216,6 +215,11 @@ namespace DarkGalaxyProject.Controllers
             ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Vengeance).Take(vengeanceCount));
             ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Leonov).Take(leonovCount));
 
+            if (colonizer)
+            {
+                ships.Add(system.Ships.FirstOrDefault(s => s.Type == ShipType.Colonizer));
+            }
+
             foreach (var ship in ships)
             {
                 ship.OnMission = true;
@@ -223,14 +227,12 @@ namespace DarkGalaxyProject.Controllers
 
             system.Outgoing = true;
 
-            var flightLength = Math.Abs(system.Position - destinationSystemPosition);
+            system.DestinationSystemPoistion = destinationSystemPosition;
 
-            Console.WriteLine("Send fleet dep time" + system.DepartureTime);
+            var flightLength = Math.Abs(system.Position - destinationSystemPosition);
 
             system.DepartureTime = DateTime.Now;
             system.ArrivalTime = system.DepartureTime.Value.AddSeconds(flightLength);
-
-            Console.WriteLine("Send fleet dep time" + system.DepartureTime);
 
             data.SaveChanges();
 
@@ -239,16 +241,56 @@ namespace DarkGalaxyProject.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult FleetReturn(string systemId, int destinationSystemPosition)
+        public IActionResult FleetReturn(string systemId)
         {
-            var system = data.Systems.First(s => s.Id == systemId);
+            var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
             system.Outgoing = false;
 
-            var flightLength = Math.Abs(system.Position - destinationSystemPosition);
+            var colonizer = system.Ships.Where(s => s.OnMission).FirstOrDefault(s => s.Type == ShipType.Colonizer);
+            var destinationSystem = data.Systems.FirstOrDefault(s => s.Position == system.DestinationSystemPoistion);
+
+            var ships = system.Ships.Where(s => s.OnMission && s.Storage < s.MaxStorage).ToList(); //this would havef to be changed if there is more than 1 fleet
+
+            //int systemLoot = destinationSystem.Resources.First(p => p.Type == ResourceType.MilkyCoin).Quantity;.Include(s => s.Resources)
+            var systemLoot = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+
+            foreach (var ship in ships)
+            {
+                var diff = ship.MaxStorage - ship.Storage;
+                if(systemLoot.Quantity == 0)
+                {
+                    break;
+                }
+                if (systemLoot.Quantity <= diff)
+                {
+                    ship.Storage += systemLoot.Quantity;
+                }
+                else
+                {
+                    ship.Storage = ship.MaxStorage;
+                }
+                systemLoot.Quantity -= diff;
+            }
+
+            if (colonizer != null)
+            {
+                destinationSystem.UserId = userManager.GetUserId(User);
+            }
+
+            var flightLength = Math.Abs(system.Position - (int)system.DestinationSystemPoistion);
 
             system.DepartureTime = DateTime.Now;
             system.ArrivalTime = system.DepartureTime.Value.AddSeconds(flightLength);
+
+            system.DestinationSystemPoistion = null;
+
+            data.SaveChanges();
+
+            if(colonizer != null)
+            {
+                data.Ships.Remove(colonizer);
+            }
 
             data.SaveChanges();
 
@@ -268,12 +310,8 @@ namespace DarkGalaxyProject.Controllers
                 ship.OnMission = false;
             }
 
-            Console.WriteLine($"before nullifying - {system.ArrivalTime}");
-
             system.ArrivalTime = null;
             system.DepartureTime = null;
-
-            Console.WriteLine($"after nullifying - {system.ArrivalTime}");
 
             data.SaveChanges();
 
@@ -288,7 +326,10 @@ namespace DarkGalaxyProject.Controllers
 
             var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
 
-            var shipbuildingQueue = system.ShipBuildingQueue.First(s => s.ShipType == shiptype);
+            var playerMilkyCoin = data.Resources.First(r => r.PlayerId == userManager.GetUserId(User) && r.Type == ResourceType.MilkyCoin);
+            playerMilkyCoin.Quantity -= (int)shiptype * 500 * count;
+
+            var shipbuildingQueue = system.ShipBuildingQueue.FirstOrDefault(s => s.ShipType == shiptype);
 
             shipbuildingQueue.Count = count;
             shipbuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(shipbuildingQueue.BuildTime);
@@ -296,6 +337,28 @@ namespace DarkGalaxyProject.Controllers
             data.SaveChanges();
 
             return Redirect($"Shipyard?systemId={systemId}");
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult StartBuildingDefence(string systemId, string defenceType, int count)
+        {
+            var system = data.Systems.Include(s => s.DefenceBuildingQueue).First(s => s.Id == systemId);
+
+            var defencetype = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceType);
+
+            var playerMilkyCoin = data.Resources.First(r => r.PlayerId == userManager.GetUserId(User) && r.Type == ResourceType.MilkyCoin);
+            playerMilkyCoin.Quantity -= (int)defencetype * 100 * count;
+
+            var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defencetype);
+
+            defenceBuildingQueue.Count = count;
+
+            defenceBuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(defenceBuildingQueue.BuildTime);
+
+            data.SaveChanges();
+
+            return Redirect($"DefenceStructureBuilder?systemId={systemId}");
         }
 
         [Authorize]
@@ -308,15 +371,6 @@ namespace DarkGalaxyProject.Controllers
 
             var shipBuildingQueue = system.ShipBuildingQueue.First(s => s.ShipType == shiptype);
 
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine(shipType);
-            Console.WriteLine(data.ShipBuilders.First(s => s.SystemId == systemId && s.ShipType == shiptype).FinishedBuildingTime);
-            Console.WriteLine(data.ShipBuilders.First(s => s.SystemId == systemId && s.ShipType == shiptype).Count);
-
-            Console.WriteLine("---------------------AFTER-------------------");
-
-            //2 vengeances are still on queue and the page doesn't stop reloading
-
             shipBuildingQueue.FinishedBuildingTime = null;
 
             for (int i = 0; i < shipBuildingQueue.Count; i++)
@@ -326,15 +380,33 @@ namespace DarkGalaxyProject.Controllers
 
             shipBuildingQueue.Count = 0;
 
-            Console.WriteLine(shipType);
-            Console.WriteLine(shipBuildingQueue.FinishedBuildingTime);
-            Console.WriteLine(shipBuildingQueue.Count);
-
-            Console.WriteLine("----------------------------------------");
-
             data.SaveChanges();
 
             return Redirect($"Shipyard?systemId={systemId}");
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult BuildDefence(string systemId, string defenceType)
+        {
+            var system = data.Systems.Include(s => s.DefenceBuildingQueue).First(s => s.Id == systemId);
+
+            var defencetype = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceType);
+
+            var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defencetype);
+
+            defenceBuildingQueue.FinishedBuildingTime = null;
+
+            for (int i = 0; i < defenceBuildingQueue.Count; i++)
+            {
+                data.DefensiveStructures.Add(new DefensiveStructure(defencetype, systemId));
+            }
+
+            defenceBuildingQueue.Count = 0;
+
+            data.SaveChanges();
+
+            return Redirect($"DefenceStructureBuilder?systemId={systemId}");
         }
 
     }

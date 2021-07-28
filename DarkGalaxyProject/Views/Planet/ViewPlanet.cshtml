@@ -1,4 +1,6 @@
-﻿@model DarkGalaxyProject.Models.Planet.PlanetViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model DarkGalaxyProject.Models.Planet.PlanetViewModel
+@inject UserManager<Player> UserManager
 
 @{
     ViewData["Title"] = "Planet View";
@@ -13,15 +15,18 @@
         <span>Position: @Model.Position</span><br />
         <span>Type @Model.Type</span><br />
         <span>Factories---> Level: @Model.Factories.Level, Income -----> @Model.Factories.Income, Upgrade Cost -----> @Model.Factories.UpgradeCost, Upgrade Time ------> @Model.Factories.UpgradeTimeLength</span><br />
-        <form>
-            <input id="buildingId" type="hidden" name="buildingId" value=@Model.Factories.Id>
-            <input id="planetId" type="hidden" name="planetId" value=@Model.Id>
-            <div class="form-group">
-                <input id="input" onclick="initialUpgrade()" value="Level Up" class="btn btn-primary" />
-            </div>
-        </form>
+        @if (Model.PlayerId == UserManager.GetUserId(User))
+        {
+            <form>
+                <input id="buildingId" type="hidden" name="buildingId" value=@Model.Factories.Id>
+                <input id="planetId" type="hidden" name="planetId" value=@Model.Id>
+                <div class="form-group">
+                    <input id="input" onclick="initialUpgrade()" value="Level Up" class="btn btn-primary" />
+                </div>
+            </form>
 
-        <p id="timer"></p>
+            <p id="timer"></p>
+        }
     </div>
 </div>
 
@@ -81,10 +86,9 @@
             return min + ':' + sec;
         }
         var dateString = '@(Model.Factories.UpgradeFinishTime.HasValue ? Model.Factories.UpgradeFinishTime.Value : null)';
-            var updateStartDateString = '@(Model.Factories.UpgradeStartTime.HasValue ? Model.Factories.UpgradeStartTime.Value : null)';
 
         function initialUpgrade() {
-            if (dateString == '' && updateStartDateString == '') {
+            if (dateString == '') {
                 $(document).ready(function () {
                     var buildingId = $("#buildingId").val();
                     var planetId = $("#planetId").val();
@@ -114,22 +118,7 @@
 
                 var upgradeDate = new Date(year, month - 1, day, hour, minutes, seconds);
 
-                oneSplit = updateStartDateString.split(' ');
-                year = oneSplit[0].split('/')[2];
-                month = oneSplit[0].split('/')[1];
-                day = oneSplit[0].split('/')[0];
-                hour = oneSplit[1].split(':')[0];
-                minutes = oneSplit[1].split(':')[1];
-                seconds = oneSplit[1].split(':')[2];
-
-                var upgradeStartDate = new Date(year, month - 1, day, hour, minutes, seconds);
-
                 timeleft = (upgradeDate.getTime() - new Date().getTime()) / 1000;
-
-                console.log('data string - ' + dateString);
-                console.log('upgrade date - ' + upgradeDate);
-                console.log('timeleft - ' + timeleft);
-                console.log('upgradeStartDate - ' + upgradeStartDate)
             }
 
             if (timeleft > 0) {
@@ -145,7 +134,7 @@
                 }, 1000);
             }
 
-            if (timeleft <= 0 && dateString != '' && updateStartDateString != '') {
+            if (timeleft <= 0 && dateString != '') {
                 levelUp();
             }
 

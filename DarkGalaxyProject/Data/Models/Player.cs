@@ -18,8 +18,8 @@ namespace DarkGalaxyProject.Data.Models
         {
             Resources = new List<Resource>()
             {
-                new Resource { Quantity = 1000, Type = ResourceType.Fuel },
-                new Resource { Quantity = 1000, Type = ResourceType.MilkyCoin },
+                new Resource { Quantity = 10000, Type = ResourceType.Fuel },
+                new Resource { Quantity = 10000, Type = ResourceType.MilkyCoin },
             };
             Systems = new List<System>();
             SentMessages = new List<Message>();
@@ -29,7 +29,9 @@ namespace DarkGalaxyProject.Data.Models
         }
 
         //[Required]
-        //public string Password { get; set; }
+        //[MaxLength(20)]
+        //[MinLength(5)]
+        //public string PlayerName { get; set; }
 
         public ResearchTree ResearchTree { get; set; }
 
