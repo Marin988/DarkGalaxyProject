@@ -1,3 +1,4 @@
+using DarkGalaxyProject.BackgroundTasks;
 using DarkGalaxyProject.Contracts;
 using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Models;
@@ -36,9 +37,12 @@ namespace DarkGalaxyProject
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<Player>(options => options.SignIn.RequireConfirmedAccount = true) 
+            services.AddDefaultIdentity<Player>(options => options.SignIn.RequireConfirmedAccount = false) 
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
+
+            services.AddHostedService<ResourceGrowing>();
+                //.AddEntityFrameworkSqlServer();
 
 
             services.AddTransient<IDatabaseSeeder, SystemsSeeder>();
