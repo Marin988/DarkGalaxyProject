@@ -4,14 +4,16 @@ using DarkGalaxyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210729110259_Fleet")]
+    partial class Fleet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -273,9 +275,21 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("AllianceId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime?>("ArrivalTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DepartureTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DestinationSystemPoistion")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("Outgoing")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PlayerId")
                         .HasColumnType("nvarchar(450)");
@@ -385,7 +399,7 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.HasIndex("SystemId");
 
-                    b.ToTable("Fleets");
+                    b.ToTable("Flets");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planet", b =>

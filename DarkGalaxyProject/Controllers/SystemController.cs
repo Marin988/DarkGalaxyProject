@@ -35,8 +35,8 @@ namespace DarkGalaxyProject.Controllers
             var system = data.Systems.Where(s => s.Id == Id).Select(s => new SystemViewModel
             {
                 Id = s.Id,
-                PlayerId = s.UserId,
-                UserName = s.User.UserName,
+                PlayerId = s.PlayerId,
+                UserName = s.Player.UserName,
                 Position = s.Position,
                 Type = s.Type.ToString(),
                 Ships = s.Ships.Select(sh => new ShipViewModel
@@ -79,19 +79,36 @@ namespace DarkGalaxyProject.Controllers
 
             bool colonize = ships.FirstOrDefault(s => s.Type == ShipType.Colonizer.ToString()) != null;
 
+            var fleets = data.Fleets
+                .Where(f => f.SystemId == systemId)
+                .Select(f => new FleetFormModel
+                {
+                    ArrivalTime = f.ArrivalTime,
+                    Outgoing = f.Outgoing,
+                    Ships = f.Ships.Select(s => new ShipViewModel
+                    {
+                        HP = s.HP,
+                        MaxHP = s.MaxHP,
+                        Damage = s.Damage,
+                        Speed = s.Speed,
+                        MaxStorage = s.MaxStorage,
+                        Storage = s.Storage,
+                        Type = s.Type.ToString(),
+                        OnMission = s.OnMission
+                    })
+                    .ToList()
+                })
+                .ToList();
+
             var fleet = data.Systems
                 .Where(s => s.Id == systemId)
                 .Select(s => new FleetViewFormModel
                 {
                     Ships = ships,
+                    Fleets = fleets,
                     HostSystemId = s.Id,
                     HostSystemPosition = s.Position,
-                    DestinationSystemPosition = s.DestinationSystemPoistion,
-                    ArrivalTime = s.ArrivalTime,
-                    DepartureTime = s.DepartureTime,
-                    Outgoing = s.Outgoing,
-                    PlayerId = s.UserId,
-                    Colonizer = colonize
+                    PlayerId = s.PlayerId,
                 })
                 .First();
 
@@ -133,7 +150,7 @@ namespace DarkGalaxyProject.Controllers
         public IActionResult PlayerSystems(string PlayerId)
         {
             var systems = data.Systems
-               .Where(s => s.UserId == PlayerId)
+               .Where(s => s.PlayerId == PlayerId)
                .Select(s => new SystemViewModel
                {
                    Id = s.Id,
@@ -196,7 +213,7 @@ namespace DarkGalaxyProject.Controllers
         {
             var targetedSystem = data.Systems.First(s => s.Id == systemId);
 
-            targetedSystem.UserId = userManager.GetUserId(User);
+            targetedSystem.PlayerId = userManager.GetUserId(User);
 
             data.SaveChanges();
 
@@ -209,32 +226,41 @@ namespace DarkGalaxyProject.Controllers
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
+            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId).First(f => f.ArrivalTime == null);
+
             var ships = new List<Ship>();
 
-            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Goliath).Take(goliathCount));
-            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Vengeance).Take(vengeanceCount));
-            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Leonov).Take(leonovCount));
+            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Goliath && s.FleetId == null).Take(goliathCount));
+            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Vengeance && s.FleetId == null).Take(vengeanceCount));
+            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Leonov && s.FleetId == null).Take(leonovCount));
 
             if (colonizer)
             {
-                ships.Add(system.Ships.FirstOrDefault(s => s.Type == ShipType.Colonizer));
+                var colonizerShip = system.Ships.FirstOrDefault(s => s.Type == ShipType.Colonizer);
+                if (colonizerShip != null)
+                {
+                    ships.Add(colonizerShip);
+                }
             }
 
-            foreach (var ship in ships)
+            if (ships.Count > 0)
             {
-                ship.OnMission = true;
+                foreach (var ship in ships)
+                {
+                    ship.OnMission = true;
+                    ship.FleetId = fleet.Id;
+                }
+
+                fleet.Outgoing = true;
+                //fleet.Ships.ToList().AddRange(ships);
+                fleet.DestinationSystemPoistion = destinationSystemPosition;
+
+                var flightLength = Math.Abs(system.Position - destinationSystemPosition);
+
+                fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
+
+                data.SaveChanges();
             }
-
-            system.Outgoing = true;
-
-            system.DestinationSystemPoistion = destinationSystemPosition;
-
-            var flightLength = Math.Abs(system.Position - destinationSystemPosition);
-
-            system.DepartureTime = DateTime.Now;
-            system.ArrivalTime = system.DepartureTime.Value.AddSeconds(flightLength);
-
-            data.SaveChanges();
 
             return Redirect($"Fleet?systemId={systemId}");
         }
@@ -245,54 +271,60 @@ namespace DarkGalaxyProject.Controllers
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
-            system.Outgoing = false;
+            var fleet = data.Fleets.Where(f => f.SystemId == systemId && f.ArrivalTime.HasValue).FirstOrDefault(f => f.ArrivalTime.Value <= DateTime.Now);//here
 
-            var colonizer = system.Ships.Where(s => s.OnMission).FirstOrDefault(s => s.Type == ShipType.Colonizer);
-            var destinationSystem = data.Systems.FirstOrDefault(s => s.Position == system.DestinationSystemPoistion);
-
-            var ships = system.Ships.Where(s => s.OnMission && s.Storage < s.MaxStorage).ToList(); //this would havef to be changed if there is more than 1 fleet
-
-            //int systemLoot = destinationSystem.Resources.First(p => p.Type == ResourceType.MilkyCoin).Quantity;.Include(s => s.Resources)
-            var systemLoot = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
-
-            foreach (var ship in ships)
+            if (fleet != null)
             {
-                var diff = ship.MaxStorage - ship.Storage;
-                if(systemLoot.Quantity == 0)
+
+                fleet.Outgoing = false;
+
+                var colonizer = fleet.Ships.FirstOrDefault(s => s.Type == ShipType.Colonizer);
+                var destinationSystem = data.Systems.First(s => s.Position == fleet.DestinationSystemPoistion);
+
+                var ShipsOnMission = fleet.Ships.ToList();
+
+                var ShipsOnMissionWithoutFullStorage = fleet.Ships.Where(s => s.Storage < s.MaxStorage).ToList();
+
+                //int systemLoot = destinationSystem.Resources.First(p => p.Type == ResourceType.MilkyCoin).Quantity;.Include(s => s.Resources)
+                var systemLoot = data.Resources.First(r => r.SystemId == destinationSystem.Id && r.Type == ResourceType.MilkyCoin);
+
+                foreach (var ship in ShipsOnMissionWithoutFullStorage)
                 {
-                    break;
+                    var diff = ship.MaxStorage - ship.Storage;
+                    if (systemLoot.Quantity == 0)//bad logic
+                    {
+                        break;
+                    }
+                    if (systemLoot.Quantity <= diff)//bad logic
+                    {
+                        ship.Storage += systemLoot.Quantity;
+                    }
+                    else//bad logic
+                    {
+                        ship.Storage = ship.MaxStorage;
+                    }
+                    systemLoot.Quantity -= diff;
                 }
-                if (systemLoot.Quantity <= diff)
+
+                var flightLength = Math.Abs(system.Position - (int)fleet.DestinationSystemPoistion);
+
+                fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
+
+                fleet.DestinationSystemPoistion = null;
+
+                if (colonizer != null && ShipsOnMission.Count == 1)
                 {
-                    ship.Storage += systemLoot.Quantity;
+                    fleet.ArrivalTime = null;
                 }
-                else
+
+                if (colonizer != null)
                 {
-                    ship.Storage = ship.MaxStorage;
+                    destinationSystem.PlayerId = userManager.GetUserId(User);
+                    data.Ships.Remove(colonizer);
                 }
-                systemLoot.Quantity -= diff;
+
+                data.SaveChanges();
             }
-
-            if (colonizer != null)
-            {
-                destinationSystem.UserId = userManager.GetUserId(User);
-            }
-
-            var flightLength = Math.Abs(system.Position - (int)system.DestinationSystemPoistion);
-
-            system.DepartureTime = DateTime.Now;
-            system.ArrivalTime = system.DepartureTime.Value.AddSeconds(flightLength);
-
-            system.DestinationSystemPoistion = null;
-
-            data.SaveChanges();
-
-            if(colonizer != null)
-            {
-                data.Ships.Remove(colonizer);
-            }
-
-            data.SaveChanges();
 
             return Redirect($"Fleet?systemId={systemId}");
         }
@@ -303,17 +335,22 @@ namespace DarkGalaxyProject.Controllers
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
-            var shipsOnMission = system.Ships.Where(s => s.OnMission).ToList();
+            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId && f.ArrivalTime.HasValue).FirstOrDefault(f => f.ArrivalTime.Value <= DateTime.Now);//here
 
-            foreach (var ship in shipsOnMission)
+            if (fleet != null)
             {
-                ship.OnMission = false;
+                var ships = fleet.Ships.ToList();
+
+                foreach (var ship in ships)
+                {
+                    ship.OnMission = false;
+                    ship.FleetId = null;
+                }
+
+                fleet.ArrivalTime = null;
+
+                data.SaveChanges();
             }
-
-            system.ArrivalTime = null;
-            system.DepartureTime = null;
-
-            data.SaveChanges();
 
             return Redirect($"Fleet?systemId={systemId}");
         }

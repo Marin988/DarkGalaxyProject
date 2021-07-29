@@ -94,6 +94,13 @@ namespace DarkGalaxyProject.Seeders
                     });
                 }
 
+                var fleets = new List<Fleet>();
+
+                for (int j = 0; j < 5; j++)
+                {
+                    fleets.Add(new Fleet(system.Id));
+                }
+
                 data.Systems.Add(system);
                 data.Suns.Add(sun);
                 data.Planets.AddRange(planets);
@@ -101,6 +108,7 @@ namespace DarkGalaxyProject.Seeders
                 data.DefenceBuilders.AddRange(defenceBuilders);
                 data.ShipBuilders.AddRange(shipBuilders);
                 data.DefensiveStructures.AddRange(defences);
+                data.Fleets.AddRange(fleets);
 
                 data.SaveChanges();
             }

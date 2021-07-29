@@ -36,6 +36,8 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int BuildTime => (int)Type * 10;
 
+        public string FleetId { get; set; }
+
         public string SystemId { get; set; }
 
         public System System { get; set; }

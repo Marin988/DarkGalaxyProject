@@ -7,6 +7,7 @@
 
 @{
     ViewData["Title"] = "Systems of the Dark Galaxy";
+    var timerIndexc = 1;
 }
 
 <h1>
@@ -30,75 +31,73 @@
 
 @if (Model.PlayerId == UserManager.GetUserId(User))
 {
-<form>
-    <div class="form-group">
-        <label asp-for="GoliathCount" class="control-label">Goliath</label>
-        <input id="goliathCount" class="form-control" />
-        <span asp-validation-for="GoliathCount" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="VengeanceCount" class="control-label">Vengeance</label>
-        <input id="vengeanceCount" class="form-control" />
-        <span asp-validation-for="VengeanceCount" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="LeonovCount" class="control-label">Leonov</label>
-        <input id="leonovCount" class="form-control" />
-        <span asp-validation-for="LeonovCount" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="DestinationSystemPosition" class="control-label">Targeted system's position</label>
-        <input id="destinationSystemPosition" class="form-control" />
-        <span asp-validation-for="DestinationSystemPosition" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <input id="systemId" hidden value=@Model.HostSystemId class="form-control" />
-    </div>
-    <div class="form-group">
-        <input id="hostSystemPosition" hidden value=@Model.HostSystemPosition class="form-control" />
-    </div>
-    <div class="form-group">
-        <input id="arrivalTime" hidden value=@Model.ArrivalTime class="form-control" />
-    </div>
-    <div class="form-group">
-        <input id="departureTime" hidden value=@Model.DepartureTime class="form-control" />
-    </div>
-    <div class="form-group">
-        <input id="outgoing" hidden value=@Model.Outgoing class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for"colonize">Colonize</label>
-        <input type="checkbox" id="colonize" value=@Model.Colonizer class="form-control" />
-    </div>
-    <div class="form-group">
-        <input value="Send" onclick="SendFleet()" class="btn btn-primary" />
-    </div>
-    <p id="timer"></p>
-    @if (Model.ArrivalTime.HasValue)
-    {
-        if (Model.Outgoing)
-        {
-            <p>Outgoing</p>
-        }
-        else
-        {
-            <p>Incoming</p>
-        }
-    }
-</form>
+    <form>
+        <div class="form-group">
+            <label asp-for="GoliathCount" class="control-label">Goliath</label>
+            <input id="goliathCount" class="form-control" />
+            <span asp-validation-for="GoliathCount" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="VengeanceCount" class="control-label">Vengeance</label>
+            <input id="vengeanceCount" class="form-control" />
+            <span asp-validation-for="VengeanceCount" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LeonovCount" class="control-label">Leonov</label>
+            <input id="leonovCount" class="form-control" />
+            <span asp-validation-for="LeonovCount" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="DestinationSystemPosition" class="control-label">Targeted system's position</label>
+            <input id="destinationSystemPosition" class="form-control" />
+            <span asp-validation-for="DestinationSystemPosition" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input id="systemId" hidden value=@Model.HostSystemId class="form-control" />
+        </div>
+        <div class="form-group">
+            <input id="hostSystemPosition" hidden value=@Model.HostSystemPosition class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for"colonize">Colonize</label>
+            <input type="checkbox" id="colonize" value=@Model.Colonizer class="form-control" />
+        </div>
+        <div class="form-group">
+            <input value="Send" onclick="SendFleet()" class="btn btn-primary" />
+        </div>
+        <div id="timers">
+            @if (Model.Fleets.Any(f => f.ArrivalTime.HasValue))
+            {
+                foreach (var fleet in Model.Fleets.Where(f => f.ArrivalTime.HasValue))
+                {
+                    if (fleet.Outgoing)
+                    {
+                        <p>Outgoing</p>
+                    }
+                    else
+                    {
+                        <p>Incoming</p>
+                    }
+                }
+            }
+        </div>
+    </form>
 }
 
 @section Scripts {
     <script>
         window.onload = function () {
-            if ('@Model.ArrivalTime.HasValue' == 'True') {
-                moveTheFleet();
+            if ('@Model.Fleets.Any(f => f.ArrivalTime.HasValue)' == 'True') { //Model.Fleets.Any(ArrivaTime.HasValue)
+                @foreach (var fleet in Model.Fleets.Where(f => f.ArrivalTime.HasValue))
+                {
+                    <text> moveTheFleet('@fleet.ArrivalTime.Value', '@fleet.Outgoing' == 'True', @timerIndexc);</text>
+                    timerIndexc++;
+                }
             }
             else {
             }
         }
-        //If i refresh the page though the time would still disappear and nothing will happen when the UpgradeTime == Date.now()
-        //I need another function activating on page load checking if the property UpgradeTime is not null
+
         function convertSeconds(s) {
             var min = Math.floor(s / 60);
             var sec = Math.floor(s % 60);
@@ -110,11 +109,9 @@
             }
             return min + ':' + sec;
         }
-        var ArrivalTime = '@(Model.ArrivalTime.HasValue ? Model.ArrivalTime.Value : null)';
-        var departureTime = '@(Model.DepartureTime.HasValue ? Model.DepartureTime.Value : null)';
 
         function SendFleet() {
-            if (ArrivalTime == '') {
+            if ('@Model.Fleets.All(f => f.ArrivalTime.HasValue)' == 'False') {//if(Fleets.Any(f => f.ArrivalTime.HasValue == false))
                 $(document).ready(function () {
                     var goliathCount = $("#goliathCount").val();
                     var vengeanceCount = $("#vengeanceCount").val();
@@ -124,20 +121,26 @@
                         colonizer = true;
                     }
                     var destinationSystemPosition = $("#destinationSystemPosition").val();
-                    console.log(colonizer);
                     var systemId = $("#systemId").val();
                     var datastring = "goliathCount=" + goliathCount + "&vengeanceCount=" + vengeanceCount + "&leonovCount=" + leonovCount + "&colonizer=" + colonizer + "&destinationSystemPosition=" + destinationSystemPosition + "&systemId=" + systemId;
                     $.ajax({
                         type: "post",
-                        url: "SendFleet", 
-                        data: datastring 
+                        url: "SendFleet",
+                        data: datastring
                     });
                     setTimeout(function () { location.reload(); }, 200);
                 });
+            } else {
+                var result = '';
+                @foreach(var fleet in Model.Fleets)
+                {
+                    <text>result += '@(fleet.ArrivalTime.HasValue ? fleet.ArrivalTime.Value : "empty date")' + ' , ';</text>
+                }
+                alert(result);
             }
         }
 
-        function moveTheFleet() {
+        function moveTheFleet(ArrivalTime, outgoing, timerIndex) {
             var counter = 0;
             var timeleft = 0;
                 var oneSplit = ArrivalTime.split(' ');
@@ -154,15 +157,19 @@
 
 
             if (timeleft - counter > 0) {
-                document.getElementById('timer').innerText = convertSeconds(timeleft);
+                var newP = document.createElement("p");
+                newP.id = 'timer' + timerIndex;
+                var textNode = document.createTextNode(" This is a new text node");
+                newP.appendChild(textNode);
+                document.getElementById("timers").appendChild(newP)
+                document.getElementById('timer' + timerIndex).innerText = convertSeconds(timeleft);
                 var _tick = setInterval(function () {
                     counter++;
-                    document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
+                    document.getElementById('timer' + timerIndex).innerText = convertSeconds(timeleft - counter);
                     if (timeleft - counter <= 0) {
-                        console.log('am I here?');
                         clearInterval(_tick);
-                        if ('@(Model.Outgoing)' === '@true') {
-                            //method  chaning outgoing to false and setting the new arrival and departure times
+                        if (outgoing) {
+                            //method  changing outgoing to false and setting the new arrival and departure times
                             fleetReturn();
                         } else {
                             fleetBoarding();
@@ -171,7 +178,7 @@
                     }
                 }, 1000);
             } else  { //|| ArrivalTime != '' || departureTime != ''
-                if ('@(Model.Outgoing)' == 'True') {
+                if (outgoing) {
                     fleetReturn();//method  changing outgoing to false
                 } else {
                     fleetBoarding();

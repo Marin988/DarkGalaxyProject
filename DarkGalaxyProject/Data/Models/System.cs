@@ -22,6 +22,7 @@ namespace DarkGalaxyProject.Data.Models
             Planets = new List<Planet>();
             Ships = new List<Ship>();
             ShipBuildingQueue = new List<ShipBuilder>();
+            Fleets = new List<Fleet>();
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();
@@ -37,8 +38,8 @@ namespace DarkGalaxyProject.Data.Models
         [EnumDataType(typeof(SystemType))]
         public SystemType Type { get; set; }
 
-        public string UserId { get; set; }
-        public Player User { get; set; }
+        public string PlayerId { get; set; }
+        public Player Player { get; set; }
 
         public string AllianceId { get; set; }
         public Alliance Alliance { get; set; }
@@ -56,12 +57,6 @@ namespace DarkGalaxyProject.Data.Models
         public IEnumerable<ShipBuilder> ShipBuildingQueue { get; set; }
         public IEnumerable<DefenceBuilder> DefenceBuildingQueue { get; set; }
 
-        public int? DestinationSystemPoistion { get; set; }
-
-        public DateTime? ArrivalTime { get; set; }
-
-        public DateTime? DepartureTime { get; set; }
-
-        public bool Outgoing { get; set; }
+        public IEnumerable<Fleet> Fleets { get; set; }
     }
 }

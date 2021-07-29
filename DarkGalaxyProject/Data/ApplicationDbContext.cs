@@ -25,10 +25,9 @@ namespace DarkGalaxyProject.Data
         public DbSet<Ship> Ships { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<Factories> Factories { get; set; }
-
         public DbSet<ShipBuilder> ShipBuilders { get; set; }
-
         public DbSet<DefenceBuilder> DefenceBuilders { get; set; }
+        public DbSet<Fleet> Fleets { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -65,14 +64,14 @@ namespace DarkGalaxyProject.Data
 
             builder.Entity<Player>()
                 .HasMany(p => p.Systems)
-                .WithOne(s => s.User)
-                .HasForeignKey(s => s.UserId)
+                .WithOne(s => s.Player)
+                .HasForeignKey(s => s.PlayerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Models.System>()
-                .HasOne(s => s.User)
+                .HasOne(s => s.Player)
                 .WithMany(p => p.Systems)
-                .HasForeignKey(s => s.UserId)
+                .HasForeignKey(s => s.PlayerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder

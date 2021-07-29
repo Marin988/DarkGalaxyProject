@@ -30,7 +30,7 @@ namespace DarkGalaxyProject.Controllers
         {
             var systemId = data.Planets.First(p => p.Id == planetId).SystemId;
 
-            var playerId = data.Systems.First(s => s.Id == systemId).UserId;
+            var playerId = data.Systems.First(s => s.Id == systemId).PlayerId;
 
             var planet = data.Planets
                 .Where(p => p.Id == planetId)
@@ -83,7 +83,7 @@ namespace DarkGalaxyProject.Controllers
 
             var system = data.Systems.First(s => s.Id == systemId);
 
-            if(system.UserId != userManager.GetUserId(User))
+            if(system.PlayerId != userManager.GetUserId(User))
             {
                 Console.WriteLine("Hello?!");
                 return BadRequest("You cannot upgrade other players' buildings!");
