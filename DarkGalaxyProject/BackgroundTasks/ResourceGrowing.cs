@@ -2,6 +2,7 @@
 using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -35,9 +36,19 @@ namespace DarkGalaxyProject.BackgroundTasks
 
                     var resources = dbContext.Resources;
 
-                    foreach (var resource in resources)
+                    var systems = dbContext.Systems.Include(s => s.Resources).Include(s => s.Planets).ThenInclude(p => p.Factories).ToList();
+
+                    //foreach (var resource in resources)
+                    //{
+                    //    resource.Quantity += 1;
+                    //}
+
+                    foreach (var system in systems)
                     {
-                        resource.Quantity += 1;
+                        foreach (var resource in system.Resources)
+                        {
+                            resource.Quantity += system.Planets.Sum(p => p.Factories.Income);
+                        }
                     }
                     //data.SaveChanges();
                     dbContext.SaveChanges();
