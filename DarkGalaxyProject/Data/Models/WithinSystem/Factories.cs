@@ -17,7 +17,7 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int Level { get; set; }
 
-        public int Income => Level * 10;
+        public int Income => Level * 1000;
 
         public int UpgradeCost => Level * 3000;
 
