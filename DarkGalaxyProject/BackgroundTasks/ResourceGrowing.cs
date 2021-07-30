@@ -16,8 +16,6 @@ namespace DarkGalaxyProject.BackgroundTasks
     public class ResourceGrowing : BackgroundService
     {
         private readonly IServiceScopeFactory scopeFactory;
-        //private readonly ApplicationDbContext data;
-        //private readonly UserManager<Player> userManager;
 
         public ResourceGrowing(IServiceScopeFactory scopeFactory)
         {
@@ -26,31 +24,29 @@ namespace DarkGalaxyProject.BackgroundTasks
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using (var scope = scopeFactory.CreateScope())
+            while (!stoppingToken.IsCancellationRequested)
             {
-                while (!stoppingToken.IsCancellationRequested)
+                using (var scope = scopeFactory.CreateScope())
                 {
-                    //var resources = data.Resources;
-
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                     var resources = dbContext.Resources;
 
-                    var systems = dbContext.Systems.Include(s => s.Resources).Include(s => s.Planets).ThenInclude(p => p.Factories).ToList();
+                    //var systems = dbContext.Systems.Include(s => s.Resources).Include(s => s.Planets).ThenInclude(p => p.Factories).ToList();
 
-                    //foreach (var resource in resources)
-                    //{
-                    //    resource.Quantity += 1;
-                    //}
-
-                    foreach (var system in systems)
+                    foreach (var resource in resources)
                     {
-                        foreach (var resource in system.Resources)
+                        var planetsId = dbContext.Planets.Where(p => p.SystemId == resource.SystemId).Select(p => p.Id).ToList();
+
+                        var totalIncome = 0;
+
+                        foreach (var planetId in planetsId)
                         {
-                            resource.Quantity += system.Planets.Sum(p => p.Factories.Income);
+                            totalIncome += dbContext.Factories.First(f => f.PlanetId == planetId).Income;
                         }
+
+                        resource.Quantity += totalIncome;
                     }
-                    //data.SaveChanges();
                     dbContext.SaveChanges();
 
                     await Task.Delay(1000);
