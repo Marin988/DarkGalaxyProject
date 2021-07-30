@@ -16,8 +16,6 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int Quantity { get; set; }
 
-        public string PlayerId { get; set; }
-
         public string SystemId { get; set; }
     }
 }

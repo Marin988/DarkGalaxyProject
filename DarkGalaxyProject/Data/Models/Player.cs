@@ -16,16 +16,10 @@ namespace DarkGalaxyProject.Data.Models
     {
         public Player()
         {
-            Resources = new List<Resource>()
-            {
-                new Resource { Quantity = 10000, Type = ResourceType.Fuel },
-                new Resource { Quantity = 10000, Type = ResourceType.MilkyCoin },
-            };
             Systems = new List<System>();
             SentMessages = new List<Message>();
             ReceivedMessages = new List<Message>();
             Researches = new List<Research>();
-
         }
 
         //[Required]
@@ -46,7 +40,10 @@ namespace DarkGalaxyProject.Data.Models
         public string AllianceCandidateId { get; set; }
         public Alliance AllianceCandidate { get; set; }
 
-        public IEnumerable<Resource> Resources { get; set; }
+        [Required]
+        public string CurrentSystemId { get; set; }
+
+        public System CurrentSystem { get; set; }
 
         public IEnumerable<System> Systems { get; set; }
 

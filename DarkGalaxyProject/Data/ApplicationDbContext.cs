@@ -44,6 +44,12 @@ namespace DarkGalaxyProject.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Player>()
+                .HasOne(p => p.CurrentSystem)
+                .WithOne(s => s.CurrentPlayer)
+                .HasForeignKey<Player>(p => p.CurrentSystemId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<Factories>()
                 .HasOne(f => f.Planet)
                 .WithOne(p => p.Factories)

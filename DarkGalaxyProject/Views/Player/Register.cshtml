@@ -1,0 +1,16 @@
+﻿@using DarkGalaxyProject.Models.Player
+@model RegisterFormModel
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="Email"></label>
+    <input asp-for="Email" />
+    <br />
+    <label asp-for="Username"></label>
+    <input asp-for="Username" />
+    <br />
+    <label asp-for="Password"></label>
+    <input asp-for="Password" type="password" />
+    <br />
+    <input type="submit" value="Register" />
+</form>

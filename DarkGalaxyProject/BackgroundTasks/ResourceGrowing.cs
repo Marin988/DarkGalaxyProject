@@ -49,7 +49,7 @@ namespace DarkGalaxyProject.BackgroundTasks
                     }
                     dbContext.SaveChanges();
 
-                    await Task.Delay(1000);
+                    await Task.Delay(1000, stoppingToken);
                 }
             }
         }

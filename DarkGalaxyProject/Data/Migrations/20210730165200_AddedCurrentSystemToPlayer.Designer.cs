@@ -4,14 +4,16 @@ using DarkGalaxyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210730165200_AddedCurrentSystemToPlayer")]
+    partial class AddedCurrentSystemToPlayer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,7 +184,7 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.Property<string>("CurrentSystemId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -234,9 +236,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         .IsUnique()
                         .HasFilter("[AllianceLeaderId] IS NOT NULL");
 
-                    b.HasIndex("CurrentSystemId")
-                        .IsUnique();
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -277,6 +276,9 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AllianceId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CurrentPlayerId")
                         .HasColumnType("nvarchar(max)");
 
@@ -294,6 +296,8 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AllianceId");
 
                     b.HasIndex("PlayerId");
 
@@ -712,19 +716,11 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasForeignKey("DarkGalaxyProject.Data.Models.Player", "AllianceLeaderId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DarkGalaxyProject.Data.Models.System", "CurrentSystem")
-                        .WithOne("CurrentPlayer")
-                        .HasForeignKey("DarkGalaxyProject.Data.Models.Player", "CurrentSystemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Alliance");
 
                     b.Navigation("AllianceCandidate");
 
                     b.Navigation("AllianceLeader");
-
-                    b.Navigation("CurrentSystem");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.ShipBuilder", b =>
@@ -736,10 +732,16 @@ namespace DarkGalaxyProject.Data.Migrations
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.System", b =>
                 {
+                    b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
+                        .WithMany()
+                        .HasForeignKey("AllianceId");
+
                     b.HasOne("DarkGalaxyProject.Data.Models.Player", "Player")
                         .WithMany("Systems")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Alliance");
 
                     b.Navigation("Player");
                 });
@@ -907,8 +909,6 @@ namespace DarkGalaxyProject.Data.Migrations
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.System", b =>
                 {
-                    b.Navigation("CurrentPlayer");
-
                     b.Navigation("DefenceBuildingQueue");
 
                     b.Navigation("DefensiveStructures");

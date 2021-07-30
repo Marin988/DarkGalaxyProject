@@ -26,6 +26,16 @@ namespace DarkGalaxyProject.Controllers
             this.signInManager = signInManager;
         }
 
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
         [Authorize]
         public IActionResult Message(string messageId)
         {
@@ -83,6 +93,72 @@ namespace DarkGalaxyProject.Controllers
                 .FirstOrDefault();
 
             return View(player);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginFormModel user)
+        {
+            var loggedInUser = await userManager.FindByEmailAsync(user.Email);
+
+            if(user == null)
+            {
+                return InvalidCredentials(user);
+            }
+
+            var passwordIsValid = await userManager.CheckPasswordAsync(loggedInUser, user.Password);
+
+            if (!passwordIsValid)
+            {
+                return InvalidCredentials(user);
+            }
+
+            await signInManager.SignInAsync(loggedInUser, true);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        private IActionResult InvalidCredentials(LoginFormModel user)
+        {
+            const string invalidCredentialsMessage = "Credentials invalid!";
+
+            ModelState.AddModelError(string.Empty, invalidCredentialsMessage);
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterFormModel user)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(user);//wtf
+            }
+
+            var systemForUser = data.Systems.First(s => s.PlayerId == null);
+
+            var registeredUser = new Player()
+            {
+                Email = user.Email,
+                UserName = user.Username,
+                CurrentSystemId = systemForUser.Id,
+                Systems = new List<Data.Models.System>() { systemForUser }
+            };
+
+            var result = await userManager.CreateAsync(registeredUser, user.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+
+                foreach (var error in errors)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+
+                return View(user);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         [Authorize]

@@ -14,8 +14,8 @@ namespace DarkGalaxyProject.Data.Models
         {
             Resources = new List<Resource>()
             {
-                new Resource { Quantity = 0, Type = ResourceType.Fuel },
-                new Resource { Quantity = 0, Type = ResourceType.MilkyCoin },
+                new Resource { Quantity = 1000, Type = ResourceType.Fuel },
+                new Resource { Quantity = 1000, Type = ResourceType.MilkyCoin },
             };
             Suns = new List<Sun>();
             DefensiveStructures = new List<DefensiveStructure>();
@@ -41,8 +41,8 @@ namespace DarkGalaxyProject.Data.Models
         public string PlayerId { get; set; }
         public Player Player { get; set; }
 
-        public string AllianceId { get; set; }
-        public Alliance Alliance { get; set; }
+        public string CurrentPlayerId { get; set; }
+        public Player CurrentPlayer { get; set; }
 
         public IEnumerable<Resource> Resources { get; set; }
 

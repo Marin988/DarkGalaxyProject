@@ -363,8 +363,8 @@ namespace DarkGalaxyProject.Controllers
 
             var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
 
-            var playerMilkyCoin = data.Resources.First(r => r.PlayerId == userManager.GetUserId(User) && r.Type == ResourceType.MilkyCoin);
-            playerMilkyCoin.Quantity -= (int)shiptype * 500 * count;
+            var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+            systemMilkyCoin.Quantity -= (int)shiptype * 500 * count;
 
             var shipbuildingQueue = system.ShipBuildingQueue.FirstOrDefault(s => s.ShipType == shiptype);
 
@@ -384,8 +384,8 @@ namespace DarkGalaxyProject.Controllers
 
             var defencetype = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceType);
 
-            var playerMilkyCoin = data.Resources.First(r => r.PlayerId == userManager.GetUserId(User) && r.Type == ResourceType.MilkyCoin);
-            playerMilkyCoin.Quantity -= (int)defencetype * 100 * count;
+            var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+            systemMilkyCoin.Quantity -= (int)defencetype * 100 * count;
 
             var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defencetype);
 
