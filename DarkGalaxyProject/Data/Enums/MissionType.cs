@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Enums
 {
-    public enum ShipType
+    public enum MissionType
     {
-        Colonizer = 0,
-        TransportShip = 1,
-        BattleShip = 2
+        Attack = 1,
+        Deploy = 2,
+        Transport = 3,
+        Colonize = 4
     }
 }

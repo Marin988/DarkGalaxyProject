@@ -1,12 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using DarkGalaxyProject.Data.Enums 
+@using DarkGalaxyProject.Data.Enums
 @using DarkGalaxyProject.Data
 @inject SignInManager<Player> SignInManager
 @inject UserManager<Player> UserManager
 @inject ApplicationDbContext dbContext
-@{
-
-}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +13,17 @@
     <title>@ViewData["Title"] - DarkGalaxyProject</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        #mysystems {
+            width: 20%;
+            float: left;
+        }
+        ,
+        #currentSystem {
+            background-color: #fff;
+            box-shadow: 0 0 60px 30px #fff, 0 0 100px 60px #f0f, 0 0 140px 90px #0ff;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -58,6 +66,10 @@
             </div>
         </nav>
     </header>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <partial name="_PlayerSystemsOverview" />
+    }
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

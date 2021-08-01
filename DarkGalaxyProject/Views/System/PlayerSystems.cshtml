@@ -22,7 +22,10 @@
                 <span>Storage: @ship.Storage---------</span>
                 <span>Type: @ship.Type</span><br>
             }
-            <a asp-controller="System" asp-action="ViewSystem" class="btn btn-block btn-primary" asp-route-ID="@system.Id" >ViewSystem</a>
+            <form method="post" action="@Url.Action("SwitchSystem", "System")">
+                <input hidden name="systemId" value=@system.Id />
+                <input type="submit" value="View system" />
+            </form>
         </li>
     }
 </ul>

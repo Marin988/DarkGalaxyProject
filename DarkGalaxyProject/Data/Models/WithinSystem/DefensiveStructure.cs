@@ -13,11 +13,14 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         {
             Type = type;
             SystemId = systemId;
+            HP = MaxHP;
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
-        public int HitPoints => 1000 / (int)Type;
+        public int HP { get; set; }
+
+        public int MaxHP => 1000 / (int)Type;
 
         public int Damage => 1000 / (int)Type;
 

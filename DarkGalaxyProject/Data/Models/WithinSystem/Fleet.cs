@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkGalaxyProject.Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         public DateTime? ArrivalTime { get; set; }
 
         public bool Outgoing { get; set; }
+
+        public MissionType MissionType { get; set; }
 
         public string SystemId { get; set; }
 

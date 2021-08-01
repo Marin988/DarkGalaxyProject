@@ -31,57 +31,56 @@
 
 @if (Model.PlayerId == UserManager.GetUserId(User))
 {
-    <form>
-        <div class="form-group">
-            <label asp-for="GoliathCount" class="control-label">Goliath</label>
-            <input id="goliathCount" class="form-control" />
-            <span asp-validation-for="GoliathCount" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="VengeanceCount" class="control-label">Vengeance</label>
-            <input id="vengeanceCount" class="form-control" />
-            <span asp-validation-for="VengeanceCount" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="LeonovCount" class="control-label">Leonov</label>
-            <input id="leonovCount" class="form-control" />
-            <span asp-validation-for="LeonovCount" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="DestinationSystemPosition" class="control-label">Targeted system's position</label>
-            <input id="destinationSystemPosition" class="form-control" />
-            <span asp-validation-for="DestinationSystemPosition" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <input id="systemId" hidden value=@Model.HostSystemId class="form-control" />
-        </div>
-        <div class="form-group">
-            <input id="hostSystemPosition" hidden value=@Model.HostSystemPosition class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for"colonize">Colonize</label>
-            <input type="checkbox" id="colonize" value=@Model.Colonizer class="form-control" />
-        </div>
-        <div class="form-group">
-            <input value="Send" onclick="SendFleet()" class="btn btn-primary" />
-        </div>
-        <div id="timers">
-            @if (Model.Fleets.Any(f => f.ArrivalTime.HasValue))
+<form>
+    <div class="form-group">
+        <label asp-for="BattleShipCount" class="control-label">Battle ship</label>
+        <input id="battleShipCount" class="form-control" />
+        <span asp-validation-for="BattleShipCount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TransportShipCount" class="control-label">Transport ship</label>
+        <input id="transportShipCount" class="form-control" />
+        <span asp-validation-for="TransportShipCount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ColonizerCount" class="control-label">Colonizer</label>
+        <input id="colonizerCount" class="form-control" />
+        <span asp-validation-for="ColonizerCount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DestinationSystemPosition" class="control-label">Targeted system's position</label>
+        <input id="destinationSystemPosition" class="form-control" />
+        <span asp-validation-for="DestinationSystemPosition" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input id="systemId" hidden value=@Model.HostSystemId class="form-control" />
+    </div>
+    <div class="form-group">
+        <input id="hostSystemPosition" hidden value=@Model.HostSystemPosition class="form-control" />
+    </div>
+    <div class="form-group">
+        <select id="missionType" class="form-control" asp-items="Html.GetEnumSelectList<MissionType>()"></select>
+    </div>
+    <div class="form-group">
+        <input value="Send" onclick="SendFleet()" class="btn btn-primary" />
+    </div>
+    <div id="timers">
+        @if (Model.Fleets.Any(f => f.ArrivalTime.HasValue))
+        {
+            foreach (var fleet in Model.Fleets.Where(f => f.ArrivalTime.HasValue))
             {
-                foreach (var fleet in Model.Fleets.Where(f => f.ArrivalTime.HasValue))
+                if (fleet.Outgoing)
                 {
-                    if (fleet.Outgoing)
-                    {
-                        <p>Outgoing</p>
-                    }
-                    else
-                    {
-                        <p>Incoming</p>
-                    }
+                    <p>Outgoing</p>
+                }
+                else
+                {
+                    <p>Incoming</p>
                 }
             }
-        </div>
-    </form>
+        }
+    </div>
+</form>
 }
 
 @section Scripts {
@@ -113,16 +112,13 @@
         function SendFleet() {
             if ('@Model.Fleets.All(f => f.ArrivalTime.HasValue)' == 'False') {//if(Fleets.Any(f => f.ArrivalTime.HasValue == false))
                 $(document).ready(function () {
-                    var goliathCount = $("#goliathCount").val();
-                    var vengeanceCount = $("#vengeanceCount").val();
-                    var leonovCount = $("#leonovCount").val();
-                    var colonizer = false;
-                    if ($("#colonize").is(":checked")) {
-                        colonizer = true;
-                    }
+                    var battleShipCount = $("#battleShipCount").val();
+                    var colonizerCount = $("#colonizerCount").val();
+                    var transportShipCount = $("#transportShipCount").val();
+                    var missionType = $("#missionType").val();
                     var destinationSystemPosition = $("#destinationSystemPosition").val();
                     var systemId = $("#systemId").val();
-                    var datastring = "goliathCount=" + goliathCount + "&vengeanceCount=" + vengeanceCount + "&leonovCount=" + leonovCount + "&colonizer=" + colonizer + "&destinationSystemPosition=" + destinationSystemPosition + "&systemId=" + systemId;
+                    var datastring = "battleShipCount=" + battleShipCount + "&colonizerCount=" + colonizerCount + "&transportShipCount=" + transportShipCount + "&missionType=" + missionType + "&destinationSystemPosition=" + destinationSystemPosition + "&systemId=" + systemId;
                     $.ajax({
                         type: "post",
                         url: "SendFleet",
@@ -174,7 +170,7 @@
                         } else {
                             fleetBoarding();
                         }
-                        setTimeout(function () { location.reload(); }, 200);
+                       setTimeout(function () { location.reload(); }, 200);
                     }
                 }, 1000);
             } else  { //|| ArrivalTime != '' || departureTime != ''

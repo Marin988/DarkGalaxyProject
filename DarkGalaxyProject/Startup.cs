@@ -42,7 +42,6 @@ namespace DarkGalaxyProject
             services.AddControllersWithViews();
 
             services.AddHostedService<ResourceGrowing>();
-                //.AddEntityFrameworkSqlServer();
 
 
             services.AddTransient<IDatabaseSeeder, SystemsSeeder>();

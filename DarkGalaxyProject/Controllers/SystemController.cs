@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using DarkGalaxyProject.BackgroundTasks;
 
 namespace DarkGalaxyProject.Controllers
 {
@@ -32,6 +33,8 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult ViewSystem(string Id)
         {
+            Console.WriteLine(data.Systems.Count());
+
             var system = data.Systems.Where(s => s.Id == Id).Select(s => new SystemViewModel
             {
                 Id = s.Id,
@@ -77,7 +80,7 @@ namespace DarkGalaxyProject.Controllers
                 })
                 .ToList();
 
-            bool colonize = ships.FirstOrDefault(s => s.Type == ShipType.Colonizer.ToString()) != null;
+            bool colonise = ships.FirstOrDefault(s => s.Type == ShipType.Colonizer.ToString()) != null;
 
             var fleets = data.Fleets
                 .Where(f => f.SystemId == systemId)
@@ -209,6 +212,21 @@ namespace DarkGalaxyProject.Controllers
 
         [Authorize]
         [HttpPost]
+        public IActionResult SwitchSystem(string systemId)
+        {
+            //var targetedSystem = data.Systems.First(s => s.Id == systemId);
+
+            var player = data.Players.First(p => p.Id == userManager.GetUserId(User));
+
+            player.CurrentSystemId = systemId;
+
+            data.SaveChanges();
+
+            return Redirect($"ViewSystem/{systemId}");
+        }
+
+        [Authorize]
+        [HttpPost]
         public IActionResult Colonize(string systemId)
         {
             var targetedSystem = data.Systems.First(s => s.Id == systemId);
@@ -222,37 +240,72 @@ namespace DarkGalaxyProject.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult SendFleet(int goliathCount, int vengeanceCount, int leonovCount, bool colonizer, int destinationSystemPosition, string systemId)
+        public IActionResult SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId)
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
             var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId).First(f => f.ArrivalTime == null);
 
+            var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
+
+            //add error if destinationSystemPosition == the current ssytemPosition
+
             var ships = new List<Ship>();
 
-            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Goliath && s.FleetId == null).Take(goliathCount));
-            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Vengeance && s.FleetId == null).Take(vengeanceCount));
-            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Leonov && s.FleetId == null).Take(leonovCount));
+            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.BattleShip && s.FleetId == null).Take(battleShipCount));
+            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.Colonizer && s.FleetId == null).Take(colonizerCount));
+            ships.AddRange(system.Ships.Where(s => s.Type == ShipType.TransportShip && s.FleetId == null).Take(transportShipCount));
 
-            if (colonizer)
+            if (ships.Count > 0)//else add error
             {
-                var colonizerShip = system.Ships.FirstOrDefault(s => s.Type == ShipType.Colonizer);
-                if (colonizerShip != null)
+                if (missionTypeEnum == MissionType.Colonize)
                 {
-                    ships.Add(colonizerShip);
+                    if (!system.Ships.Any(s => s.Type == ShipType.Colonizer && s.FleetId == null))
+                    {
+                        //TODO: add error to error list
+                        Console.WriteLine("return error view...");
+                    }
+                    if(data.Systems.First(s => s.Position == destinationSystemPosition).PlayerId != null)
+                    {
+                        //TODO: add error to error list
+                    }
+                    //if destinationSystemPosition doesn't exist - add another error
+                    if (!ships.Any(s => s.Type == ShipType.Colonizer))
+                    {
+                        ships.Add(system.Ships.First(s => s.Type == ShipType.Colonizer && s.FleetId == null));//or return error
+                    }
+                    //TODO: if error list.Count > 0 return error view
                 }
-            }
 
-            if (ships.Count > 0)
-            {
+                //if deploy check if the system you are deploying to has a playerid - if not - add error
+
+                if (missionTypeEnum == MissionType.Transport && cargo > 0)
+                {
+                    system.Resources.First(r => r.Type == ResourceType.MilkyCoin).Quantity -= cargo;
+                }
+
                 foreach (var ship in ships)
                 {
                     ship.OnMission = true;
                     ship.FleetId = fleet.Id;
-                }
+
+                    if (missionTypeEnum == MissionType.Transport && cargo > 0) //possible issue - If there are ships already loaded they might
+                    {                                                         //be the ones i get in the fleet UNLESS I order them by cargo 
+                        int load = ship.MaxStorage - ship.Storage;
+                        if (cargo < load)
+                        {
+                            load = cargo;
+                        }
+
+                        ship.Storage += load;
+                        cargo -= load;
+                    }
+                }//issue note (above next to if)
+
+                fleet.MissionType = missionTypeEnum;
 
                 fleet.Outgoing = true;
-                //fleet.Ships.ToList().AddRange(ships);
+                fleet.Ships.ToList().AddRange(ships);
                 fleet.DestinationSystemPoistion = destinationSystemPosition;
 
                 var flightLength = Math.Abs(system.Position - destinationSystemPosition);
@@ -260,7 +313,7 @@ namespace DarkGalaxyProject.Controllers
                 fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
 
                 data.SaveChanges();
-            }
+            }//else add error
 
             return Redirect($"Fleet?systemId={systemId}");
         }
@@ -271,57 +324,173 @@ namespace DarkGalaxyProject.Controllers
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
-            var fleet = data.Fleets.Where(f => f.SystemId == systemId && f.ArrivalTime.HasValue).FirstOrDefault(f => f.ArrivalTime.Value <= DateTime.Now);//here
+            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId && f.ArrivalTime.HasValue).FirstOrDefault(f => f.ArrivalTime.Value <= DateTime.Now);
 
-            if (fleet != null)
+            if(fleet != null)
             {
-
                 fleet.Outgoing = false;
 
-                var colonizer = fleet.Ships.FirstOrDefault(s => s.Type == ShipType.Colonizer);
-                var destinationSystem = data.Systems.First(s => s.Position == fleet.DestinationSystemPoistion);
+                var destinationSystem = data.Systems.Include(s => s.Ships).Include(s => s.DefensiveStructures).First(s => s.Position == fleet.DestinationSystemPoistion);
 
                 var ShipsOnMission = fleet.Ships.ToList();
 
-                var ShipsOnMissionWithoutFullStorage = fleet.Ships.Where(s => s.Storage < s.MaxStorage).ToList();
-
-                //int systemLoot = destinationSystem.Resources.First(p => p.Type == ResourceType.MilkyCoin).Quantity;.Include(s => s.Resources)
-                var systemLoot = data.Resources.First(r => r.SystemId == destinationSystem.Id && r.Type == ResourceType.MilkyCoin);
-
-                foreach (var ship in ShipsOnMissionWithoutFullStorage)
-                {
-                    var diff = ship.MaxStorage - ship.Storage;
-                    if (systemLoot.Quantity == 0)//bad logic
-                    {
-                        break;
-                    }
-                    if (systemLoot.Quantity <= diff)//bad logic
-                    {
-                        ship.Storage += systemLoot.Quantity;
-                    }
-                    else//bad logic
-                    {
-                        ship.Storage = ship.MaxStorage;
-                    }
-                    systemLoot.Quantity -= diff;
-                }
-
                 var flightLength = Math.Abs(system.Position - (int)fleet.DestinationSystemPoistion);
-
                 fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
-
                 fleet.DestinationSystemPoistion = null;
 
-                if (colonizer != null && ShipsOnMission.Count == 1)
+                if (fleet.MissionType == MissionType.Attack)
                 {
-                    fleet.ArrivalTime = null;
+                    var attackerHP = ShipsOnMission.Sum(s => s.HP);
+                    var attackerDMG = ShipsOnMission.Sum(s => s.Damage);
+
+                    var DefenderFleet = destinationSystem.Ships.Where(s => !s.OnMission);
+                    var Defence = destinationSystem.DefensiveStructures;
+
+                    var defenderHP = DefenderFleet.Sum(f => f.HP) + Defence.Sum(d => d.HP);
+                    var defenderDMG = DefenderFleet.Sum(f => f.Damage) + Defence.Sum(d => d.Damage);
+
+                    if (attackerDMG >= defenderHP)
+                    {
+                        DefenderFleet.ToList().RemoveAll(s => !s.OnMission);
+                        Defence.ToList().RemoveAll(d => d.SystemId == destinationSystem.Id); //am I actually removing them?!? If so, am I just saying systemId = null or actually deleting them
+                    }
+                    else
+                    {
+                        foreach (var def in Defence)
+                        {
+                            var defHP = def.HP;
+                            if (def.HP <= attackerDMG)
+                            {
+                                def.HP -= attackerDMG;
+                            }
+                            else
+                            {
+                                def.HP -= attackerDMG;
+                                attackerDMG = 0;
+                                break;
+                            }
+                            attackerDMG -= defHP;
+                        }
+
+                        if (attackerDMG > 0)
+                        {
+                            foreach (var defShip in DefenderFleet)
+                            {
+                                if (defShip.HP <= attackerDMG)
+                                {
+                                    defShip.HP -= attackerDMG;
+                                }
+                                else
+                                {
+                                    defShip.HP -= attackerDMG;
+                                    attackerDMG = 0;
+                                    break;
+                                }
+                                attackerDMG -= defShip.HP;
+                            }
+                        }
+
+                        if (Defence.Any(d => d.HP <= 0))
+                        {
+                            Defence.ToList().RemoveAll(d => d.HP <= 0);
+                        }
+                        if (DefenderFleet.Any(s => s.HP <= 0))
+                        {
+                            DefenderFleet.ToList().RemoveAll(s => s.HP <= 0);
+                        }
+
+                    }
+                    if (defenderDMG >= attackerHP)
+                    {
+                        ShipsOnMission.RemoveAll(s => s.OnMission);
+                        fleet.ArrivalTime = null;
+                    }
+                    else
+                    {
+                        foreach (var ship in ShipsOnMission)
+                        {
+                            var shipHP = ship.HP;
+                            if (ship.HP <= defenderDMG)
+                            {
+                                ship.HP -= defenderDMG;
+                            }
+                            else
+                            {
+                                ship.HP -= defenderDMG;
+                                defenderDMG = 0;
+                                break;
+                            }
+                            defenderDMG -= shipHP;
+                        }
+
+                        if (ShipsOnMission.Any(s => s.HP <= 0))
+                        {
+                            ShipsOnMission.RemoveAll(s => s.HP <= 0);
+                        }
+                    }
+
+                    if (ShipsOnMission.Any()) //I presume that if there are any ships left all the defences have been wiped out
+                    {
+                        var systemResource = data.Resources.First(r => r.SystemId == destinationSystem.Id && r.Type == ResourceType.MilkyCoin);
+
+                        foreach (var ship in ShipsOnMission)
+                        {
+                            var availableStorage = ship.MaxStorage - ship.Storage; //may include that as a property
+
+                            if (ship.Storage < ship.MaxStorage)
+                            {
+                                if (systemResource.Quantity >= availableStorage)
+                                {
+                                    ship.Storage = ship.MaxStorage;
+                                    systemResource.Quantity -= availableStorage;
+                                }
+                                else
+                                {
+                                    ship.Storage += systemResource.Quantity;
+                                    systemResource.Quantity = 0;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
 
-                if (colonizer != null)
+                if (fleet.MissionType == MissionType.Transport)//I may have a problem here if before adding the amount to be transported, the ships already had  
+                {                                             //resources.But I would rather remove storing resources to stationary ships as an option at all
+                    var transportedResources = ShipsOnMission.Sum(s => s.Storage);
+
+                    foreach (var ship in ShipsOnMission)
+                    {
+                        ship.Storage = 0;
+                    }
+
+                    destinationSystem.Resources.First(r => r.Type == ResourceType.MilkyCoin).Quantity += transportedResources;
+                }
+
+
+                if (fleet.MissionType == MissionType.Deploy)//I may add transport function in here later
                 {
+                    fleet.ArrivalTime = null;
+                    foreach (var ship in ShipsOnMission)
+                    {
+                        ship.SystemId = destinationSystem.Id;
+                        ship.OnMission = false;
+                        ship.PlayerId = destinationSystem.PlayerId;//check if dest system has a playerId if you let that be acceptable in your business logic
+                    }
+                    ShipsOnMission.RemoveAll(p => !p.OnMission);
+                }//NOTE
+
+
+                if (fleet.MissionType == MissionType.Colonize)//I may add transport function in here later
+                {
+                    var colonizer = fleet.Ships.First(s => s.Type == ShipType.Colonizer);
+                    if (ShipsOnMission.Count == 1)
+                    {
+                        fleet.ArrivalTime = null;
+                    }
                     destinationSystem.PlayerId = userManager.GetUserId(User);
                     data.Ships.Remove(colonizer);
-                }
+                }//NOTE
 
                 data.SaveChanges();
             }

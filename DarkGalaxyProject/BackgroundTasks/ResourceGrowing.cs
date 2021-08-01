@@ -22,7 +22,7 @@ namespace DarkGalaxyProject.BackgroundTasks
             this.scopeFactory = scopeFactory;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)//perhaps I should try to call a function from a controller using its database...
         {
             while (!stoppingToken.IsCancellationRequested)
             {

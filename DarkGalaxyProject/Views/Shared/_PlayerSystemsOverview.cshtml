@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using DarkGalaxyProject.Data
+@inject UserManager<Player> UserManager
+@inject ApplicationDbContext dbContext
+@{
+    var systems = dbContext.Systems.Where(s => s.PlayerId == UserManager.GetUserId(User));
+}
+
+
+<div id="mysystems">
+    <ul>
+        @foreach (var system in systems)
+        {
+            if (UserManager.GetUserAsync(User).Result.CurrentSystemId == system.Id)
+            {
+                <li id="currentSystem">@system.Position - Currently chosen</li>
+            }
+            else
+            {
+                <li>
+                    @system.Position
+                    <form method="post" action="@Url.Action("SwitchSystem", "System")">
+                        <input hidden name="systemId" value=@system.Id />
+                        <input type="submit" value="Choose this system"/>
+                    </form>
+                </li>
+            }
+        }
+    </ul>
+</div>

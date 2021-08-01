@@ -11,11 +11,11 @@ namespace DarkGalaxyProject.Models.System
 
         public List<FleetFormModel> Fleets { get; set; }
 
-        public int GoliathCount { get; set; }
+        public int BattleShipCount { get; set; }
 
-        public int VengeanceCount { get; set; }
+        public int TransportShipCount { get; set; }
 
-        public int LeonovCount { get; set; }
+        public int ColonizerCount { get; set; }
 
         public string HostSystemId { get; set; }
 
@@ -24,7 +24,5 @@ namespace DarkGalaxyProject.Models.System
         public int? DestinationSystemPosition { get; set; }
 
         public string PlayerId { get; set; }
-
-        public bool Colonizer { get; set; }
     }
 }
