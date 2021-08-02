@@ -76,7 +76,8 @@ namespace DarkGalaxyProject.Controllers
                     MaxStorage = s.MaxStorage,
                     Storage = s.Storage,
                     Type = s.Type.ToString(),
-                    OnMission = s.OnMission
+                    OnMission = s.OnMission,
+                    DealId = s.DealId
                 })
                 .ToList();
 

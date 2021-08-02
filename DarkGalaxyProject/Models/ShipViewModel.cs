@@ -17,5 +17,7 @@
         public int Speed { get; set; }
 
         public bool OnMission { get; set; }
+
+        public string DealId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DarkGalaxyProject.Data;
+using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Models;
@@ -136,13 +137,20 @@ namespace DarkGalaxyProject.Controllers
 
             var systemForUser = data.Systems.First(s => s.PlayerId == null);
 
+            var researches = new List<ResearchTree>();
+
             var registeredUser = new Player()
             {
                 Email = user.Email,
                 UserName = user.Username,
                 CurrentSystemId = systemForUser.Id,
-                Systems = new List<Data.Models.System>() { systemForUser }
+                Systems = new List<Data.Models.System>() { systemForUser },
             };
+
+            foreach (var researchType in Enum.GetValues(typeof(ResearchType)))
+            {
+                researches.Add(new ResearchTree(registeredUser.Id, (ResearchType)researchType));
+            }
 
             var result = await userManager.CreateAsync(registeredUser, user.Password);
 
@@ -157,6 +165,9 @@ namespace DarkGalaxyProject.Controllers
 
                 return View(user);
             }
+
+            data.ResearchTrees.AddRange(researches);
+            data.SaveChanges();
 
             return RedirectToAction("Index", "Home");
         }

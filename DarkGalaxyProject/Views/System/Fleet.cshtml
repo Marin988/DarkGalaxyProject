@@ -15,7 +15,7 @@
 </h1>
 
 <ul>
-    @foreach (var ship in Model.Ships.Where(s => !s.OnMission).ToList())
+    @foreach (var ship in Model.Ships.Where(s => !s.OnMission && s.DealId == null).ToList())
     {
         <li>
             <span>Type: @ship.Type,</span>

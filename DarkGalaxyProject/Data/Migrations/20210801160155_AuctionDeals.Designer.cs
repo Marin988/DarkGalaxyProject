@@ -4,14 +4,16 @@ using DarkGalaxyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210801160155_AuctionDeals")]
+    partial class AuctionDeals
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,15 +49,9 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.Property<string>("SellerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ShipType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -474,7 +470,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DealId")
+                    b.Property<string>("AuctionDealId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FleetId")
@@ -501,7 +497,7 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DealId");
+                    b.HasIndex("AuctionDealId");
 
                     b.HasIndex("FleetId");
 
@@ -840,9 +836,9 @@ namespace DarkGalaxyProject.Data.Migrations
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Ship", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.AuctionDeal", "Deal")
+                    b.HasOne("DarkGalaxyProject.Data.Models.AuctionDeal", null)
                         .WithMany("ShipsForSale")
-                        .HasForeignKey("DealId");
+                        .HasForeignKey("AuctionDealId");
 
                     b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Fleet", null)
                         .WithMany("Ships")
@@ -857,8 +853,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasOne("DarkGalaxyProject.Data.Models.System", "System")
                         .WithMany("Ships")
                         .HasForeignKey("SystemId");
-
-                    b.Navigation("Deal");
 
                     b.Navigation("Player");
 

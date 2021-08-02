@@ -19,15 +19,13 @@ namespace DarkGalaxyProject.Data.Models
             Systems = new List<System>();
             SentMessages = new List<Message>();
             ReceivedMessages = new List<Message>();
-            Researches = new List<Research>();
+            ResearcheTree = new List<ResearchTree>();
         }
 
         //[Required]
         //[MaxLength(20)]
         //[MinLength(5)]
         //public string PlayerName { get; set; }
-
-        public ResearchTree ResearchTree { get; set; }
 
         public string AllianceId { get; set; }
 
@@ -51,6 +49,10 @@ namespace DarkGalaxyProject.Data.Models
 
         public IEnumerable<Message> ReceivedMessages { get; set; }
 
-        public IEnumerable<Research> Researches { get; set; }
+        public IEnumerable<ResearchTree> ResearcheTree { get; set; }
+
+        public IEnumerable<AuctionDeal> SoldAuctionDeals { get; set; }
+
+        public IEnumerable<AuctionDeal> BoughtAuctionDeals { get; set; }
     }
 }

@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using DarkGalaxyProject.Models.Auction
+@model List<DealListView>
+@inject UserManager<Player> UserManager
+
+@{
+    ViewData["Title"] = "Systems of the Dark Galaxy";
+}
+
+<h1>
+    Auction
+</h1>
+@if (Model.Any())
+{
+    <ul>
+        @foreach (var Deal in Model)
+        {
+            <li>
+                <span>Seller: @Deal.SellerName</span><br>
+                <span>Ship type: @Deal.ShipType</span><br>
+                <span>Quantity: @Deal.Quantity</span><br>
+                <span>Price: @Deal.Price</span><br>
+                @if (Deal.SellerId != UserManager.GetUserId(User))
+                {
+                    <form action="Buy" method="post">
+                        <input type="hidden" name="dealId" value=@Deal.Id>
+                        <div class="form-group">
+                            <input type="submit" value="Buy" class="btn btn-primary" />
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <form action="Delete" method="post">
+                        <input type="hidden" name="dealId" value=@Deal.Id>
+                        <div class="form-group">
+                            <input type="submit" value="Delete" class="btn btn-primary" />
+                        </div>
+                    </form>
+                }
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <text><h5>No deals at the moment...</h5></text>
+}
+
+        <a class="nav-link text-dark" asp-area="" asp-controller="Auction" asp-action="Create">Create a deal</a>

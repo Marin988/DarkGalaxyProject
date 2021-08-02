@@ -8,6 +8,6 @@ namespace DarkGalaxyProject.Data.Enums
     public enum ResourceType
     {
         MilkyCoin = 0,
-        Fuel = 1
+        Fuel = 1,
     }
 }

@@ -56,6 +56,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Player" asp-action="Messages" asp-route-playerId="@UserManager.GetUserId(User)">Messages</a>
                             </li>
+                            <li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auction" asp-action="All">Auction</a>
+                            </li>
                             <li class="nav-item">
                                 <p>@(dbContext.Resources.First(r => r.SystemId == UserManager.GetUserAsync(User).Result.CurrentSystemId && r.Type == ResourceType.MilkyCoin).Type.ToString() ?? null) - @((int?)dbContext.Resources.First(r => r.SystemId == UserManager.GetUserAsync(User).Result.CurrentSystemId && r.Type == ResourceType.MilkyCoin).Quantity ?? 0)</p>
                             </li>

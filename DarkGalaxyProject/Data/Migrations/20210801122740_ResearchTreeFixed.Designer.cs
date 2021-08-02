@@ -4,14 +4,16 @@ using DarkGalaxyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210801122740_ResearchTreeFixed")]
+    partial class ResearchTreeFixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,36 +36,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Alliances");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.AuctionDeal", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("BuyerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SellerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ShipType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BuyerId");
-
-                    b.HasIndex("SellerId");
-
-                    b.ToTable("AuctionDeals");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Others.ChatMessage", b =>
@@ -474,9 +446,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DealId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("FleetId")
                         .HasColumnType("nvarchar(450)");
 
@@ -500,8 +469,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DealId");
 
                     b.HasIndex("FleetId");
 
@@ -669,24 +636,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.AuctionDeal", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.Player", "Buyer")
-                        .WithMany("BoughtAuctionDeals")
-                        .HasForeignKey("BuyerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DarkGalaxyProject.Data.Models.Player", "Seller")
-                        .WithMany("SoldAuctionDeals")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Buyer");
-
-                    b.Navigation("Seller");
-                });
-
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Others.ChatMessage", b =>
                 {
                     b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
@@ -840,10 +789,6 @@ namespace DarkGalaxyProject.Data.Migrations
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Ship", b =>
                 {
-                    b.HasOne("DarkGalaxyProject.Data.Models.AuctionDeal", "Deal")
-                        .WithMany("ShipsForSale")
-                        .HasForeignKey("DealId");
-
                     b.HasOne("DarkGalaxyProject.Data.Models.WithinSystem.Fleet", null)
                         .WithMany("Ships")
                         .HasForeignKey("FleetId");
@@ -857,8 +802,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasOne("DarkGalaxyProject.Data.Models.System", "System")
                         .WithMany("Ships")
                         .HasForeignKey("SystemId");
-
-                    b.Navigation("Deal");
 
                     b.Navigation("Player");
 
@@ -938,22 +881,13 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("Messages");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.AuctionDeal", b =>
-                {
-                    b.Navigation("ShipsForSale");
-                });
-
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Player", b =>
                 {
-                    b.Navigation("BoughtAuctionDeals");
-
                     b.Navigation("ReceivedMessages");
 
                     b.Navigation("ResearcheTree");
 
                     b.Navigation("SentMessages");
-
-                    b.Navigation("SoldAuctionDeals");
 
                     b.Navigation("Systems");
                 });

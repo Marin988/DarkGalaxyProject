@@ -47,5 +47,9 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public string PlayerId { get; set; }
         public Player Player { get; set; }
+
+        public string DealId { get; set; }
+
+        public AuctionDeal Deal { get; set; }
     }
 }

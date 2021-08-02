@@ -28,6 +28,7 @@ namespace DarkGalaxyProject.Data
         public DbSet<ShipBuilder> ShipBuilders { get; set; }
         public DbSet<DefenceBuilder> DefenceBuilders { get; set; }
         public DbSet<Fleet> Fleets { get; set; }
+        public DbSet<AuctionDeal> AuctionDeals { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -44,6 +45,18 @@ namespace DarkGalaxyProject.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<AuctionDeal>()
+                .HasOne(ad => ad.Buyer)
+                .WithMany(p => p.BoughtAuctionDeals)
+                .HasForeignKey(ad => ad.BuyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<AuctionDeal>()
+                .HasOne(ad => ad.Seller)
+                .WithMany(p => p.SoldAuctionDeals)
+                .HasForeignKey(ad => ad.SellerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<Player>()
                 .HasOne(p => p.CurrentSystem)
                 .WithOne(s => s.CurrentPlayer)
