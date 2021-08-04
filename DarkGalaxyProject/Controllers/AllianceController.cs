@@ -3,6 +3,7 @@ using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Models.Alliance;
+using DarkGalaxyProject.Services.AllianceServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,53 +16,34 @@ namespace DarkGalaxyProject.Controllers
 {
     public class AllianceController : Controller
     {
-        private readonly ApplicationDbContext data;
+        private readonly IAllianceService alliances;
         private readonly UserManager<Player> userManager;
-        private readonly SignInManager<Player> signInManager;
 
-        public AllianceController(ApplicationDbContext data, UserManager<Player> userManager, SignInManager<Player> signInManager)
+        public AllianceController(UserManager<Player> userManager, IAllianceService alliances)
         {
-            this.data = data;
             this.userManager = userManager;
-            this.signInManager = signInManager;
+            this.alliances = alliances;
         }
 
         [Authorize]
         public IActionResult All()
         {
-            var alliances = data.Alliances
-                .Select(a => new AllianceViewModel
-                {
-                    Id = a.Id,
-                    Leader = a.Leader.UserName,
-                    MembersCount = a.Members.Count(),
-                    Name = a.Name,
-                })
-                .ToList();
+            var AllAlliances = alliances.All();
 
-            return View(alliances);
+            return View(AllAlliances);
         }
 
         [Authorize]
         public IActionResult Home()
         {
-            var allianceId = data.Players.First(u => u.Id == userManager.GetUserId(User)).AllianceId;
+            var playerId = userManager.GetUserId(User);
 
-            if (allianceId == null)
+            if (!alliances.IsInAlliance(playerId))
             {
                 return Redirect("NoAllianceHome");
             }
 
-            var alliance = data.Alliances
-                .Where(a => a.Id == allianceId)
-                .Select(a => new AllianceViewModel
-                {
-                    Id = a.Id,
-                    Name = a.Name,
-                    Leader = a.Leader == null ? null : a.Leader.UserName,
-                    MembersCount = a.Members.Count()
-                })
-                .First();
+            var alliance = alliances.Home(playerId);
 
             return View(alliance);
         }
@@ -69,31 +51,15 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult Members(string allianceId)
         {
-            var members = data.Players
-                .Where(p => p.AllianceId == allianceId)
-                .Select(p => new MemberViewModel
-                {
-                    Id = p.Id,
-                    Systems = p.Systems.Count(),
-                    UserName = p.UserName
-                })
-                .ToList();
+            var members = alliances.Members(allianceId);
 
-            var candidates = data.Players
-                .Where(p => p.AllianceCandidateId == allianceId)
-                .Select(p => new MemberViewModel
-                {
-                    Id = p.Id,
-                    Systems = p.Systems.Count(),
-                    UserName = p.UserName
-                })
-                .ToList();
+            var candidates = alliances.Candidates(allianceId);
 
             var membersAndCandidates = new MembersCandidatesViewModel
             {
-                Candidates = candidates,
                 Members = members,
-                allianceId = allianceId
+                Candidates = candidates,
+                AllianceId = allianceId
             };
 
             return View(membersAndCandidates);
@@ -102,24 +68,14 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult Chat(string allianceId)
         {
-            var messages = data.ChatMessages
-                .Where(c => c.AllianceId == allianceId)
-                .Select(c => new ChatViewMessageModel
-                {
-                    AllianceId = c.AllianceId,
-                    Content = c.Content,
-                    Sender = c.Player.UserName,
-                    SenderId = c.PlayerId,
-                    TimeOfSending = c.TimeOfSending
-                })
-                .ToList();
+            var messages = alliances.ChatMessages(allianceId);
 
             var chat = new ChatViewModel
             {
                 Messages = messages,
                 AllianceId = allianceId,
-                SenderId = userManager.GetUserId(User),
-                Sender = userManager.GetUserName(User)
+                PlayerId = userManager.GetUserId(User),
+                Player = userManager.GetUserName(User)
             };
 
             return View(chat);
@@ -141,14 +97,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult Send(ChatViewModel message)
         {
-            data.ChatMessages.Add(new ChatMessage
-            {
-                AllianceId = message.AllianceId,
-                Content = message.Content,
-                PlayerId = message.SenderId
-            });
-
-            data.SaveChanges();
+            alliances.Send(message.AllianceId, message.Content, message.PlayerId); 
 
             return Redirect($"Chat?allianceId={message.AllianceId}");
         }
@@ -157,22 +106,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult Create(CreateViewModel allianceModel)
         {
-            var player = data.Players.First(p => p.Id == userManager.GetUserId(User));
-
-            var alliance = new Alliance(allianceModel.Name);
-
-            alliance.Members.ToList().Add(player);
-
-            data.Alliances.Add(alliance);
-
-            data.SaveChanges();
-
-            player.AllianceId = alliance.Id;
-
-            alliance.LeaderId = userManager.GetUserId(User);
-            player.AllianceLeaderId = alliance.Id;
-
-            data.SaveChanges();
+            alliances.Create(userManager.GetUserId(User), allianceModel.Name);
 
             return Redirect("Home");
         }
@@ -181,11 +115,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult Leave(string playerId)
         {
-            var player = data.Players.First(p => p.Id == playerId);
-
-            player.AllianceId = null;
-
-            data.SaveChanges();
+            alliances.Leave(playerId);
 
             return Redirect("All");
         }
@@ -194,13 +124,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult AcceptCandidate(string allianceId, string candidateId)
         {
-            var candidate = data.Players.First(p => p.Id == candidateId);
-
-            candidate.AllianceCandidateId = null;
-
-            candidate.AllianceId = allianceId;
-
-            data.SaveChanges();
+            alliances.AcceptCandidate(allianceId, candidateId);
 
             return Redirect($"Members?allianceId={allianceId}");
         }
@@ -210,11 +134,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult Apply(string allianceId)
         {
-            var candidate = data.Players.First(p => p.Id == userManager.GetUserId(User));
-
-            candidate.AllianceCandidateId = allianceId;
-
-            data.SaveChanges();
+            alliances.Apply(allianceId, userManager.GetUserId(User));
 
             return Redirect("All");
         }
@@ -223,11 +143,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult PromoteToLeader(string allianceId, string playerId) //SqlException: Cannot insert duplicate key row in object ...
         {
-            var player = data.Players.First(p => p.Id == userManager.GetUserId(User));
-
-            player.AllianceLeaderId = allianceId;
-
-            data.SaveChanges();
+            alliances.PromoteToLeader(allianceId, playerId);
 
             return Redirect($"Members?allianceId={allianceId}");
         }

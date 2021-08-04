@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkGalaxyProject.Services.AllianceServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,10 +8,9 @@ namespace DarkGalaxyProject.Models.Alliance
 {
     public class MembersCandidatesViewModel
     {
-        public List<MemberViewModel> Members { get; set; }
+        public IEnumerable<MemberServiceModel> Members { get; set; }
+        public IEnumerable<MemberServiceModel> Candidates { get; set; }
 
-        public List<MemberViewModel> Candidates { get; set; }
-
-        public string allianceId { get; set; }
+        public string AllianceId { get; set; }
     }
 }

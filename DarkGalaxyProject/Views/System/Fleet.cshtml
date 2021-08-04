@@ -29,7 +29,7 @@
     }
 </ul>
 
-@if (Model.PlayerId == UserManager.GetUserId(User))
+@if (Model.HostSystemInfo.PlayerId == UserManager.GetUserId(User))
 {
 <form>
     <div class="form-group">
@@ -53,10 +53,10 @@
         <span asp-validation-for="DestinationSystemPosition" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <input id="systemId" hidden value=@Model.HostSystemId class="form-control" />
+        <input id="systemId" hidden value=@Model.HostSystemInfo.HostSystemId class="form-control" />
     </div>
     <div class="form-group">
-        <input id="hostSystemPosition" hidden value=@Model.HostSystemPosition class="form-control" />
+        <input id="hostSystemPosition" hidden value=@Model.HostSystemInfo.HostSystemPosition class="form-control" />
     </div>
     <div class="form-group">
         <select id="missionType" class="form-control" asp-items="Html.GetEnumSelectList<MissionType>()"></select>

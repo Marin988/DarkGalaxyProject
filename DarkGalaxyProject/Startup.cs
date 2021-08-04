@@ -4,6 +4,11 @@ using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Infrastructure.Extensions;
 using DarkGalaxyProject.Seeders;
+using DarkGalaxyProject.Services.AllianceServices;
+using DarkGalaxyProject.Services.Auction;
+using DarkGalaxyProject.Services.PlanetServices;
+using DarkGalaxyProject.Services.PlayerServices;
+using DarkGalaxyProject.Services.SystemServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -45,6 +50,11 @@ namespace DarkGalaxyProject
 
 
             services.AddTransient<IDatabaseSeeder, SystemsSeeder>();
+            services.AddTransient<IAuctionService, AuctionService>();
+            services.AddTransient<IAllianceService, AllianceService>();
+            services.AddTransient<IPlanetService, PlanetService>();
+            services.AddTransient<IPlayerService, PlayerService>();
+            services.AddTransient<ISystemService, SystemService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

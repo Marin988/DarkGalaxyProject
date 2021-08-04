@@ -4,6 +4,7 @@ using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Models;
 using DarkGalaxyProject.Models.Player;
+using DarkGalaxyProject.Services.PlayerServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,15 @@ namespace DarkGalaxyProject.Controllers
 {
     public class PlayerController : Controller
     {
-        private readonly ApplicationDbContext data;
+        private readonly IPlayerService players;
         private readonly UserManager<Player> userManager;
         private readonly SignInManager<Player> signInManager;
 
-        public PlayerController(ApplicationDbContext data, UserManager<Player> userManager, SignInManager<Player> signInManager)
+        public PlayerController(UserManager<Player> userManager, SignInManager<Player> signInManager, IPlayerService players)
         {
-            this.data = data;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.players = players;
         }
 
         public IActionResult Register()
@@ -40,17 +41,7 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult Message(string messageId)
         {
-            var message = data.Messages
-                .Where(m => m.Id == messageId)
-                .Select(m => new MessageViewModel
-                {
-                    Content = m.Content,
-                    SenderId = m.SenderId,
-                    SenderName = m.Sender.UserName,
-                    Title = m.Title,
-                    Time = m.TimeOfSending
-                })
-                .First();
+            var message = players.Message(messageId);
 
             return View(message);
         }
@@ -64,19 +55,7 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult Messages(string playerId)
         {
-            var messages = data.Messages
-                .Where(m => m.ReceiverId == playerId || m.SenderId == playerId)
-                .Select(m => new MessageListingViewModel
-                {
-                    Id = m.Id,
-                    Title = m.Title,
-                    ReceiverId = m.ReceiverId == playerId ? m.SenderId : m.ReceiverId,
-                    ReceiverName = m.ReceiverId == playerId ? m.Sender.UserName : m.Receiver.UserName,
-                    Time = m.TimeOfSending
-                })
-                .ToList()
-                .OrderByDescending(m => m.Time)
-                .ToList();
+            var messages = players.PlayerMessages(playerId);
 
             return View(messages);
         }
@@ -84,14 +63,7 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult Profile(string playerId)
         {
-           var player = data.Players.Where(p => p.Id == playerId)
-                .Select(p => new ProfileViewModel
-                {
-                    UserName = p.NormalizedUserName,
-                    AllianceName = p.Alliance.Name,
-                    Systems = p.Systems.Count()
-                })
-                .FirstOrDefault();
+            var player = players.Profile(playerId);
 
             return View(player);
         }
@@ -132,12 +104,10 @@ namespace DarkGalaxyProject.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(user);//wtf
+                return View(user);
             }
 
-            var systemForUser = data.Systems.First(s => s.PlayerId == null);
-
-            var researches = new List<ResearchTree>();
+            var systemForUser = players.StartingSystem();
 
             var registeredUser = new Player()
             {
@@ -146,11 +116,6 @@ namespace DarkGalaxyProject.Controllers
                 CurrentSystemId = systemForUser.Id,
                 Systems = new List<Data.Models.System>() { systemForUser },
             };
-
-            foreach (var researchType in Enum.GetValues(typeof(ResearchType)))
-            {
-                researches.Add(new ResearchTree(registeredUser.Id, (ResearchType)researchType));
-            }
 
             var result = await userManager.CreateAsync(registeredUser, user.Password);
 
@@ -166,8 +131,7 @@ namespace DarkGalaxyProject.Controllers
                 return View(user);
             }
 
-            data.ResearchTrees.AddRange(researches);
-            data.SaveChanges();
+            players.PlayerResearches(registeredUser.Id);
 
             return RedirectToAction("Index", "Home");
         }
@@ -176,16 +140,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult SendMessage(MessageFormModel message)
         {
-            data.Messages.Add(new Message
-            {
-                Content = message.Content,
-                ReceiverId = data.Players.First(p => p.UserName == message.ReceiverName).Id,
-                SenderId = message.SenderId,
-                Title = message.Title,
-                TimeOfSending = DateTime.Now
-            });
-
-            data.SaveChanges();
+            players.SendMessage(message.Content, message.ReceiverName, message.SenderId, message.Title);
 
             return Redirect($"Messages?playerId={userManager.GetUserId(User)}");
         }

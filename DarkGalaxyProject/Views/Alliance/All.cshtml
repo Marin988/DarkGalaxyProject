@@ -1,6 +1,6 @@
-﻿@using DarkGalaxyProject.Models.Alliance
+﻿@using DarkGalaxyProject.Services.AllianceServices
 
-@model List<DarkGalaxyProject.Models.Alliance.AllianceViewModel>
+@model List<AllianceServiceModel>
 
 @{
     ViewData["Title"] = "All Alliances";
@@ -8,7 +8,7 @@
 
 @foreach (var alliance in Model)
 {
-    <h1>@alliance.Name</h1>
+    <h5>@alliance.Name</h5>
 
     <hr />
     <div class="row">

@@ -11,35 +11,25 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
 using DarkGalaxyProject.Data.Enums;
+using DarkGalaxyProject.Services.Auction;
 
 namespace DarkGalaxyProject.Controllers
 {
     public class AuctionController : Controller
     {
-        private readonly ApplicationDbContext data;
+        private readonly IAuctionService auctionDeals;
         private readonly UserManager<Player> userManager;
 
-        public AuctionController(ApplicationDbContext data, UserManager<Player> userManager)
+        public AuctionController(UserManager<Player> userManager, IAuctionService auctionDeals)
         {
-            this.data = data;
             this.userManager = userManager;
+            this.auctionDeals = auctionDeals;
         }
 
         [Authorize]
         public IActionResult All()
         {
-            var allDeals = data.AuctionDeals
-                .Where(ad => ad.BuyerId == null)
-                .Select(ad => new DealListView
-                {
-                    Id = ad.Id,
-                    SellerName = ad.Seller.UserName,
-                    Price = ad.Price,
-                    Quantity = ad.Quantity,
-                    SellerId = ad.SellerId,
-                    ShipType = ad.ShipsForSale.Select(s => s.Type.ToString()).FirstOrDefault()
-                })
-                .ToList();
+            var allDeals = auctionDeals.All();
 
             return View(allDeals);
         }
@@ -59,31 +49,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult Create(CreateDealFormModel dealModel)
         {
-            var shipsForSale = data.Ships
-                .Where(s => s.PlayerId == userManager.GetUserId(User) && s.Type == (ShipType)Enum.Parse(typeof(ShipType), dealModel.ShipType) && !s.OnMission)
-                .Take(dealModel.ShipCount)
-                .ToList();
-
-
-            var deal = new AuctionDeal
-            {
-                Price = dealModel.Price,
-                SellerId = dealModel.SellerId,
-                ShipsForSale = shipsForSale,
-                Quantity = dealModel.ShipCount,
-                ShipType = dealModel.ShipType
-            };
-
-            data.AuctionDeals.Add(deal);
-
-            data.SaveChanges();
-
-            foreach (var ship in shipsForSale)//would that be done by EF Core?
-            {
-                ship.DealId = deal.Id;
-            }
-
-            data.SaveChanges();
+            auctionDeals.CreateDeal(dealModel.Price, userManager.GetUserId(User), dealModel.ShipCount, dealModel.ShipType);
 
             return Redirect("All");
         }
@@ -92,19 +58,9 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult Delete(string dealId)
         {
-            var deal = data.AuctionDeals
-                .First(ad => ad.Id == dealId);
+            auctionDeals.DeleteDeal(dealId);
 
-            var shipsForSale = data.Ships.Where(s => s.DealId == dealId).ToList();
-
-            foreach (var ship in shipsForSale)//would that be taken care of by EF Core?
-            {
-                ship.DealId = null;
-            }
-
-            data.AuctionDeals.Remove(deal);
-
-            data.SaveChanges();
+            //if false return error
 
             return Redirect("All");
         }
@@ -115,40 +71,9 @@ namespace DarkGalaxyProject.Controllers
         {
             var playerId = userManager.GetUserId(User);
 
-            var deal = data.AuctionDeals
-                .Include(a => a.ShipsForSale)
-                .First(ad => ad.Id == dealId);
+            auctionDeals.Buy(dealId, playerId);
 
-            var buyerCurrentSystemId = data.Players
-                .First(p => p.Id == playerId)
-                .CurrentSystemId;
-
-            var buyerMilkyCoin = data.Resources
-                .First(r => r.Type == ResourceType.MilkyCoin && r.SystemId == buyerCurrentSystemId);
-
-            var sellerCurrentSystemId = data.Players.First(p => p.Id == deal.SellerId).CurrentSystemId;
-
-            var sellerMilkyCoin = data.Resources
-                .First(r => r.Type == ResourceType.MilkyCoin && r.SystemId == sellerCurrentSystemId);
-
-            deal.BuyerId = playerId;
-
-            buyerMilkyCoin.Quantity -= deal.Price;
-            sellerMilkyCoin.Quantity += deal.Price;
-
-            if(buyerMilkyCoin.Quantity < deal.Price)
-            {
-                //TODO: error not enough money
-            }
-
-            foreach (var ship in deal.ShipsForSale)
-            {
-                ship.DealId = null;
-                ship.SystemId = buyerCurrentSystemId;
-                ship.PlayerId = playerId;
-            }
-
-            data.SaveChanges();
+            //if false return error
 
             return Redirect("All");
         }

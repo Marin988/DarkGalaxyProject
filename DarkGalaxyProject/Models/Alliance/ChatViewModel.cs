@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkGalaxyProject.Services.AllianceServices;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,11 +8,11 @@ namespace DarkGalaxyProject.Models.Alliance
 {
     public class ChatViewModel
     {
-        public IEnumerable<ChatViewMessageModel> Messages { get; set; }
+        public IEnumerable<ChatMessageServiceModel> Messages { get; set; }
 
-        public string Sender { get; set; }
+        public string Player { get; set; }
 
-        public string SenderId { get; set; }
+        public string PlayerId { get; set; }
 
         public string AllianceId { get; set; }
 

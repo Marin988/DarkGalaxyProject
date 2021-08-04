@@ -1,7 +1,7 @@
-﻿@using DarkGalaxyProject.Models.System
+﻿@using DarkGalaxyProject.Services.SystemServices
 @using DarkGalaxyProject.Data.Enums
 @using System.Text
-@model List<BuildDefenceFormViewModel>
+@model List<DefenceBuilderServiceModel>
 
 @{
     ViewData["Title"] = "Defence building";
@@ -85,7 +85,7 @@
                         var datastring = "defenceType=" + defenceType + "&systemId=" + systemId + "&count=" + count;
                         $.ajax({
                             type: "post",
-                            url: "StartBuildingDefence", 
+                            url: "StartBuildingDefence",
                             data: datastring
                         });
                         setTimeout(function () { location.reload(); }, 200);

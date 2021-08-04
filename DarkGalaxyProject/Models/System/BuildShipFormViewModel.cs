@@ -7,8 +7,6 @@ namespace DarkGalaxyProject.Models.System
 {
     public class BuildShipFormViewModel
     {
-
-
         public string systemId { get; set; }
 
         public string ShipType { get; set; }

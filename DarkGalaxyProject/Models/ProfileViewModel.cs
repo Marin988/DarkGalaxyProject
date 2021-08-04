@@ -12,7 +12,5 @@ namespace DarkGalaxyProject.Models
         public string AllianceName { get; set; }
 
         public int Systems { get; set; }
-
-
     }
 }
