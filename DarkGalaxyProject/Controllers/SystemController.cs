@@ -59,11 +59,17 @@ namespace DarkGalaxyProject.Controllers
         }
 
         [Authorize]
-        public IActionResult AllSystems()
+        public IActionResult AllSystems(int page)
         {
-            var allSystems = systems.AllSystems();
+            var allPageSystems = systems.AllSystems(page);
 
-            return View(allSystems);
+            var pageSystems = new SystemPageViewModel
+            {
+                Systems = allPageSystems,
+                Page = page
+            };
+
+            return View(pageSystems);
         }
 
         [Authorize]

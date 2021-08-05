@@ -19,10 +19,13 @@ namespace DarkGalaxyProject.Services.SystemServices
             this.data = data;
         }
 
-        public IEnumerable<SystemServiceModel> AllSystems()
+        public IEnumerable<SystemServiceModel> AllSystems(int page)
         {
             var systems = this.data
                 .Systems
+                .OrderByDescending(s => s.Position)
+                .Skip((page - 1) * 5)
+                .Take(5)
                 .Select(s => new SystemServiceModel
                 {
                     Id = s.Id,

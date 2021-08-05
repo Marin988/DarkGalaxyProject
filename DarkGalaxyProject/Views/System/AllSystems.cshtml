@@ -1,5 +1,5 @@
-﻿@using DarkGalaxyProject.Services.SystemServices
-@model List<SystemServiceModel>
+﻿@using DarkGalaxyProject.Models.System
+@model SystemPageViewModel
 
 @{
     ViewData["Title"] = "Systems of the Dark Galaxy";
@@ -8,28 +8,36 @@
 <h1>
     All systems
 </h1>
+@*<div class="col-md-4">*@
+    <ul>
+        @foreach (var system in Model.Systems)
+        {
+            <li>
+                <span>Position: @system.Position</span><br>
+                <span>Type: @system.Type</span><br>
+                @foreach (var ship in system.Ships)
+                {
+                    <span>HP: @ship.HP---------</span>
+                    <span>Damage: @ship.Damage---------</span>
+                    <span>Speed: @ship.Speed---------</span>
+                    <span>Storage: @ship.Storage---------</span>
+                    <span>Type: @ship.Type</span><br>
+                }
+                <form action="Colonize" method="post">
+                    <input type="hidden" name="systemId" value=@system.Id>
+                    <div class="form-group">
+                        <input type="submit" value="Colonize" class="btn btn-primary" />
+                    </div>
+                </form>
+                <a asp-controller="System" asp-action="ViewSystem" class="btn btn-block btn-primary" asp-route-ID="@system.Id">ViewSystem</a>
+            </li>
+        }
+    </ul>
+<div class="row">
+    <div class="col-md-6">
+        <a asp-controller="System" asp-action="AllSystems" asp-route-page="@(Model.Page - 1)">Previous page</a>
+        <a asp-controller="System" asp-action="AllSystems" asp-route-page="@(Model.Page + 1)">Next page</a>
+    </div>
+</div>
 
-<ul>
-    @foreach (var system in Model)
-    {
-        <li>
-            <span>Position: @system.Position</span><br>
-            <span>Type: @system.Type</span><br>
-            @foreach (var ship in system.Ships)
-            {
-                <span>HP: @ship.HP---------</span>
-                <span>Damage: @ship.Damage---------</span>
-                <span>Speed: @ship.Speed---------</span>
-                <span>Storage: @ship.Storage---------</span>
-                <span>Type: @ship.Type</span><br>
-            }
-            <form action="Colonize" method="post">
-                <input type="hidden" name="systemId" value=@system.Id>
-                <div class="form-group">
-                    <input type="submit" value="Colonize" class="btn btn-primary" />
-                </div>
-            </form>
-            <a asp-controller="System" asp-action="ViewSystem" class="btn btn-block btn-primary" asp-route-ID="@system.Id">ViewSystem</a>
-        </li>
-    }
-</ul>
+@*</div>*@

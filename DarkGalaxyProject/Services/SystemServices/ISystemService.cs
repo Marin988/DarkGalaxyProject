@@ -15,7 +15,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public HostSystemInfoServiceModel HostSystemInfo(string systemId);
 
-        public IEnumerable<SystemServiceModel> AllSystems();
+        public IEnumerable<SystemServiceModel> AllSystems(int page);
 
         public IEnumerable<SystemServiceModel> PlayerSystems(string playerId);
 
