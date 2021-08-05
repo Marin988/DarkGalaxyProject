@@ -24,5 +24,7 @@ namespace DarkGalaxyProject.Services.SystemServices
         public bool OnMission { get; set; }
 
         public string DealId { get; set; }
+
+        public string FleetId { get; set; }
     }
 }

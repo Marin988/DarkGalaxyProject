@@ -29,7 +29,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public bool SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId);
 
-        public bool FleetReturn(string systemId, string playerId);
+        public bool FleetReturn(string systemId);
 
         public bool FleetBoarding(string systemId);
 

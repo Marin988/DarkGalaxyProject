@@ -121,7 +121,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult FleetReturn(string systemId)
         {
-            systems.FleetReturn(systemId, userManager.GetUserId(User));
+            systems.FleetReturn(systemId);
 
             return Redirect($"Fleet?systemId={systemId}");
         }

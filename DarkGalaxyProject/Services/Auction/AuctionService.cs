@@ -1,6 +1,7 @@
 ﻿using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
+using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -73,7 +74,13 @@ namespace DarkGalaxyProject.Services.Auction
                 ship.PlayerId = buyerId;
             }
 
-            data.SaveChanges();
+            var sellerMessageTitle = "Sold item";
+            var sellerMessageContent = $"{deal.Quantity} of {deal.ShipType.ToString()} were sold for {deal.Price}.";
+            var buyerMessageTitle = "Bought item";
+            var buyerMessageContent = $"You bought {deal.Quantity} of {deal.ShipType.ToString()} for {deal.Price}.";
+
+            ReportMessage(deal.SellerId, sellerMessageTitle, sellerMessageContent);
+            ReportMessage(deal.BuyerId, buyerMessageTitle, buyerMessageContent);
 
             return true;
         }
@@ -137,6 +144,21 @@ namespace DarkGalaxyProject.Services.Auction
                 .ToList();
 
             return shipsForSale;
+        }
+
+        private void ReportMessage(string playerId, string messageTitle, string messageContent)
+        {
+            var reportMessage = new Message()
+            {
+                ReceiverId = playerId,
+                TimeOfSending = DateTime.Now,
+                SenderId = "1",//baaaaaaaaaaaad------Add a "System" user? Who would send all these messages
+                Title = messageTitle,
+                Content = messageContent
+            };
+
+            data.Messages.Add(reportMessage);
+            data.SaveChanges();
         }
     }
 }
