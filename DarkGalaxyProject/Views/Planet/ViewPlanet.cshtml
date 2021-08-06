@@ -7,6 +7,11 @@
     ViewData["Title"] = "Planet View";
 }
 
+@if (TempData["Message"] != null)
+{
+    <p> @TempData["Message"] </p>
+}
+
 <h1>Planet @Model.Position - @Model.Type</h1>
 
 <hr />

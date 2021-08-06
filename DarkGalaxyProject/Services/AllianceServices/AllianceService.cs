@@ -32,9 +32,15 @@ namespace DarkGalaxyProject.Services.AllianceServices
             return alliances;
         }
 
-        public bool AcceptCandidate(string allianceId, string candidateId)
+        public string AcceptCandidate(string allianceId, string candidateId, string playerId)
         {
             var candidate = data.Players.First(p => p.Id == candidateId);
+            var alliance = data.Alliances.First(a => a.Id == allianceId);
+
+            if(playerId != alliance.LeaderId)
+            {
+                return "Only the leader can accept members!";
+            }
 
             candidate.AllianceCandidateId = null;
 
@@ -42,7 +48,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
             data.SaveChanges();
 
-            return true;
+            return null;
         }
 
         public bool Apply(string allianceId, string playerId)
@@ -131,6 +137,12 @@ namespace DarkGalaxyProject.Services.AllianceServices
         public bool Leave(string playerId)
         {
             var player = data.Players.First(p => p.Id == playerId);
+            var alliance = data.Alliances.First(a => a.Id == player.AllianceId);
+
+            if(alliance.LeaderId == playerId)
+            {
+                data.Alliances.Remove(alliance);
+            }
 
             player.AllianceId = null;
 

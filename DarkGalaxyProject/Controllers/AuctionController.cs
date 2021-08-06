@@ -49,7 +49,13 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult Create(CreateDealFormModel dealModel)
         {
-            auctionDeals.CreateDeal(dealModel.Price, userManager.GetUserId(User), dealModel.ShipCount, dealModel.ShipType);
+            var message = auctionDeals.CreateDeal(dealModel.Price, userManager.GetUserId(User), dealModel.ShipCount, dealModel.ShipType);
+
+            if(message != null)
+            {
+                TempData["Message"] = message;
+                return Redirect("Create");
+            }
 
             return Redirect("All");
         }

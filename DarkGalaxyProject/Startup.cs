@@ -49,6 +49,8 @@ namespace DarkGalaxyProject
 
             services.AddHostedService<ResourceGrowing>();
 
+            services.AddMemoryCache();
+
 
             services.AddTransient<IDatabaseSeeder, SystemsSeeder>();
             services.AddTransient<IAuctionService, AuctionService>();

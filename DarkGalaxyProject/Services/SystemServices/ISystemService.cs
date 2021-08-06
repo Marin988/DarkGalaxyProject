@@ -27,15 +27,15 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public bool Colonize(string systemId, string playerId);
 
-        public bool SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId);
+        public string SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId);
 
         public bool FleetReturn(string systemId);
 
         public bool FleetBoarding(string systemId);
 
-        public bool StartBuildingShip(string systemId, string shipType, int count);
+        public string StartBuildingShip(string systemId, string shipType, int count);
 
-        public bool StartBuildingDefence(string systemId, string defenceType, int count);
+        public string StartBuildingDefence(string systemId, string defenceType, int count);
 
         public bool BuildShip(string systemId, string shipType, string playerId);
 

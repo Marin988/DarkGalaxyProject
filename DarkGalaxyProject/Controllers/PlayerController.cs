@@ -80,7 +80,9 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult StudyResearch(string researchId, string systemId, string playerId)
         {
-            players.StudyResearch(researchId, systemId);
+            var message = players.StudyResearch(researchId, systemId);
+
+            TempData["Message"] = message;
 
             return Redirect($"Researches?playerId={playerId}");
         }
@@ -157,7 +159,9 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult SendMessage(MessageFormModel message)
         {
-            players.SendMessage(message.Content, message.ReceiverName, message.SenderId, message.Title);
+            var Errormessage = players.SendMessage(message.Content, message.ReceiverName, message.SenderId, message.Title);
+
+            TempData["Message"] = Errormessage;
 
             return Redirect($"Messages?playerId={userManager.GetUserId(User)}");
         }

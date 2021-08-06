@@ -493,32 +493,56 @@ namespace DarkGalaxyProject.Services.SystemServices
             return systems;
         }
 
-        public bool SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId)
+        public string SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId)
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
             var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId).First(f => f.ArrivalTime == null);
             var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
 
-            //add error if destinationSystemPosition == the current ssytemPosition
+            List<Ship> ships = GetShips(battleShipCount, colonizerCount, transportShipCount, system);//maybe add validations in here
 
-            List<Ship> ships = GetShips(battleShipCount, colonizerCount, transportShipCount, system);
+            var destinationSystem = data.Systems.FirstOrDefault(s => s.Position == destinationSystemPosition);
+
+            if (destinationSystem == null)
+            {
+                return $"A system with position {destinationSystemPosition} doesn't exist!";
+            }
 
             if (ships.Count == 0)
             {
-                //add error
-                return false;
+                return "You cannot send a fleet of 0 ships";
+            }
+
+            if (destinationSystemPosition == system.Position)
+            {
+                return "You cannot send ships to the same system";
             }
 
             if (missionTypeEnum == MissionType.Colonize)//method  ColonizeErrorChecker
             {
-                ColoniseErrorChecker(destinationSystemPosition, system, ships);
+                var error = ColoniseErrorChecker(destinationSystemPosition, system, ships);
+
+                if (error != null)
+                {
+                    return error;
+                }
             }
 
-            //if deploy check if the system you are deploying to has a playerid - if not - add error
+            if(missionTypeEnum == MissionType.Deploy && destinationSystem.PlayerId == null)
+            {
+                return "You cannot deploy ships to system not belonging to a player.";
+            }
 
             if (missionTypeEnum == MissionType.Transport && cargo > 0)
             {
-                system.Resources.First(r => r.Type == ResourceType.MilkyCoin).Quantity -= cargo;
+                var systemMilkyCoin = system.Resources.First(r => r.Type == ResourceType.MilkyCoin).Quantity;
+
+                if(cargo > systemMilkyCoin)
+                {
+                    cargo = systemMilkyCoin;
+                }
+
+                systemMilkyCoin -= cargo;
             }
 
             PrepareShipsForMission(cargo, fleet, missionTypeEnum, ships);
@@ -533,7 +557,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             data.SaveChanges();
 
-            return true;
+            return null;
         }
 
         private static List<Ship> GetShips(int battleShipCount, int colonizerCount, int transportShipCount, Data.Models.System system)
@@ -548,7 +572,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         private void PrepareShipsForMission(int cargo, Fleet fleet, MissionType missionTypeEnum, List<Ship> ships)
         {
-            foreach (var ship in ships)//could be in its own method
+            foreach (var ship in ships)
             {
                 ship.OnMission = true;
                 ship.FleetId = fleet.Id;
@@ -567,23 +591,22 @@ namespace DarkGalaxyProject.Services.SystemServices
             }//issue note (above next to if)
         }
 
-        private void ColoniseErrorChecker(int destinationSystemPosition, Data.Models.System system, List<Ship> ships)
+        private string ColoniseErrorChecker(int destinationSystemPosition, Data.Models.System system, List<Ship> ships)
         {
             if (!system.Ships.Any(s => s.Type == ShipType.Colonizer && s.FleetId == null))
             {
-                //TODO: add error to error list
-                Console.WriteLine("return error view...");
+                return $"You don't have any {ShipType.Colonizer.ToString()}s";
             }
             if (data.Systems.First(s => s.Position == destinationSystemPosition).PlayerId != null)
             {
-                //TODO: add error to error list
+                return $"You cannot colonise a system, belonging to a player!";
             }
-            //if destinationSystemPosition doesn't exist - add another error
             if (!ships.Any(s => s.Type == ShipType.Colonizer))
             {
                 ships.Add(system.Ships.First(s => s.Type == ShipType.Colonizer && s.FleetId == null));//or return error
             }
-            //TODO: if error list.Count > 0 return error view
+
+            return null;
         }
 
         public IEnumerable<ShipBuilderServiceModel> ShipBuilders(string systemId)
@@ -625,13 +648,19 @@ namespace DarkGalaxyProject.Services.SystemServices
             return ships;
         }
 
-        public bool StartBuildingDefence(string systemId, string defenceType, int count)
+        public string StartBuildingDefence(string systemId, string defenceType, int count)
         {
             var system = data.Systems.Include(s => s.DefenceBuildingQueue).First(s => s.Id == systemId);
 
             var defencetype = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceType);
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+
+            if(systemMilkyCoin.Quantity < (int)defencetype * 100 * count)
+            {
+                return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
+            }
+
             systemMilkyCoin.Quantity -= (int)defencetype * 100 * count;
 
             var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defencetype);
@@ -642,10 +671,10 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             data.SaveChanges();
 
-            return true;
+            return null;
         }
 
-        public bool StartBuildingShip(string systemId, string shipType, int count)
+        public string StartBuildingShip(string systemId, string shipType, int count)
         {
             var system = data.Systems.Include(s => s.ShipBuildingQueue).First(s => s.Id == systemId);
 
@@ -673,7 +702,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             if (!research.IsLearned)
             {
-                return false;
+                return $"You have to research {researchType.ToString()} before building ship of type {shiptype.ToString()}";
             }
 
             var shipbuildingQueue = system.ShipBuildingQueue.FirstOrDefault(s => s.ShipType == shiptype);
@@ -682,11 +711,17 @@ namespace DarkGalaxyProject.Services.SystemServices
             shipbuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(shipbuildingQueue.BuildTime);
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+
+            if (systemMilkyCoin.Quantity < (int)shiptype * 500 * count)
+            {
+                return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
+            }
+
             systemMilkyCoin.Quantity -= (int)shiptype * 500 * count;
 
             data.SaveChanges();
 
-            return true;
+            return null;
         }
 
         public bool SwitchSystem(string systemId, string playerId)

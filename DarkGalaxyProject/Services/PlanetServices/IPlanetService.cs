@@ -11,7 +11,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
         public bool LevelUp(string buildingId);
 
-        public bool StartUpgrade(string buildingId, string planetId, string playerId);
+        public string StartUpgrade(string buildingId, string planetId, string playerId);
 
         public bool SetUpgradeTime(string buildingId);
 

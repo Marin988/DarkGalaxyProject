@@ -89,6 +89,16 @@ namespace DarkGalaxyProject.Services.Auction
         {
             var shipsForSale = ShipsForSale(sellerId, shipType, quantity);
 
+            if(shipsForSale.Count() != quantity)
+            {
+                return $"You only have {shipsForSale.Count()} available ships of type {shipType.ToString()}.";
+            }
+            if(quantity <= 0)
+            {
+                return $"Ship count has to be more than 0.";
+            }
+
+
             var deal = new AuctionDeal
             {
                 Price = price,
@@ -102,14 +112,14 @@ namespace DarkGalaxyProject.Services.Auction
 
             data.SaveChanges();
 
-            foreach (var ship in shipsForSale)//would that be done by EF Core?
+            foreach (var ship in shipsForSale)
             {
                 ship.DealId = deal.Id;
             }
 
             data.SaveChanges();
 
-            return deal.Id;
+            return null;
         }
 
         public bool DeleteDeal(string dealId)
@@ -139,7 +149,7 @@ namespace DarkGalaxyProject.Services.Auction
         public IEnumerable<Ship> ShipsForSale(string playerId, string shipType, int quantity)
         {
             var shipsForSale = data.Ships
-                .Where(s => s.PlayerId == playerId && s.Type == (ShipType)Enum.Parse(typeof(ShipType), shipType) && !s.OnMission)
+                .Where(s => s.PlayerId == playerId && s.Type == (ShipType)Enum.Parse(typeof(ShipType), shipType) && !s.OnMission && s.DealId == null)
                 .Take(quantity)
                 .ToList();
 

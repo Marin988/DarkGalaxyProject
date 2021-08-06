@@ -124,7 +124,9 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult AcceptCandidate(string allianceId, string candidateId)
         {
-            alliances.AcceptCandidate(allianceId, candidateId);
+            var message = alliances.AcceptCandidate(allianceId, candidateId, userManager.GetUserId(User));
+
+            TempData["Message"] = message;
 
             return Redirect($"Members?allianceId={allianceId}");
         }

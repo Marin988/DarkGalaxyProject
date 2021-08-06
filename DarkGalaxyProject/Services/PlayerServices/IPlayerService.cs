@@ -17,11 +17,11 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
         public bool PlayerResearches(string playerId);
 
-        public bool SendMessage(string content, string receiverName, string senderId, string title);
+        public string SendMessage(string content, string receiverName, string senderId, string title);
 
         public ResearchListServiceModel Researches(string playerId);
 
-        public bool StudyResearch(string researchId, string systemId);
+        public string StudyResearch(string researchId, string systemId);
 
     }
 }

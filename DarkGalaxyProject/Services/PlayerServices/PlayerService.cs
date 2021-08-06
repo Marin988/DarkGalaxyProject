@@ -112,8 +112,14 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
 
 
-        public bool SendMessage(string content, string receiverName, string senderId, string title)
+        public string SendMessage(string content, string receiverName, string senderId, string title)
         {
+            var receiverId = data.Players.FirstOrDefault(p => p.UserName == receiverName).Id;
+            if(receiverId == null)
+            {
+                return "There is no player with such name";
+            }
+
             data.Messages.Add(new Message
             {
                 Content = content,
@@ -125,7 +131,7 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
             data.SaveChanges();
 
-            return true;
+            return null;
         }
 
         public Data.Models.System StartingSystem()
@@ -134,25 +140,20 @@ namespace DarkGalaxyProject.Services.PlayerServices
             return systemForUser;
         }
 
-        public bool StudyResearch(string researchId, string systemId)
+        public string StudyResearch(string researchId, string systemId)
         {
             var research = data.ResearchTrees.FirstOrDefault(r => r.Id == researchId);
 
             var systemMilkyCoin = data.Resources.FirstOrDefault(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
 
-            if(research == null)
-            {
-                return false;
-            }
-
             if(research.IsLearned == true)
             {
-                return false;
+                return "You have already done this research!";
             }
 
             if(systemMilkyCoin.Quantity < research.Price)
             {
-                return false;
+                return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
             }
 
             systemMilkyCoin.Quantity -= research.Price;
@@ -160,7 +161,7 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
             data.SaveChanges();
 
-            return true;
+            return "";
         }
     }
 }

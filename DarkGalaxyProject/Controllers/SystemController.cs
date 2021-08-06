@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DarkGalaxyProject.BackgroundTasks;
 using DarkGalaxyProject.Services.SystemServices;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DarkGalaxyProject.Controllers
 {
@@ -22,11 +23,13 @@ namespace DarkGalaxyProject.Controllers
     {
         private readonly UserManager<Player> userManager;
         private readonly ISystemService systems;
+        private readonly IMemoryCache cache;
 
-        public SystemController(UserManager<Player> userManager, ISystemService systems)
+        public SystemController(UserManager<Player> userManager, ISystemService systems, IMemoryCache cache)
         {
             this.userManager = userManager;
             this.systems = systems;
+            this.cache = cache;
         }
 
         [Authorize]
@@ -61,11 +64,23 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult AllSystems(int page)
         {
-            var allPageSystems = systems.AllSystems(page);
+            string allSystemsCacheKey = $"AllSystems{page}";
+
+            var allSystems = cache.Get<List<SystemServiceModel>>(allSystemsCacheKey);
+
+            if(allSystems == null)
+            {
+                allSystems = systems.AllSystems(page).ToList();
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(30));
+
+                cache.Set(allSystemsCacheKey, allSystems, cacheOptions);
+            }
 
             var pageSystems = new SystemPageViewModel
             {
-                Systems = allPageSystems,
+                Systems = allSystems,
                 Page = page
             };
 
@@ -118,7 +133,9 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId)
         {
-            systems.SendFleet(battleShipCount, colonizerCount, transportShipCount, missionType, cargo, destinationSystemPosition, systemId);
+            var message = systems.SendFleet(battleShipCount, colonizerCount, transportShipCount, missionType, cargo, destinationSystemPosition, systemId);
+
+            TempData["Message"] = message;
 
             return Redirect($"Fleet?systemId={systemId}");
         }
@@ -145,7 +162,9 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult StartBuilding(string systemId, string shipType, int count)
         {
-            systems.StartBuildingShip(systemId, shipType, count);
+            var message = systems.StartBuildingShip(systemId, shipType, count);
+
+            TempData["Message"] = message;
 
             return Redirect($"Shipyard?systemId={systemId}");
         }
@@ -154,7 +173,9 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult StartBuildingDefence(string systemId, string defenceType, int count)
         {
-            systems.StartBuildingDefence(systemId, defenceType, count);
+            var message = systems.StartBuildingDefence(systemId, defenceType, count);
+
+            TempData["Message"] = message;
 
             return Redirect($"DefenceStructureBuilder?systemId={systemId}");
         }

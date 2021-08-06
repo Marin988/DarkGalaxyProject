@@ -47,7 +47,9 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult StartUpgrade(string buildingId, string planetId)
         {
-            planets.StartUpgrade(buildingId, planetId, userManager.GetUserId(User));
+            var message = planets.StartUpgrade(buildingId, planetId, userManager.GetUserId(User));
+
+            TempData["Message"] = message;
 
             return Redirect($"ViewPlanet?planetId={planetId}");
         }

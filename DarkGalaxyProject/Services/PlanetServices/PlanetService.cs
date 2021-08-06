@@ -81,7 +81,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
             return true;
         }
 
-        public bool StartUpgrade(string buildingId, string planetId, string playerId)
+        public string StartUpgrade(string buildingId, string planetId, string playerId)
         {
             var planet = data.Planets.First(p => p.Id == planetId);
 
@@ -93,18 +93,23 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             var milkyCoin = data.Resources.First(r => r.Type == ResourceType.MilkyCoin && r.SystemId == systemId);
 
+            if(milkyCoin.Quantity < factory.UpgradeCost)
+            {
+                return $"You don't have enough {milkyCoin.Type.ToString()}.";
+            }
+
             milkyCoin.Quantity -= factory.UpgradeCost;
 
             factory.UpgradeStartTime = DateTime.Now;
 
             if (system.PlayerId != playerId)
             {
-                return false;
+                return "You can only upgprade buildings built in your systems.";
             }
 
             data.SaveChanges();
 
-            return true;
+            return null;
         }
     }
 }
