@@ -1,5 +1,7 @@
-﻿@using DarkGalaxyProject.Services.PlayerServices
+﻿@using Microsoft.AspNetCore.Identity
+@using DarkGalaxyProject.Services.PlayerServices
 @model ProfileServiceModel
+@inject UserManager<Player> UserManager
 
 @{
     ViewData["Title"] = $"{Model.UserName}'s profile";
@@ -17,3 +19,5 @@
         <span>Systems: @Model.Systems</span>
     </li>
 </ul>
+
+<a class="nav-link text-dark" asp-area="" asp-controller="Player" asp-action="Researches" asp-route-PlayerId="@UserManager.GetUserId(User)">Researches</a>

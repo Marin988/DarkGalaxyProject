@@ -83,6 +83,35 @@ namespace DarkGalaxyProject.Services.PlayerServices
             return player;
         }
 
+        public ResearchListServiceModel Researches(string playerId)
+        {
+            var researches = data.ResearchTrees
+                .Where(r => r.PlayerId == playerId)
+                .Select(r => new ResearchServiceModel
+                {
+                    Id = r.Id,
+                    Description = r.Description,
+                    IsLearned = r.IsLearned,
+                    PlayerId = r.PlayerId,
+                    Price = r.Price,
+                    ResearchType = r.ResearchType.ToString()
+                })
+                .ToList();
+
+            var currentSystemId = data.Players.First(p => p.Id == playerId).CurrentSystemId;
+
+            var researchListModel = new ResearchListServiceModel
+            {
+                Researches = researches,
+                CurrentSystemId = currentSystemId,
+                PlayerId = playerId
+            };
+
+            return researchListModel;
+        }
+
+
+
         public bool SendMessage(string content, string receiverName, string senderId, string title)
         {
             data.Messages.Add(new Message
@@ -103,6 +132,35 @@ namespace DarkGalaxyProject.Services.PlayerServices
         {
             var systemForUser = data.Systems.First(s => s.PlayerId == null);
             return systemForUser;
+        }
+
+        public bool StudyResearch(string researchId, string systemId)
+        {
+            var research = data.ResearchTrees.FirstOrDefault(r => r.Id == researchId);
+
+            var systemMilkyCoin = data.Resources.FirstOrDefault(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+
+            if(research == null)
+            {
+                return false;
+            }
+
+            if(research.IsLearned == true)
+            {
+                return false;
+            }
+
+            if(systemMilkyCoin.Quantity < research.Price)
+            {
+                return false;
+            }
+
+            systemMilkyCoin.Quantity -= research.Price;
+            research.IsLearned = true;
+
+            data.SaveChanges();
+
+            return true;
         }
     }
 }

@@ -651,6 +651,31 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
 
+            var playerId = system.PlayerId;
+
+            ResearchType researchType = 0;
+            switch (shiptype)
+            {
+                case ShipType.Colonizer:
+                    researchType = ResearchType.Colonizing;
+                    break;
+                case ShipType.TransportShip:
+                    researchType = ResearchType.TransportShip;
+                    break;
+                case ShipType.BattleShip:
+                    researchType = ResearchType.BattleShip;
+                    break;
+                default:
+                    break;
+            };
+
+            var research = data.ResearchTrees.FirstOrDefault(r => r.PlayerId == playerId && r.ResearchType == researchType);
+
+            if (!research.IsLearned)
+            {
+                return false;
+            }
+
             var shipbuildingQueue = system.ShipBuildingQueue.FirstOrDefault(s => s.ShipType == shiptype);
 
             shipbuildingQueue.Count = count;

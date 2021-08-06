@@ -19,11 +19,9 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
         public bool SendMessage(string content, string receiverName, string senderId, string title);
 
+        public ResearchListServiceModel Researches(string playerId);
+
+        public bool StudyResearch(string researchId, string systemId);
+
     }
 }
-
-//Content = message.Content,
-//                ReceiverId = data.Players.First(p => p.UserName == message.ReceiverName).Id,
-//                SenderId = message.SenderId,
-//                Title = message.Title,
-//                TimeOfSending = DateTime.Now

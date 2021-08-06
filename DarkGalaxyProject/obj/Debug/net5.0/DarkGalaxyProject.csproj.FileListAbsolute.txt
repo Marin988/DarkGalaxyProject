@@ -460,3 +460,4 @@ D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Auction\All.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Auction\Create.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\DarkGalaxyProject.csproj.AssemblyReference.cache
+D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Player\Researches.cshtml.g.cs

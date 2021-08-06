@@ -2,6 +2,7 @@ using DarkGalaxyProject.BackgroundTasks;
 using DarkGalaxyProject.Contracts;
 using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Models;
+using DarkGalaxyProject.Hubs;
 using DarkGalaxyProject.Infrastructure.Extensions;
 using DarkGalaxyProject.Seeders;
 using DarkGalaxyProject.Services.AllianceServices;
@@ -55,6 +56,8 @@ namespace DarkGalaxyProject
             services.AddTransient<IPlanetService, PlanetService>();
             services.AddTransient<IPlayerService, PlayerService>();
             services.AddTransient<ISystemService, SystemService>();
+
+            //services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +84,7 @@ namespace DarkGalaxyProject
 
             app.UseEndpoints(endpoints =>
             {
+                //endpoints.MapHub<ResourceHub>("/resourcehub");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

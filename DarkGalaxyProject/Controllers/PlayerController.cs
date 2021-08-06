@@ -39,6 +39,14 @@ namespace DarkGalaxyProject.Controllers
         }
 
         [Authorize]
+        public IActionResult Researches(string playerId)
+        {
+            var researches = players.Researches(playerId);
+
+            return View(researches);
+        }
+
+        [Authorize]
         public IActionResult Message(string messageId)
         {
             var message = players.Message(messageId);
@@ -66,6 +74,15 @@ namespace DarkGalaxyProject.Controllers
             var player = players.Profile(playerId);
 
             return View(player);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult StudyResearch(string researchId, string systemId, string playerId)
+        {
+            players.StudyResearch(researchId, systemId);
+
+            return Redirect($"Researches?playerId={playerId}");
         }
 
         [HttpPost]

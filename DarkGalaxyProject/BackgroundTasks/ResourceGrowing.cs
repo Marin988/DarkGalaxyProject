@@ -47,7 +47,7 @@ namespace DarkGalaxyProject.BackgroundTasks
 
                         resource.Quantity += totalIncome;
                     }
-                    dbContext.SaveChanges();
+                    dbContext.SaveChanges(); //async here?
 
                     await Task.Delay(1000, stoppingToken);
                 }
