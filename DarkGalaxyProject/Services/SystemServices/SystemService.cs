@@ -352,7 +352,10 @@ namespace DarkGalaxyProject.Services.SystemServices
                 ShipsOnMission.RemoveAll(s => s.OnMission);
                 fleet.ArrivalTime = null;
                 ReportMessage(playerId, messageTitle, AttackerMessageContent);
-                ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent);
+                if(destinationSystemPlayerId != null)
+                {
+                    ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent);
+                }
             }
             else
             {
@@ -528,9 +531,9 @@ namespace DarkGalaxyProject.Services.SystemServices
                 }
             }
 
-            if(missionTypeEnum == MissionType.Deploy && destinationSystem.PlayerId == null)
+            if((missionTypeEnum == MissionType.Deploy || missionTypeEnum == MissionType.Transport) && destinationSystem.PlayerId == null)
             {
-                return "You cannot deploy ships to system not belonging to a player.";
+                return "You cannot deploy ships and transport resources to systems not belonging to a player.";
             }
 
             if (missionTypeEnum == MissionType.Transport && cargo > 0)
