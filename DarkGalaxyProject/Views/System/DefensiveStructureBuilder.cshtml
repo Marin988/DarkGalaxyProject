@@ -39,11 +39,6 @@
     <script>
         @defenceType = $("#defenceType").val().toString();
 
-        @*if('@Model.Any(p => p.FinishedBuildingTime.HasValue)' == 'True')
-        {
-            @shipType = '@Model.FirstOrDefault(p => p.FinishedBuildingTime.HasValue).ShipType';//(p => p.FinishedBuildingTime.HasValue).ShipType
-        }*@
-
         @if(Model.Any(p => p.FinishedBuildingTime.HasValue))
         {
             defenceType = Model.FirstOrDefault(p => p.FinishedBuildingTime.HasValue).DefenceType;
@@ -62,8 +57,6 @@
         window.onload = function () {
             if ('@Defence.FinishedBuildingTime.HasValue' != 'False') {
                  buildDefence();
-            }
-            else {
             }
         }
 
@@ -123,26 +116,10 @@
                     document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
                     if (timeleft - counter <= 0) {
                         clearInterval(_tick);
-                        build();
+                        document.getElementById('timer').remove();
                     }
                 }, 1000);
-            } else {
-                build();
-            }
-        }
-
-        function build() {
-            $(document).ready(function () {
-                var defenceType = '@defenceType';//!!!!!!
-                var systemId = $("#systemId").val();
-                var datastring = "defenceType=" + defenceType + "&systemId=" + systemId;
-                $.ajax({
-                    type: "post",
-                    url: "BuildDefence", //set count to 0, set buildingfinishtime to null
-                    data: datastring
-                });
-                setTimeout(function () { location.reload(); }, 200);
-            });
+            } 
         }
 
     </script>

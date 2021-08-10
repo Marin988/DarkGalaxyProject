@@ -45,8 +45,6 @@ namespace DarkGalaxyProject.Controllers
         {
             var ships = systems.ShipsInSystem(systemId);
 
-            bool colonise = ships.FirstOrDefault(s => s.Type == ShipType.Colonizer.ToString()) != null;//should this be in service? and do I even need this?
-
             var fleets = systems.FleetsInSystem(systemId);
 
             var hostSystemInfo = systems.HostSystemInfo(systemId);
@@ -122,38 +120,11 @@ namespace DarkGalaxyProject.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Colonize(string systemId)
+        public IActionResult SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int destinationSystemPosition, string systemId, int cargo)
         {
-            systems.Colonize(systemId, userManager.GetUserId(User));
-
-            return Redirect($"PlayerSystems?PlayerId={userManager.GetUserId(User)}");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId)
-        {
-            var message = systems.SendFleet(battleShipCount, colonizerCount, transportShipCount, missionType, cargo, destinationSystemPosition, systemId);
+            var message = systems.SendFleet(battleShipCount, colonizerCount, transportShipCount, missionType, destinationSystemPosition, systemId, cargo);
 
             TempData["Message"] = message;
-
-            return Redirect($"Fleet?systemId={systemId}");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult FleetReturn(string systemId)
-        {
-            systems.FleetReturn(systemId);
-
-            return Redirect($"Fleet?systemId={systemId}");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult FleetBoarding(string systemId)
-        {
-            systems.FleetBoarding(systemId);
 
             return Redirect($"Fleet?systemId={systemId}");
         }
@@ -176,24 +147,6 @@ namespace DarkGalaxyProject.Controllers
             var message = systems.StartBuildingDefence(systemId, defenceType, count);
 
             TempData["Message"] = message;
-
-            return Redirect($"DefenceStructureBuilder?systemId={systemId}");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult BuildShip(string systemId, string shipType)
-        {
-            systems.BuildShip(systemId, shipType, userManager.GetUserId(User));
-
-            return Redirect($"Shipyard?systemId={systemId}");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult BuildDefence(string systemId, string defenceType)
-        {
-            systems.BuildDefence(systemId, defenceType);
 
             return Redirect($"DefenceStructureBuilder?systemId={systemId}");
         }

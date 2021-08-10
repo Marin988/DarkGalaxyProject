@@ -50,33 +50,6 @@
             }
         }
 
-        function SetUpgradeTime() {
-            $(document).ready(function () {
-                var buildingId = $("#buildingId").val();
-                var planetId = $("#planetId").val();
-                var datastring = "buildingId=" + buildingId + "&planetId=" + planetId;
-                $.ajax({
-                    type: "post",
-                    url: "SetUpgradeTime",
-                    data: datastring
-                })
-            })
-        }
-
-        function NullifyUpgradeTime() {
-            $(document).ready(function () {
-                console.log('NullifyUpgradeTime');
-                var buildingId = $("#buildingId").val();
-                var planetId = $("#planetId").val();
-                var datastring = "buildingId=" + buildingId + "&planetId=" + planetId;
-                $.ajax({
-                    type: "post",
-                    url: "NullifyUpgradeTime",
-                    data: datastring
-                })
-            })
-        }
-
         var counter = 0;
         //If i refresh the page though the time would still disappear and nothing will happen when the UpgradeTime == Date.now()
         //I need another function activating on page load checking if the property UpgradeTime is not null
@@ -104,8 +77,6 @@
                         url: "StartUpgrade",
                         data: datastring
                     });
-                    SetUpgradeTime();
-                    upgrade();
                 });
                 setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the timer still isn't out
             }
@@ -134,29 +105,8 @@
                     document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
                     if (counter >= timeleft) {
                         clearInterval(_tick);
-                        console.log('-_-');
-                        levelUp();
                     }
                 }, 1000);
-            }
-
-            if (timeleft <= 0 && dateString != '') {
-                levelUp();
-            }
-
-            function levelUp() {
-                $(document).ready(function () {
-                    var buildingId = $("#buildingId").val();
-                    var planetId = $("#planetId").val();
-                    var datastring = "buildingId=" + buildingId + "&planetId=" + planetId;
-                    $.ajax({
-                        type: "post",
-                        url: "LevelUp",
-                        data: datastring
-                    });
-                    NullifyUpgradeTime();
-                    setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the level still shows the same
-                });
             }
         }
     </script>

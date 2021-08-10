@@ -23,7 +23,7 @@
                 <span>Storage: @ship.Storage---------</span>
                 <span>Type: @ship.Type</span><br>
             }
-            <form method="post" action="@Url.Action("SwitchSystem", "System")">
+            <form action="SwitchSystem" method="post">
                 <input hidden name="systemId" value=@system.Id />
                 <input type="submit" value="View system" />
             </form>

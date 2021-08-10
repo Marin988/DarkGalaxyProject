@@ -22,19 +22,17 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public ShipType Type { get; set; }
 
-        public int Damage => (int)Type * 20;
+        public int Damage => (int)Type * 10;
 
-        public int MaxHP => (int)Type * 20;
+        public int MaxHP => (int)Type * 10;
 
         public int HP { get; set; }
 
-        public int MaxStorage => (int)Type * 20;
+        public int MaxStorage => (int)Type * 500;
 
         public int Storage { get; set; }
 
-        public int Speed => (int)Type * 20;
-
-        public int BuildTime => (int)Type * 10;
+        public int Speed => (int)Type * 10;
 
         public string FleetId { get; set; }
 

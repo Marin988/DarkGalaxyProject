@@ -5,13 +5,6 @@ namespace DarkGalaxyProject.Data.Models
 {
     public class ShipBuilder
     {
-        //public ShipBuilder(string systemId, ShipType shipType)
-        //{
-        //    FinishedBuildingTime = DateTime.Now.AddSeconds(BuildTime);
-        //    SystemId = systemId;
-        //    ShipType = shipType;
-        //}
-
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public string SystemId { get; set; }
@@ -20,7 +13,7 @@ namespace DarkGalaxyProject.Data.Models
 
         public int Count { get; set; }
 
-        public int BuildTime => (int)ShipType * 10 * Count;
+        public int BuildTime => (int)ShipType * Count;
 
         public DateTime? FinishedBuildingTime { get; set; }
     }

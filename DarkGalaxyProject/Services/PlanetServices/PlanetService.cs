@@ -16,29 +16,6 @@ namespace DarkGalaxyProject.Services.PlanetServices
             this.data = data;
         }
 
-        public bool LevelUp(string buildingId)
-        {
-            var factory = data.Factories.First(f => f.Id == buildingId);
-
-            factory.Level += 1;
-
-            data.SaveChanges();
-
-            return true;
-        }
-
-        public bool NullifyUpgradeTime(string buildingId)
-        {
-            var factory = data.Factories.First(f => f.Id == buildingId);
-
-            factory.UpgradeFinishTime = null;
-            factory.UpgradeStartTime = null;
-
-            data.SaveChanges();
-
-            return true;
-        }
-
         public PlanetServiceModel Planet(string planetId)
         {
             var systemId = data.Planets.First(p => p.Id == planetId).SystemId;
@@ -70,17 +47,6 @@ namespace DarkGalaxyProject.Services.PlanetServices
             return planet;
         }
 
-        public bool SetUpgradeTime(string buildingId)
-        {
-            var factory = data.Factories.First(f => f.Id == buildingId);
-
-            factory.UpgradeFinishTime = DateTime.Now.AddSeconds(factory.UpgradeTimeLength);
-
-            data.SaveChanges();
-
-            return true;
-        }
-
         public string StartUpgrade(string buildingId, string planetId, string playerId)
         {
             var planet = data.Planets.First(p => p.Id == planetId);
@@ -97,17 +63,19 @@ namespace DarkGalaxyProject.Services.PlanetServices
             {
                 return $"You don't have enough {milkyCoin.Type.ToString()}.";
             }
-
-            milkyCoin.Quantity -= factory.UpgradeCost;
-
-            factory.UpgradeStartTime = DateTime.Now;
-
-            if (system.PlayerId != playerId)
+            else
             {
-                return "You can only upgprade buildings built in your systems.";
-            }
+                milkyCoin.Quantity -= factory.UpgradeCost;
 
-            data.SaveChanges();
+                factory.UpgradeFinishTime = DateTime.Now.AddSeconds(factory.UpgradeTimeLength);
+
+                if (system.PlayerId != playerId)
+                {
+                    return "You can only upgprade buildings built in your systems.";
+                }
+
+                data.SaveChanges();
+            }
 
             return null;
         }

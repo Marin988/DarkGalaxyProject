@@ -9,13 +9,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
     {
         public PlanetServiceModel Planet(string planetId);
 
-        public bool LevelUp(string buildingId);
-
         public string StartUpgrade(string buildingId, string planetId, string playerId);
-
-        public bool SetUpgradeTime(string buildingId);
-
-        public bool NullifyUpgradeTime(string buildingId);
         
     }
 }

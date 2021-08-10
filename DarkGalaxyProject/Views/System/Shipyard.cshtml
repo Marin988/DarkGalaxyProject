@@ -39,11 +39,6 @@
     <script>
         @shipType = $("#shipType").val().toString();
 
-        @*if('@Model.Any(p => p.FinishedBuildingTime.HasValue)' == 'True')
-        {
-            @shipType = '@Model.FirstOrDefault(p => p.FinishedBuildingTime.HasValue).ShipType';//(p => p.FinishedBuildingTime.HasValue).ShipType
-        }*@
-
         @if(Model.Any(p => p.FinishedBuildingTime.HasValue))
         {
             shipType = Model.FirstOrDefault(p => p.FinishedBuildingTime.HasValue).ShipType;
@@ -127,26 +122,9 @@
                     document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
                     if (timeleft - counter <= 0) {
                         clearInterval(_tick);
-                        build();
                     }
                 }, 1000);
-            } else {
-                build();
-            }
-        }
-
-        function build() {
-            $(document).ready(function () {
-                var shipType = '@shipType';//!!!!!!
-                var systemId = $("#systemId").val();
-                var datastring = "shipType=" + shipType + "&systemId=" + systemId;
-                $.ajax({
-                    type: "post",
-                    url: "BuildShip", //set count to 0, set buildingfinishtime to null
-                    data: datastring
-                });
-                setTimeout(function () { location.reload(); }, 200);
-            });
+            } 
         }
 
     </script>

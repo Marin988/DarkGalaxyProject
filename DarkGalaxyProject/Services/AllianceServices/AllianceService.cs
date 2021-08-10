@@ -37,7 +37,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
             var candidate = data.Players.First(p => p.Id == candidateId);
             var alliance = data.Alliances.First(a => a.Id == allianceId);
 
-            if(playerId != alliance.LeaderId)
+            if(playerId != alliance.Leader.Id) //alliance.LeaderId is still null if only Player.AllianceLeaderId is set
             {
                 return "Only the leader can accept members!";
             }
@@ -181,15 +181,31 @@ namespace DarkGalaxyProject.Services.AllianceServices
             return candidates;
         }
 
-        public bool PromoteToLeader(string allianceId, string playerId)
+        public string PromoteToLeader(string allianceId, string playerId, string leaderId)
         {
             var player = data.Players.First(p => p.Id == playerId);
+            var leader = data.Players.First(p => p.Id == leaderId);
+            var alliance = data.Alliances.First(a => a.Id == allianceId);
+
+            if(leaderId != alliance.Leader.Id)
+            {
+                return "Only the leader can promote other members";
+            }
+
+            if(player.AllianceId != allianceId)
+            {
+                return "You can only promote members of this alliance";
+            }
+
+            leader.AllianceLeaderId = null;
+
+            leader.AllianceId = allianceId;
 
             player.AllianceLeaderId = allianceId;
 
             data.SaveChanges();
 
-            return true;
+            return null;
         }
 
         public bool Send(string allianceId, string content, string playerId)

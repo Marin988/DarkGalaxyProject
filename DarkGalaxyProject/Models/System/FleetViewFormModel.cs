@@ -20,6 +20,8 @@ namespace DarkGalaxyProject.Models.System
 
         public int? DestinationSystemPosition { get; set; }
 
+        public int Cargo { get; set; }
+
         public HostSystemInfoServiceModel HostSystemInfo { get; set; }
     }
 }

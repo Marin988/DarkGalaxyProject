@@ -52,66 +52,6 @@ namespace DarkGalaxyProject.Services.SystemServices
             return systems;
         }
 
-        public bool BuildDefence(string systemId, string defenceType)
-        {
-            var system = data.Systems.Include(s => s.DefenceBuildingQueue).First(s => s.Id == systemId);
-
-            var defencetype = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceType);
-
-            var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defencetype);
-
-            defenceBuildingQueue.FinishedBuildingTime = null;
-
-            for (int i = 0; i < defenceBuildingQueue.Count; i++)
-            {
-                data.DefensiveStructures.Add(new DefensiveStructure(defencetype, systemId));
-            }
-
-            defenceBuildingQueue.Count = 0;
-
-            data.SaveChanges();
-
-            return true;
-        }
-
-        public bool BuildShip(string systemId, string shipType, string playerId)
-        {
-            var system = data.Systems.Include(s => s.ShipBuildingQueue).First(s => s.Id == systemId);
-
-            var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
-
-            var shipBuildingQueue = system.ShipBuildingQueue.First(s => s.ShipType == shiptype);
-
-            shipBuildingQueue.FinishedBuildingTime = null;
-
-            for (int i = 0; i < shipBuildingQueue.Count; i++)
-            {
-                data.Ships.Add(new Ship(shiptype, systemId, playerId));
-            }
-
-            shipBuildingQueue.Count = 0;
-
-            data.SaveChanges();
-
-            return true;
-        }
-
-        public bool Colonize(string systemId, string playerId)
-        {
-            var targetedSystem = data.Systems.First(s => s.Id == systemId);
-
-            if (targetedSystem.PlayerId != null)
-            {
-                return false;
-            }
-
-            targetedSystem.PlayerId = playerId;
-
-            data.SaveChanges();
-
-            return true;
-        }
-
         public IEnumerable<DefenceBuilderServiceModel> DefenceBuilders(string systemId)
         {
             var defenceBuilders = data.DefenceBuilders
@@ -128,309 +68,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             return defenceBuilders;
         }
-
-        public bool FleetBoarding(string systemId)
-        {
-            var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
-
-            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId && f.ArrivalTime.HasValue).FirstOrDefault(f => f.ArrivalTime.Value <= DateTime.Now);//here
-
-            if (fleet != null)
-            {
-                var ships = fleet.Ships.ToList();
-
-                foreach (var ship in ships)
-                {
-                    ship.OnMission = false;
-                    ship.FleetId = null;
-                }
-
-                fleet.ArrivalTime = null;
-
-                data.SaveChanges();
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool FleetReturn(string systemId)
-        {
-            var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
-
-            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId && f.ArrivalTime.HasValue).FirstOrDefault(f => f.ArrivalTime.Value <= DateTime.Now);
-
-            string playerId = system.PlayerId;
-
-            if (fleet == null)
-            {
-                //add errors
-                return false;
-            }
-
-            fleet.Outgoing = false;
-
-            var destinationSystem = data.Systems.Include(s => s.Ships).Include(s => s.DefensiveStructures).First(s => s.Position == fleet.DestinationSystemPoistion);
-
-            var ShipsOnMission = fleet.Ships.ToList();
-
-            var flightLength = Math.Abs(system.Position - (int)fleet.DestinationSystemPoistion);
-            fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
-            fleet.DestinationSystemPoistion = null;
-
-            if (fleet.MissionType == MissionType.Attack) // separate method
-            {
-                Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId);
-            } // separate method
-
-            if (fleet.MissionType == MissionType.Transport)
-            {
-                CargoUnload(playerId, destinationSystem, ShipsOnMission);
-            }
-
-
-            if (fleet.MissionType == MissionType.Deploy)//I may add transport function in here later // separate method
-            {
-                DeployShips(playerId, fleet, destinationSystem, ShipsOnMission);
-            }//NOTE
-
-
-            if (fleet.MissionType == MissionType.Colonize)//I may add transport function in here later // separate method
-            {
-                Colonize(playerId, fleet, destinationSystem, ShipsOnMission);
-            }//NOTE
-
-            data.SaveChanges();
-
-            return true;
-        }
-
-        private void Colonize(string playerId, Fleet fleet, Data.Models.System destinationSystem, List<Ship> ShipsOnMission)
-        {
-            var colonizer = fleet.Ships.First(s => s.Type == ShipType.Colonizer);
-            if (ShipsOnMission.Count == 1)
-            {
-                fleet.ArrivalTime = null;
-            }
-            destinationSystem.PlayerId = playerId;//now this would playerId have to be changed if I put that in the background service
-            data.Ships.Remove(colonizer);
-            var messageTitle = $"Colonised system";
-            var messageContent = $"Successfully colonised system {destinationSystem.Position}";
-
-            ReportMessage(playerId, messageTitle, messageContent);
-        }
-
-        private void DeployShips(string senderplayerId, Fleet fleet, Data.Models.System destinationSystem, List<Ship> ShipsOnMission)
-        {
-            fleet.ArrivalTime = null;
-            var senderUsername = data.Players.First(p => p.Id == senderplayerId).UserName;
-            var systemPosition = data.Systems.First(s => s.Id == ShipsOnMission.First().SystemId).Position;
-            foreach (var ship in ShipsOnMission)
-            {
-                ship.SystemId = destinationSystem.Id;
-                ship.FleetId = null;
-                ship.OnMission = false;
-                ship.PlayerId = destinationSystem.PlayerId;//check if dest system has a playerId if you let that be acceptable in your business logic
-            }
-            var recieverPlayerId = destinationSystem.PlayerId;
-
-            var MessageTitle = $"Deployed ships";
-            var recieverMessageContent = $"{ShipsOnMission.Count} ships were deployed to your system {destinationSystem.Position} by {senderUsername} from {systemPosition}";
-            var senderMessageContent = $"You deployed {ShipsOnMission.Count} ships to system {destinationSystem.Position}";
-
-            ShipsOnMission.RemoveAll(p => !p.OnMission);
-
-            ReportMessage(senderplayerId, MessageTitle, senderMessageContent);
-            ReportMessage(recieverPlayerId, MessageTitle, recieverMessageContent);
-
-        }
-
-        private void CargoUnload(string PlayerId, Data.Models.System destinationSystem, List<Ship> ShipsOnMission)
-        {
-            var transportedResources = ShipsOnMission.Sum(s => s.Storage);
-            var playerName = data.Players.First(p => p.Id == PlayerId).UserName;
-            var systemId = ShipsOnMission.First().SystemId;
-            var systemPosition = data.Systems.First(s => s.Id == systemId).Position;
-
-            foreach (var ship in ShipsOnMission)
-            {
-                ship.Storage = 0;
-            }
-
-            destinationSystem.Resources.First(r => r.Type == ResourceType.MilkyCoin).Quantity += transportedResources;
-
-            var SenderMessageTitle = "Transported resources";
-            var SenderMessageContent = $"You've successfully transported {transportedResources} {ResourceType.MilkyCoin.ToString()} to system {destinationSystem.Position}.";
-
-            var RecieverMessageTitle = "Recieved resources";
-            var RecieverMessageContent = $"You have recieved {transportedResources} {ResourceType.MilkyCoin.ToString()} by {playerName} from system {systemPosition}.";
-
-            ReportMessage(PlayerId, SenderMessageTitle, SenderMessageContent);
-            ReportMessage(destinationSystem.PlayerId, RecieverMessageTitle, RecieverMessageContent);
-
-        }
-
-        private void Battle(Fleet fleet, Data.Models.System destinationSystem, List<Ship> ShipsOnMission, string playerId, string destinationSystemPlayerId)
-        {
-            var attackerHP = ShipsOnMission.Sum(s => s.HP);
-            var attackerDMG = ShipsOnMission.Sum(s => s.Damage);
-
-            var DefenderFleet = destinationSystem.Ships.Where(s => !s.OnMission);
-            var Defence = destinationSystem.DefensiveStructures;
-
-            var defenderHP = DefenderFleet.Sum(f => f.HP) + Defence.Sum(d => d.HP);
-            var defenderDMG = DefenderFleet.Sum(f => f.Damage) + Defence.Sum(d => d.Damage);
-
-            var messageTitle = "Battle report";
-            var AttackerMessageContent = string.Empty;
-            var DefenderMessageContent = string.Empty;
-
-            if (attackerDMG >= defenderHP)
-            {
-                data.Ships.RemoveRange(DefenderFleet);
-                data.DefensiveStructures.RemoveRange(Defence);
-
-                AttackerMessageContent += $"Attack successful.{DefenderFleet.Count()} ships and {Defence.Count()} defensive structures were destroyed.";
-                DefenderMessageContent += $"You were attacked by {ShipsOnMission.Count} ships.All of your {DefenderFleet.Count()} ships and {Defence.Count()} defensive structures were destroyed.";
-
-                DefenderFleet.ToList().RemoveAll(s => !s.OnMission);
-                Defence.ToList().RemoveAll(d => d.SystemId == destinationSystem.Id); //am I actually removing them?!? 
-            }
-            else
-            {
-                foreach (var def in Defence)
-                {
-                    var defHP = def.HP;
-                    if (def.HP <= attackerDMG)
-                    {
-                        def.HP -= attackerDMG;
-                    }
-                    else
-                    {
-                        def.HP -= attackerDMG;
-                        attackerDMG = 0;
-                        break;
-                    }
-                    attackerDMG -= defHP;
-                }
-
-                if (attackerDMG > 0)
-                {
-                    foreach (var defShip in DefenderFleet)
-                    {
-                        if (defShip.HP <= attackerDMG)
-                        {
-                            defShip.HP -= attackerDMG;
-                        }
-                        else
-                        {
-                            defShip.HP -= attackerDMG;
-                            attackerDMG = 0;
-                            break;
-                        }
-                        attackerDMG -= defShip.HP;
-                    }
-                }
-
-                if (Defence.Any(d => d.HP <= 0))
-                {
-                    Defence.ToList().RemoveAll(d => d.HP <= 0);
-                }
-                if (DefenderFleet.Any(s => s.HP <= 0))
-                {
-                    DefenderFleet.ToList().RemoveAll(s => s.HP <= 0);
-                }
-
-            }
-            if (defenderDMG >= attackerHP)
-            {
-                data.Ships.RemoveRange(ShipsOnMission);
-
-                AttackerMessageContent += $"Your {ShipsOnMission.Count} ships were destroyed by the enemy defences, surviving your attack with {Defence.Sum(d => d.HP)} HP left.";
-                DefenderMessageContent += $"Your defences destroyed all {ShipsOnMission.Count} of the enemy's ships, surviving the attack with {Defence.Sum(d => d.HP)} HP left.";
-
-                ShipsOnMission.RemoveAll(s => s.OnMission);
-                fleet.ArrivalTime = null;
-                ReportMessage(playerId, messageTitle, AttackerMessageContent);
-                if(destinationSystemPlayerId != null)
-                {
-                    ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent);
-                }
-            }
-            else
-            {
-                foreach (var ship in ShipsOnMission)
-                {
-                    var shipHP = ship.HP;
-                    if (ship.HP <= defenderDMG)
-                    {
-                        ship.HP -= defenderDMG;
-                    }
-                    else
-                    {
-                        ship.HP -= defenderDMG;
-                        defenderDMG = 0;
-                        break;
-                    }
-                    defenderDMG -= shipHP;
-                }
-
-                if (ShipsOnMission.Any(s => s.HP <= 0))
-                {
-                    ShipsOnMission.RemoveAll(s => s.HP <= 0);
-                }
-            }
-
-            if (ShipsOnMission.Any()) //I presume that if there are any ships left all the defences have been wiped out
-            {
-                var systemResource = data.Resources.First(r => r.SystemId == destinationSystem.Id && r.Type == ResourceType.MilkyCoin);
-                var loot = 0;
-
-                foreach (var ship in ShipsOnMission)
-                {
-                    var availableStorage = ship.MaxStorage - ship.Storage; //may include that as a property
-
-                    if (ship.Storage < ship.MaxStorage)
-                    {
-                        if (systemResource.Quantity >= availableStorage)
-                        {
-                            ship.Storage = ship.MaxStorage;
-                            systemResource.Quantity -= availableStorage;
-                            loot += availableStorage;
-                        }
-                        else
-                        {
-                            ship.Storage += systemResource.Quantity;
-                            loot += systemResource.Quantity;
-                            systemResource.Quantity = 0;
-                            break;
-                        }
-                    }
-                }
-
-                AttackerMessageContent += $"The enemy defences were destroyed, your fleet looted {loot} {systemResource.Type.ToString()}s and is coming back.";
-                DefenderMessageContent += $"The enemy ships looted {loot} {systemResource.Type.ToString()}s.";
-
-                ReportMessage(playerId, messageTitle, AttackerMessageContent);
-                ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent);
-            }
-        }
-
-        private void ReportMessage(string playerId, string messageTitle, string messageContent)
-        {
-            var reportMessage = new Message()
-            {
-                ReceiverId = playerId,
-                TimeOfSending = DateTime.Now,
-                SenderId = "1",//baaaaaaaaaaaad------Add a "System" user? Who would send all these messages
-                Title = messageTitle,
-                Content = messageContent
-            };
-
-            data.Messages.Add(reportMessage);
-            data.SaveChanges();
-        }
-
+       
         public IEnumerable<FleetServiceModel> FleetsInSystem(string systemId)
         {
             var fleets = data.Fleets
@@ -496,7 +134,7 @@ namespace DarkGalaxyProject.Services.SystemServices
             return systems;
         }
 
-        public string SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int cargo, int destinationSystemPosition, string systemId)
+        public string SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int destinationSystemPosition, string systemId, int cargo)
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
             var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId).First(f => f.ArrivalTime == null);
@@ -506,9 +144,9 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var destinationSystem = data.Systems.FirstOrDefault(s => s.Position == destinationSystemPosition);
 
-            if (destinationSystem == null)
+            if (destinationSystem == null || destinationSystemPosition == 0)
             {
-                return $"A system with position {destinationSystemPosition} doesn't exist!";
+                return $"A system with position {destinationSystemPosition} doesn't exist! (or is 0)";
             }
 
             if (ships.Count == 0)
@@ -536,16 +174,20 @@ namespace DarkGalaxyProject.Services.SystemServices
                 return "You cannot deploy ships and transport resources to systems not belonging to a player.";
             }
 
-            if (missionTypeEnum == MissionType.Transport && cargo > 0)
+            if (cargo > 0)
             {
-                var systemMilkyCoin = system.Resources.First(r => r.Type == ResourceType.MilkyCoin).Quantity;
+                var systemMilkyCoin = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.MilkyCoin);
 
-                if(cargo > systemMilkyCoin)
+                if(cargo > systemMilkyCoin.Quantity)
                 {
-                    cargo = systemMilkyCoin;
+                    cargo = systemMilkyCoin.Quantity;
                 }
 
-                systemMilkyCoin -= cargo;
+                lock (systemMilkyCoin)
+                {
+                    systemMilkyCoin.Quantity -= cargo;
+                    data.SaveChanges();
+                }
             }
 
             PrepareShipsForMission(cargo, fleet, missionTypeEnum, ships);
@@ -580,7 +222,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                 ship.OnMission = true;
                 ship.FleetId = fleet.Id;
 
-                if (missionTypeEnum == MissionType.Transport && cargo > 0) //possible issue - If there are ships already loaded they might
+                if (missionTypeEnum == MissionType.Transport || cargo > 0) //possible issue - If there are ships already loaded they might
                 {                                                         //be the ones i get in the fleet UNLESS I order them by cargo 
                     int load = ship.MaxStorage - ship.Storage;//or maybe just this
                     if (cargo < load)

@@ -8,7 +8,7 @@ namespace DarkGalaxyProject.Data.Enums
     public enum ShipType
     {
         Colonizer = 0,
-        TransportShip = 1,
-        BattleShip = 2
+        TransportShip = 5,
+        BattleShip = 10
     }
 }

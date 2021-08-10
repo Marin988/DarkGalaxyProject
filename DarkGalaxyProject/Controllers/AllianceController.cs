@@ -70,7 +70,7 @@ namespace DarkGalaxyProject.Controllers
         {
             var messages = alliances.ChatMessages(allianceId);
 
-            var chat = new ChatViewModel
+            var chat = new ChatFormViewModel
             {
                 Messages = messages,
                 AllianceId = allianceId,
@@ -95,7 +95,7 @@ namespace DarkGalaxyProject.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Send(ChatViewModel message)
+        public IActionResult Send(ChatFormViewModel message)
         {
             alliances.Send(message.AllianceId, message.Content, message.PlayerId); 
 
@@ -104,7 +104,7 @@ namespace DarkGalaxyProject.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Create(CreateViewModel allianceModel)
+        public IActionResult Create(CreateFormModel allianceModel)
         {
             alliances.Create(userManager.GetUserId(User), allianceModel.Name);
 
@@ -145,7 +145,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult PromoteToLeader(string allianceId, string playerId) //SqlException: Cannot insert duplicate key row in object ...
         {
-            alliances.PromoteToLeader(allianceId, playerId);
+            alliances.PromoteToLeader(allianceId, playerId, userManager.GetUserId(User));
 
             return Redirect($"Members?allianceId={allianceId}");
         }

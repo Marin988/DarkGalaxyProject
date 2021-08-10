@@ -33,15 +33,6 @@ namespace DarkGalaxyProject.Controllers
 
             return View(planet);
         }
-        
-        [Authorize]
-        [HttpPost]
-        public IActionResult LevelUp(string buildingId, string planetId)
-        {
-            planets.LevelUp(buildingId);
-
-            return Redirect($"ViewPlanet?planetId={planetId}");
-        }
 
         [Authorize]
         [HttpPost]
@@ -50,24 +41,6 @@ namespace DarkGalaxyProject.Controllers
             var message = planets.StartUpgrade(buildingId, planetId, userManager.GetUserId(User));
 
             TempData["Message"] = message;
-
-            return Redirect($"ViewPlanet?planetId={planetId}");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult SetUpgradeTime(string buildingId, string planetId)
-        {
-            planets.SetUpgradeTime(buildingId);
-
-            return Redirect($"ViewPlanet?planetId={planetId}");
-        }
-
-        [Authorize]
-        [HttpPost]
-        public IActionResult NullifyUpgradeTime(string buildingId, string planetId)
-        {
-            planets.NullifyUpgradeTime(buildingId);
 
             return Redirect($"ViewPlanet?planetId={planetId}");
         }
