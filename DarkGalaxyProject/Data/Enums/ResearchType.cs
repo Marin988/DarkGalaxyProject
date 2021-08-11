@@ -7,8 +7,14 @@ namespace DarkGalaxyProject.Data.Enums
 {
     public enum ResearchType
     {
-        Colonizing = 1,
-        BattleShip = 2,
-        TransportShip = 3
+        Espionage = 1,
+        SecondFleet = 2,
+        BattleShip = 3, 
+        Terraforming = 4,
+        Colonizing = 5,
+        ThirdFleet = 6,
+        TransportShip = 7,
+        FourthFleet = 8,
+        FifthFleet = 9,
     }
 }

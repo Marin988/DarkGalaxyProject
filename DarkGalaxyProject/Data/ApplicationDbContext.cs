@@ -65,8 +65,8 @@ namespace DarkGalaxyProject.Data
 
             builder.Entity<Factories>()
                 .HasOne(f => f.Planet)
-                .WithOne(p => p.Factories)
-                .HasForeignKey<Factories>(f => f.PlanetId)
+                .WithMany(p => p.Factories)
+                .HasForeignKey(f => f.PlanetId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Alliance>()

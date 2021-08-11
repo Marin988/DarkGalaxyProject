@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DarkGalaxyProject.Services.PlanetServices
+namespace DarkGalaxyProject.Services.PlanetServices.Models
 {
-    public class FactoriesServiceModel
+    public class FactorySeviceModel
     {
         public string Id { get; set; }
 
@@ -17,8 +17,8 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
         public DateTime? UpgradeFinishTime { get; set; }
 
-        public DateTime? UpgradeStartTime { get; set; }
-
         public int UpgradeTimeLength { get; set; }
+
+        public string Type { get; set; }
     }
 }

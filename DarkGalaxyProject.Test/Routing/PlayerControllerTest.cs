@@ -55,5 +55,14 @@ namespace DarkGalaxyProject.Test.Routing
             .Configuration()
             .ShouldMap("/Player/Profile?playerId=1")
             .To<PlayerController>(c => c.Profile("1"));
+
+        //[Fact]
+        //public void StudyResearchShouldReturnCorrectRoute()
+        //    => MyRouting
+        //    .Configuration()
+        //    .ShouldMap(request => request
+        //            .WithPath("/Player/StudyResearch?researchId=1&systemId=1&playerId=1")
+        //            .WithMethod(HttpMethod.Post))
+        //    .To<PlayerController>(c => c.StudyResearch("1", "1", "1"));
     }
 }

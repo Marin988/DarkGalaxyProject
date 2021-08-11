@@ -1,10 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using DarkGalaxyProject.Services.PlanetServices
+@using DarkGalaxyProject.Services.PlanetServices.Models
 @model PlanetServiceModel
 @inject UserManager<Player> UserManager
 
 @{
     ViewData["Title"] = "Planet View";
+    var timerIndexc = 1;
+    var buildingIndex = 1;
 }
 
 @if (TempData["Message"] != null)
@@ -20,39 +22,43 @@
         <span>Planet name: @Model.Name</span><br />
         <span>Position: @Model.Position</span><br />
         <span>Type @Model.Type</span><br />
-        <span>Factories---> Level: @Model.Factories.Level, Income -----> @Model.Factories.Income, Upgrade Cost -----> @Model.Factories.UpgradeCost, Upgrade Time ------> @Model.Factories.UpgradeTimeLength</span><br />
-        @if (Model.PlayerId == UserManager.GetUserId(User))
-        {
-            <form>
-                <input id="buildingId" type="hidden" name="buildingId" value=@Model.Factories.Id>
-                <input id="planetId" type="hidden" name="planetId" value=@Model.Id>
-                <div class="form-group">
-                    <input id="input" onclick="initialUpgrade()" value="Level Up" class="btn btn-primary" />
-                </div>
-            </form>
 
-            <p id="timer"></p>
+        @foreach (var Factory in Model.Factories)
+        {
+            <span>@Factory.Type ---> Level: @Factory.Level, Income -----> @Factory.Income, Upgrade Cost -----> @Factory.UpgradeCost, Upgrade Time ------> @Factory.UpgradeTimeLength</span><br />
+            @if (Model.PlayerId == UserManager.GetUserId(User))
+            {
+                <form>
+                    <input id="buildingId @buildingIndex" type="hidden" name="buildingId" value=@Factory.Id>
+                    <input id="planetId" type="hidden" name="planetId" value=@Model.Id>
+                    <div class="form-group">
+                        <input id="input" onclick="initialUpgrade(@(buildingIndex++))" value="Level Up" class="btn btn-primary" />
+                    </div>
+                </form>
+
+                <p id="timer"></p>
+            }
         }
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div id="timers">
 </div>
 
 @section Scripts {
     <script>
         window.onload = function () {
-            if ('@Model.Factories.UpgradeFinishTime' != '') {
-                upgrade();
+            if ('@Model.Factories.Any(f => f.UpgradeFinishTime.HasValue)' == 'True') {
+                @foreach (var Factory in Model.Factories.Where(f => f.UpgradeFinishTime.HasValue))
+                {
+                    <text> upgrade('@Factory.UpgradeFinishTime.Value', '@Factory.Type.ToString()', @timerIndexc);</text>
+                    timerIndexc++;
+                }
             }
             else {
             }
         }
 
-        var counter = 0;
-        //If i refresh the page though the time would still disappear and nothing will happen when the UpgradeTime == Date.now()
-        //I need another function activating on page load checking if the property UpgradeTime is not null
         function convertSeconds(s) {
             var min = Math.floor(s / 60);
             var sec = Math.floor(s % 60);
@@ -64,12 +70,10 @@
             }
             return min + ':' + sec;
         }
-        var dateString = '@(Model.Factories.UpgradeFinishTime.HasValue ? Model.Factories.UpgradeFinishTime.Value : null)';
 
-        function initialUpgrade() {
-            if (dateString == '') {
-                $(document).ready(function () {
-                    var buildingId = $("#buildingId").val();
+        function initialUpgrade(buildingIndex) {
+            $(document).ready(function () {
+                var buildingId = document.getElementById("buildingId " + buildingIndex).value;
                     var planetId = $("#planetId").val();
                     var datastring = "buildingId=" + buildingId + "&planetId=" + planetId;
                     $.ajax({
@@ -79,13 +83,13 @@
                     });
                 });
                 setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the timer still isn't out
-            }
         }
 
-        function upgrade() {
+        function upgrade(UpgradeFinishTime, factoryType, timerIndex) {
+            var counter = 0;
             var timeleft = 0;
-            if (dateString != '') {
-                var oneSplit = dateString.split(' ');
+            if (UpgradeFinishTime != '') {
+                var oneSplit = UpgradeFinishTime.split(' ');
                 var year = oneSplit[0].split('/')[2];
                 var month = oneSplit[0].split('/')[1];
                 var day = oneSplit[0].split('/')[0];
@@ -99,12 +103,19 @@
             }
 
             if (timeleft > 0) {
-                document.getElementById('timer').innerText = convertSeconds(timeleft);
+                var newP = document.createElement("p");
+                newP.id = 'timer' + timerIndex;
+                var textNode = document.createTextNode(" This is a new text node");
+                newP.appendChild(textNode);
+                document.getElementById("timers").appendChild(newP);
+
+                document.getElementById('timer' + timerIndex).innerText = factoryType + ' ' + convertSeconds(timeleft);
                 var _tick = setInterval(function () {
                     counter++;
-                    document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
+                    document.getElementById('timer' + timerIndex).innerText = factoryType + ' ' + convertSeconds(timeleft - counter);
                     if (counter >= timeleft) {
                         clearInterval(_tick);
+                        setTimeout(function () { location.reload(); }, 1000);
                     }
                 }, 1000);
             }

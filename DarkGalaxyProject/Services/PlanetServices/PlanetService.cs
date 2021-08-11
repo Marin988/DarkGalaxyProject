@@ -1,5 +1,6 @@
 ﻿using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
+using DarkGalaxyProject.Services.PlanetServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,16 +31,16 @@ namespace DarkGalaxyProject.Services.PlanetServices
                     Name = p.Name,
                     Position = p.Position,
                     Type = p.Type.ToString(),
-                    Factories = new FactoriesServiceModel
+                    Factories = p.Factories.Select(f => new FactorySeviceModel
                     {
-                        Id = p.Factories.Id,
-                        Income = p.Factories.Income,
-                        Level = p.Factories.Level,
-                        UpgradeCost = p.Factories.UpgradeCost,
-                        UpgradeFinishTime = p.Factories.UpgradeFinishTime,
-                        UpgradeStartTime = p.Factories.UpgradeStartTime,
-                        UpgradeTimeLength = p.Factories.UpgradeTimeLength
-                    },
+                        Id = f.Id,
+                        Income = f.Income,
+                        Level = f.Level,
+                        UpgradeCost = f.UpgradeCost,
+                        UpgradeFinishTime = f.UpgradeFinishTime,
+                        UpgradeTimeLength = f.UpgradeTimeLength,
+                        Type = f.FactoryType.ToString()
+                    }).ToList(),
                     PlayerId = playerId
                 })
                 .First();
@@ -55,11 +56,16 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             var factory = data.Factories.First(f => f.Id == buildingId);
 
+            if(factory.UpgradeFinishTime != null)
+            {
+                return "This building is already in the process of upgrading";
+            }
+
             var system = data.Systems.First(s => s.Id == systemId);
 
             var milkyCoin = data.Resources.First(r => r.Type == ResourceType.MilkyCoin && r.SystemId == systemId);
 
-            if(milkyCoin.Quantity < factory.UpgradeCost)
+            if (milkyCoin.Quantity < factory.UpgradeCost)
             {
                 return $"You don't have enough {milkyCoin.Type.ToString()}.";
             }

@@ -2,6 +2,7 @@
 using DarkGalaxyProject.Controllers;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using DarkGalaxyProject.Services.PlanetServices;
+using DarkGalaxyProject.Services.PlanetServices.Models;
 using MyTested.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;

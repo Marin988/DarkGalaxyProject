@@ -7,7 +7,8 @@ namespace DarkGalaxyProject.Data.Enums
 {
     public enum SunType
     {
-        Giant = 1,
-        Dwarf = 2
+        Dwarf = 1,
+        SubGiant = 2,
+        Giant = 3,
     }
 }

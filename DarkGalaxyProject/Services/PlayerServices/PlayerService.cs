@@ -136,7 +136,7 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
         public Data.Models.System StartingSystem()
         {
-            var systemForUser = data.Systems.First(s => s.PlayerId == null);
+            var systemForUser = data.Systems.First(s => s.PlayerId == null && s.Type == SystemType.Small);
             return systemForUser;
         }
 

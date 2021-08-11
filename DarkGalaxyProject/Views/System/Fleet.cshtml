@@ -149,7 +149,7 @@
                timeleft = (arrivalDate.getTime() - new Date().getTime()) / 1000;
 
 
-            if (timeleft - counter > 0) {
+            if (timeleft > 0) { //deleted - counter because counter would always be 0 right?
                 var newP = document.createElement("p");
                 newP.id = 'timer' + timerIndex;
                 var textNode = document.createTextNode(" This is a new text node");

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DarkGalaxyProject.Services.PlanetServices
+namespace DarkGalaxyProject.Services.PlanetServices.Models
 {
     public class PlanetServiceModel
     {
@@ -17,6 +17,6 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
         public string Type { get; set; }
 
-        public FactoriesServiceModel Factories { get; set; }
+        public IEnumerable<FactorySeviceModel> Factories { get; set; }
     }
 }

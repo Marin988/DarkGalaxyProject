@@ -7,8 +7,8 @@ namespace DarkGalaxyProject.Data.Enums
 {
     public enum SystemType
     {
-        Small = 1,
-        Medium = 2,
-        Large = 3
+        Small = 10,
+        Medium = 20,
+        Large = 30,
     }
 }

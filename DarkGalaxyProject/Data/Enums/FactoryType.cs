@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Enums
 {
-    public enum ResourceType
+    public enum FactoryType
     {
-        MilkyCoin = 0,
-        Fuel = 1,
-        Paper = 2
+        SolarPanel = 1,
+        ResearchBuilding = 2,
+        Factory = 10
     }
 }

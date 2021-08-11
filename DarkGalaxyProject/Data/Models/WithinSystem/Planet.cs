@@ -18,9 +18,13 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public PlanetType Type { get; set; }
 
-        public string FactoriesId { get; set; }
+        public bool IsTerraformed { get; set; }
 
-        public Factories Factories { get; set; }    
+        public int BuiltUpSpace { get; set; }
+
+        public int BuildingCap => 5000 * (int)Type;
+
+        public IEnumerable<Factories> Factories { get; set; }    
 
         [Required]
         public string SystemId { get; set; }

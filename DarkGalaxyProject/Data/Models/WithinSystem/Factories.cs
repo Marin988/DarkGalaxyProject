@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DarkGalaxyProject.Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,20 +11,22 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
     {
         public Factories()
         {
-            Level = 1;
+            Level = 0;
         }
 
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public int Level { get; set; }
 
-        public int Income => Level * 10;
+        public int Income => Level * 10 * (int)FactoryType;
 
         public int UpgradeCost => Level * 3000;
 
         public int UpgradeTimeLength => Level * 10;
 
-        public DateTime? UpgradeStartTime { get; set; }
+        public int BuildingSpace => Level * 100;
+
+        public FactoryType FactoryType { get; set; }
 
         public DateTime? UpgradeFinishTime { get; set; }
 
