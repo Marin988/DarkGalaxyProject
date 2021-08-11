@@ -41,7 +41,8 @@ namespace DarkGalaxyProject.Services.PlanetServices
                         UpgradeTimeLength = f.UpgradeTimeLength,
                         Type = f.FactoryType.ToString()
                     }).ToList(),
-                    PlayerId = playerId
+                    PlayerId = playerId,
+                    IsTerraformed = p.IsTerraformed
                 })
                 .First();
 
@@ -84,6 +85,39 @@ namespace DarkGalaxyProject.Services.PlanetServices
             }
 
             return null;
+        }
+
+        public string Terraform(string planetId, string playerId)
+        {
+            var terraformResearch = data.ResearchTrees.First(r => r.PlayerId == playerId && r.ResearchType == ResearchType.Terraforming);
+            var planet = data.Planets.First(p => p.Id == planetId);
+
+            if (planet.IsTerraformed)
+            {
+                return "This planet has already been terraformed";
+            }
+
+            if (!terraformResearch.IsLearned)
+            {
+                return "You have not yet learned the research required for terraforming";
+            }
+
+            var systemId = planet.SystemId;
+
+            var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+
+            if(systemMilkyCoin.Quantity < 40000)
+            {
+                return $"You don't have enough {systemMilkyCoin.Type.ToString()} to terraform this planet";
+            }
+
+            systemMilkyCoin.Quantity -= 40000;
+
+            planet.IsTerraformed = true;
+
+            data.SaveChanges();
+
+            return $"You have successfully terraformed this planet in exchange for 40000 {systemMilkyCoin.Type.ToString()}";
         }
     }
 }

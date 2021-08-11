@@ -44,5 +44,16 @@ namespace DarkGalaxyProject.Controllers
 
             return Redirect($"ViewPlanet?planetId={planetId}");
         }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult Terraform(string planetId)
+        {
+            var message = planets.Terraform(planetId, userManager.GetUserId(User));
+
+            TempData["Message"] = message;
+
+            return Redirect($"ViewPlanet?planetId={planetId}");
+        }
     }
 }

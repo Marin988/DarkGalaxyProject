@@ -369,7 +369,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             data.SaveChanges();
 
-            return null;
+            return "You have successfuly built a colonizer";
         }
 
         public bool SwitchSystem(string systemId, string playerId)

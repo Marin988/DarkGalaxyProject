@@ -23,21 +23,35 @@
         <span>Position: @Model.Position</span><br />
         <span>Type @Model.Type</span><br />
 
-        @foreach (var Factory in Model.Factories)
+        @if (Model.IsTerraformed)
         {
-            <span>@Factory.Type ---> Level: @Factory.Level, Income -----> @Factory.Income, Upgrade Cost -----> @Factory.UpgradeCost, Upgrade Time ------> @Factory.UpgradeTimeLength</span><br />
-            @if (Model.PlayerId == UserManager.GetUserId(User))
+            foreach (var Factory in Model.Factories)
             {
-                <form>
-                    <input id="buildingId @buildingIndex" type="hidden" name="buildingId" value=@Factory.Id>
-                    <input id="planetId" type="hidden" name="planetId" value=@Model.Id>
-                    <div class="form-group">
-                        <input id="input" onclick="initialUpgrade(@(buildingIndex++))" value="Level Up" class="btn btn-primary" />
-                    </div>
-                </form>
+                <span>@Factory.Type ---> Level: @Factory.Level, Income -----> @Factory.Income, Upgrade Cost -----> @Factory.UpgradeCost, Upgrade Time ------> @Factory.UpgradeTimeLength</span><br />
+                @if (Model.PlayerId == UserManager.GetUserId(User))
+                {
+                    <form>
+                        <input id="buildingId @buildingIndex" type="hidden" name="buildingId" value=@Factory.Id>
+                        <input id="planetId" type="hidden" name="planetId" value=@Model.Id>
+                        <div class="form-group">
+                            <input id="input" onclick="initialUpgrade(@(buildingIndex++))" value="Level Up" class="btn btn-primary" />
+                        </div>
+                    </form>
 
-                <p id="timer"></p>
+                    <p id="timer"></p>
+                }
             }
+        }
+        else
+        {
+            <form asp-action="Terraform" method="post">
+                <div class="form-group">
+                    <input name="planetId" hidden value="@Model.Id" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Terraform" class="btn btn-primary" />
+                </div>
+            </form>
         }
     </div>
 </div>
