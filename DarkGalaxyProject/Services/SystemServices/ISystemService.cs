@@ -30,5 +30,7 @@ namespace DarkGalaxyProject.Services.SystemServices
         public string StartBuildingShip(string systemId, string shipType, int count);
 
         public string StartBuildingDefence(string systemId, string defenceType, int count);
+
+        public string AddFleet(string systemId, string playerId);
     }
 }

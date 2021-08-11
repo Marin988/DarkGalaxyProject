@@ -200,6 +200,9 @@ namespace DarkGalaxyProject.Services.SystemServices
             var flightLength = Math.Abs(system.Position - destinationSystemPosition);
             fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
 
+            var systemFuel = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.Fuel);
+            systemFuel.Quantity -= flightLength * 10;
+
             data.SaveChanges();
 
             return null;
@@ -407,6 +410,58 @@ namespace DarkGalaxyProject.Services.SystemServices
            .FirstOrDefault();
 
             return system;
+        }
+
+        public string AddFleet(string systemId, string playerId)
+        {
+            var fleetCount = data.Fleets.Count(f => f.SystemId == systemId);
+
+            if(fleetCount == 5)
+            {
+                return "You already have the maximum of 5 fleets";
+            }
+
+            ResearchType researchType = ResearchType.SecondFleet;
+
+            switch (fleetCount)
+            {
+                case 1:
+                    researchType = ResearchType.SecondFleet;
+                    break;
+                case 2:
+                    researchType = ResearchType.ThirdFleet;
+                    break;
+                case 3:
+                    researchType = ResearchType.FourthFleet;
+                    break;
+                case 4:
+                    researchType = ResearchType.FifthFleet;
+                    break;
+            }
+
+            var FleetResearch = data.ResearchTrees.First(r => r.PlayerId == playerId && r.ResearchType == researchType);
+
+            if (!FleetResearch.IsLearned)
+            {
+                return $"You have not yet learned the {researchType.ToString()} research";
+            }
+
+            var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+
+            if(systemMilkyCoin.Quantity < 10000 * fleetCount)
+            {
+                return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
+            }
+
+            systemMilkyCoin.Quantity -= 10000 * fleetCount;
+
+            var fleet = new Fleet(systemId);
+
+            data.Fleets.Add(fleet);
+
+            data.SaveChanges();
+
+            return "You have successfully added a new fleet";
         }
     }
 }

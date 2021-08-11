@@ -151,5 +151,16 @@ namespace DarkGalaxyProject.Controllers
             return Redirect($"DefenceStructureBuilder?systemId={systemId}");
         }
 
+        [Authorize]
+        [HttpPost]
+        public IActionResult AddFleet(string systemId)
+        {
+            var message = systems.AddFleet(systemId, userManager.GetUserId(User));
+
+            TempData["Message"] = message;
+
+            return Redirect($"Fleet?systemId={systemId}");
+        }
+
     }
 }

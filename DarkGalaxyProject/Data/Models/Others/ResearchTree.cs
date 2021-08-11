@@ -28,7 +28,7 @@ namespace DarkGalaxyProject.Data.Models.Others
 
         //image
 
-        public int Price { get; set; }
+        public int Price => 10000 * (int)ResearchType;
 
         [Required]
         public string PlayerId { get; set; }

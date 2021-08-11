@@ -77,6 +77,15 @@
         <div id="timers">
         </div>
     </form>
+
+    <form asp-action="AddFleet" method="post">
+        <div class="form-group">
+            <input name="systemId" hidden value="@Model.HostSystemInfo.HostSystemId" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Add Fleet" class="btn btn-primary" />
+        </div>
+    </form>
 }
 
 @section Scripts {
