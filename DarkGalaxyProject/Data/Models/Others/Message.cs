@@ -20,7 +20,7 @@ namespace DarkGalaxyProject.Data.Models.Others
 
         public DateTime TimeOfSending { get; set; }
 
-        [Required]
+        //[Required]
         public string SenderId { get; set; }
 
         //[ForeignKey("SenderId")]

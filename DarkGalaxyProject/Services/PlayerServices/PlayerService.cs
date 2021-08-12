@@ -41,7 +41,7 @@ namespace DarkGalaxyProject.Services.PlayerServices
                 {
                     Content = m.Content,
                     SenderId = m.SenderId,
-                    SenderName = m.Sender.UserName,
+                    SenderName = m.Sender.UserName == null ? "System" : m.Sender.UserName,
                     Title = m.Title,
                     Time = m.TimeOfSending
                 })

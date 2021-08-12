@@ -19,13 +19,12 @@ namespace DarkGalaxyProject.Infrastructure.Extensions
 
             var data = services.GetService<ApplicationDbContext>();
 
-            //data.Database.Migrate();
-
             var seeders = services.GetServices<IDatabaseSeeder>();
 
             foreach (var seeder in seeders)
             {
                 seeder.Seed();
+                //seeder.SeedUsers();
             }
 
             return app;

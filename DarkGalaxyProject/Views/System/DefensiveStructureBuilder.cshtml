@@ -116,7 +116,7 @@
                     document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
                     if (timeleft - counter <= 0) {
                         clearInterval(_tick);
-                        document.getElementById('timer').remove();
+                        setTimeout(function () { location.reload(); }, 200);
                     }
                 }, 1000);
             } 

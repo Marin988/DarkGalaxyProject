@@ -15,14 +15,6 @@
             <li>
                 <span>Position: @system.Position</span><br>
                 <span>Type: @system.Type</span><br>
-                @foreach (var ship in system.Ships)
-                {
-                    <span>HP: @ship.HP---------</span>
-                    <span>Damage: @ship.Damage---------</span>
-                    <span>Speed: @ship.Speed---------</span>
-                    <span>Storage: @ship.Storage---------</span>
-                    <span>Type: @ship.Type</span><br>
-                }
                 <form action="Colonize" method="post">
                     <input type="hidden" name="systemId" value=@system.Id>
                     <div class="form-group">

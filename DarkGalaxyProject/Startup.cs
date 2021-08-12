@@ -59,6 +59,7 @@ namespace DarkGalaxyProject
 
 
             services.AddTransient<IDatabaseSeeder, SystemsSeeder>();
+            services.AddTransient<IDatabaseSeeder, PlayersSeeder>();
             services.AddTransient<IAuctionService, AuctionService>();
             services.AddTransient<IAllianceService, AllianceService>();
             services.AddTransient<IPlanetService, PlanetService>();

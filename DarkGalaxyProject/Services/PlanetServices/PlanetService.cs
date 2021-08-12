@@ -57,7 +57,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             var factory = data.Factories.First(f => f.Id == buildingId);
 
-            if(factory.UpgradeFinishTime != null)
+            if (factory.UpgradeFinishTime != null)
             {
                 return "This building is already in the process of upgrading";
             }
@@ -76,7 +76,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
             {
                 return $"You don't have enough {milkyCoin.Type.ToString()}.";
             }
-            else if(energy.Quantity < factory.UpgradeCost / 10)
+            else if (energy.Quantity < factory.UpgradeCost / 10)
             {
                 return $"You don't have enough {energy.Type.ToString()}.";
             }
@@ -86,7 +86,6 @@ namespace DarkGalaxyProject.Services.PlanetServices
                 energy.Quantity -= factory.UpgradeCost / 10;
 
                 factory.UpgradeFinishTime = DateTime.Now.AddSeconds(factory.UpgradeTimeLength);
-
                 data.SaveChanges();
             }
 
@@ -112,7 +111,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
 
-            if(systemMilkyCoin.Quantity < 40000)
+            if (systemMilkyCoin.Quantity < 40000)
             {
                 return $"You don't have enough {systemMilkyCoin.Type.ToString()} to terraform this planet";
             }

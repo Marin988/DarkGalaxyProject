@@ -77,8 +77,15 @@ namespace DarkGalaxyProject.BackgroundTasks
 
                         resource.Quantity += totalIncome;
                     }
-
-                    dbContext.SaveChanges();
+                    try
+                    {
+                        dbContext.SaveChanges();
+                    }
+                    catch(Exception error)
+                    {
+                        Console.WriteLine($"Message: {error.Message}");
+                        Console.WriteLine($"Inner exception: {error.InnerException}");
+                    }
 
                     if(dbContext.Factories.Any(f => f.UpgradeFinishTime <= DateTime.Now))
                     {
@@ -140,8 +147,18 @@ namespace DarkGalaxyProject.BackgroundTasks
                         dbContext.AddRange(defences);
                     }
 
+                    try
+                    {
+                        await dbContext.SaveChangesAsync();
+                    }
+                    catch (Exception error)
+                    {
+                        Console.WriteLine($"Message: {error.Message}");
+                        Console.WriteLine($"Inner exception: {error.InnerException}");
+                        Console.WriteLine($"--------------------------------------------");
+                    }
 
-                    await dbContext.SaveChangesAsync();//cancel token None - read about it
+                    //await dbContext.SaveChangesAsync();//cancel token None - read about it
 
                     await Task.Delay(1000, stoppingToken);
                 }
@@ -195,6 +212,14 @@ namespace DarkGalaxyProject.BackgroundTasks
                 ShipsOnMission = fleet.Ships.OrderByDescending(s => s.Type).ToList();
                 Colonize(playerId, fleet, destinationSystem, ShipsOnMission, data);
             }//NOTE
+
+            if(fleet.MissionType == MissionType.Spy)
+            {
+                var MessageTitle = "Spy results";
+                var MessageContent = $"Your espionage probe sent to system {destinationSystem.Position} determined their total strength of defence to be {destinationSystem.DefensiveStructures.Sum(d => d.HP) + destinationSystem.Ships.Where(s => !s.OnMission).Sum(s => s.HP)}.";
+
+                ReportMessage(playerId, MessageTitle, MessageContent, data);
+            }
 
             //data.SaveChanges();
 
@@ -443,7 +468,6 @@ namespace DarkGalaxyProject.BackgroundTasks
             {
                 ReceiverId = playerId,
                 TimeOfSending = DateTime.Now,
-                SenderId = "1",//baaaaaaaaaaaad------Add a "System" user? Who would send all these messages
                 Title = messageTitle,
                 Content = messageContent
             };

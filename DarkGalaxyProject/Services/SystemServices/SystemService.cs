@@ -97,7 +97,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             return defenceBuilders;
         }
-       
+
         public IEnumerable<FleetServiceModel> FleetsInSystem(string systemId)
         {
             var fleets = data.Fleets
@@ -178,7 +178,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                 return $"A system with position {destinationSystemPosition} doesn't exist! (or is 0)";
             }
 
-            if (ships.Count == 0)
+            if (ships.Count == 0 && missionTypeEnum != MissionType.Spy)
             {
                 return "You cannot send a fleet of 0 ships";
             }
@@ -198,25 +198,32 @@ namespace DarkGalaxyProject.Services.SystemServices
                 }
             }
 
-            if((missionTypeEnum == MissionType.Deploy || missionTypeEnum == MissionType.Transport) && destinationSystem.PlayerId == null)
+            if ((missionTypeEnum == MissionType.Deploy || missionTypeEnum == MissionType.Transport) && destinationSystem.PlayerId == null)
             {
                 return "You cannot deploy ships and transport resources to systems not belonging to a player.";
             }
 
-            if (cargo > 0)
+            if (cargo > 0 && missionTypeEnum != MissionType.Attack && missionTypeEnum != MissionType.Colonize && missionTypeEnum != MissionType.Spy)
             {
                 var systemMilkyCoin = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.MilkyCoin);
 
-                if(cargo > systemMilkyCoin.Quantity)
+                if (cargo > systemMilkyCoin.Quantity)
                 {
                     cargo = systemMilkyCoin.Quantity;
                 }
 
-                lock (systemMilkyCoin)
+                systemMilkyCoin.Quantity -= cargo;
+                data.SaveChanges();
+            }
+
+            if (missionTypeEnum == MissionType.Spy)
+            {
+                if (!system.Ships.Any(s => s.Type == ShipType.Espionage))
                 {
-                    systemMilkyCoin.Quantity -= cargo;
-                    data.SaveChanges();
+                    return "You can't spy without espionages";
                 }
+
+                ships.Add(system.Ships.First(s => s.Type == ShipType.Espionage));
             }
 
             PrepareShipsForMission(cargo, fleet, missionTypeEnum, ships);
@@ -230,11 +237,11 @@ namespace DarkGalaxyProject.Services.SystemServices
             fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
 
             var systemFuel = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.Fuel);
-            systemFuel.Quantity -= flightLength * 100;
+            systemFuel.Quantity -= flightLength * 500;
 
             data.SaveChanges();
 
-            return null;
+            return $"Successfully sent {fleet.Ships.Count()} ships on mission {missionType}";
         }
 
         private static List<Ship> GetShips(int battleShipCount, int colonizerCount, int transportShipCount, Data.Models.System system)
@@ -332,13 +339,9 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var defenceType = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceTypeString);
 
-            var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
-
-            var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defenceType);
-
             if (playerId != system.PlayerId)
             {
-                return $"Only the player, whom this system belongs to can build ships";
+                return $"Only the player, whom this system belongs to can build defences";
             }
 
             var research = data.ResearchTrees.First(r => r.PlayerId == playerId && r.ResearchType == ResearchType.HeavyDefence);
@@ -348,16 +351,19 @@ namespace DarkGalaxyProject.Services.SystemServices
                 return $"You must learn {research.ResearchType.ToString()} to be able to build {DefensiveStructureType.SpaceStation.ToString()}";
             }
 
+            var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+            var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defenceType);
+
             if (systemMilkyCoin.Quantity < defenceBuildingQueue.Price)
             {
                 return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
             }
 
             systemMilkyCoin.Quantity -= defenceBuildingQueue.Price;
-
             defenceBuildingQueue.Count = count;
 
             defenceBuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(defenceBuildingQueue.BuildTime);
+
 
             data.SaveChanges();
 
@@ -370,7 +376,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
 
-            if(playerId != system.PlayerId)
+            if (playerId != system.PlayerId)
             {
                 return $"Only the player, whom this system belongs to can build ships";
             }
@@ -387,6 +393,9 @@ namespace DarkGalaxyProject.Services.SystemServices
                 case ShipType.BattleShip:
                     researchType = ResearchType.BattleShip;
                     break;
+                case ShipType.Espionage:
+                    researchType = ResearchType.Espionage;
+                    break;
                 default:
                     break;
             };
@@ -399,9 +408,7 @@ namespace DarkGalaxyProject.Services.SystemServices
             }
 
             var shipbuildingQueue = system.ShipBuildingQueue.FirstOrDefault(s => s.ShipType == shiptype);
-
             shipbuildingQueue.Count = count;
-            shipbuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(shipbuildingQueue.BuildTime);
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
 
@@ -411,6 +418,9 @@ namespace DarkGalaxyProject.Services.SystemServices
             }
 
             systemMilkyCoin.Quantity -= shipbuildingQueue.Price;
+
+            shipbuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(shipbuildingQueue.BuildTime);
+
 
             data.SaveChanges();
 
@@ -461,7 +471,7 @@ namespace DarkGalaxyProject.Services.SystemServices
         {
             var fleetCount = data.Fleets.Count(f => f.SystemId == systemId);
 
-            if(fleetCount == 5)
+            if (fleetCount == 5)
             {
                 return "You already have the maximum of 5 fleets";
             }
@@ -493,7 +503,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
 
-            if(systemMilkyCoin.Quantity < 10000 * fleetCount)
+            if (systemMilkyCoin.Quantity < 10000 * fleetCount)
             {
                 return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
             }

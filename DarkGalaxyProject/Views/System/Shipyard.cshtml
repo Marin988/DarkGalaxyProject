@@ -87,13 +87,11 @@
                         var datastring = "shipType=" + shipType + "&systemId=" + systemId + "&count=" + count;
                         $.ajax({
                             type: "post",
-                            url: "StartBuilding", // set the count, set the building finish time for the whole count (for the corresponding ship type)
+                            url: "StartBuilding", 
                             data: datastring
                         });
                         setTimeout(function () { location.reload(); }, 200);
                     });
-                    //buildShip();//is that ever happening? it is right after the location.reload()... Oh yeah it is, even before the new datetime sets...
-
             }
         }
 
@@ -122,6 +120,7 @@
                     document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
                     if (timeleft - counter <= 0) {
                         clearInterval(_tick);
+                        setTimeout(function () { location.reload(); }, 200);
                     }
                 }, 1000);
             } 

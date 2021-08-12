@@ -45,6 +45,9 @@ namespace DarkGalaxyProject.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Resource>()
+                .Property(r => r.Quantity).IsConcurrencyToken();
+
             builder.Entity<AuctionDeal>()
                 .HasOne(ad => ad.Buyer)
                 .WithMany(p => p.BoughtAuctionDeals)

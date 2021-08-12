@@ -109,7 +109,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SenderId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("TimeOfSending")
@@ -453,6 +452,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.Property<string>("SystemId")
@@ -716,8 +716,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasOne("DarkGalaxyProject.Data.Models.Player", "Sender")
                         .WithMany("SentMessages")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Receiver");
 

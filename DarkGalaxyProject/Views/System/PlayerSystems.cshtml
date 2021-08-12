@@ -12,22 +12,23 @@
 <ul>
     @foreach (var system in Model)
     {
-        <li>
-            <span>Position: @system.Position</span><br>
-            <span>Type: @system.Type</span><br>
-            @foreach (var ship in system.Ships)
-            {
-                <span>HP: @ship.HP---------</span>
-                <span>Damage: @ship.Damage---------</span>
-                <span>Speed: @ship.Speed---------</span>
-                <span>Storage: @ship.Storage---------</span>
-                <span>Type: @ship.Type</span><br>
-            }
-            <form action="SwitchSystem" method="post">
-                <input hidden name="systemId" value=@system.Id />
-                <input type="submit" value="View system" />
-            </form>
-        </li>
+    <li>
+        <span>Position: @system.Position</span><br>
+        <span>Type: @system.Type</span><br>
+        @foreach (var ship in system.Ships.GroupBy(s => s.Type))
+        {
+            <span>Count: @ship.Count()---------</span>
+            <span>HP: @ship.Sum(s => s.HP)---------</span>
+            <span>Damage: @ship.Sum(s => s.Damage)---------</span>
+            <span>Speed: @ship.Sum(s => s.Speed)---------</span>
+            <span>Storage: @ship.Sum(s => s.Storage)---------</span>
+            <span>Type: @ship.First().Type</span><br>
+        }
+        <form action="SwitchSystem" method="post">
+            <input hidden name="systemId" value=@system.Id />
+            <input type="submit" value="View system" />
+        </form>
+    </li>
     }
 </ul>
 

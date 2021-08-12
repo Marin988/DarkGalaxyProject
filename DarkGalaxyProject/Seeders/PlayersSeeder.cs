@@ -25,16 +25,31 @@ namespace DarkGalaxyProject.Seeders
             return;
         }
 
-        //public async Task RegisterPlayer()
-        //{
-        //    var SystemMessagesSender = new Player()
-        //    {
-        //        Email = "SystemMessagesSender@abv.bg",
-        //        UserName = "System",
-        //        CurrentSystemId = data.Systems.First(s => s.Position == 1).Id
-        //    };
+        public async Task SeedUsers()
+        {
+            if (!data.Players.Any())
+            {
+                var SystemMessagesSender = new Player()
+                {
+                    Email = "SystemMessagesSender@abv.bg",
+                    UserName = "System",
+                    CurrentSystemId = data.Systems.First(s => s.Position == 1).Id
+                };
 
-        //    await userManager.CreateAsync(SystemMessagesSender, "a!1jJk09");
-        //}
+                var result = await userManager.CreateAsync(SystemMessagesSender, "a!1jJk09");
+
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(e => e.Description);
+
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine(error);
+                    }
+                }
+
+                await data.SaveChangesAsync();
+            }
+        }
     }
 }
