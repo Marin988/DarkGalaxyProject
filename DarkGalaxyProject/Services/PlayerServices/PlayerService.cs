@@ -1,6 +1,7 @@
 ﻿using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models.Others;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,21 @@ namespace DarkGalaxyProject.Services.PlayerServices
         public PlayerService(ApplicationDbContext data)
         {
             this.data = data;
+        }
+
+        public IEnumerable<ProfileServiceModel> AllPlayers()
+        {
+            var allPlayers = data.Players
+                .Include(p => p.Systems)
+                .Select(p => new ProfileServiceModel
+                {
+                    UserName = p.UserName,
+                    AllianceName = p.Alliance != null ? p.Alliance.Name : null,
+                    Systems = p.Systems.Count()
+                })
+                .ToList();
+
+            return allPlayers;
         }
 
         public MessageServiceModel Message(string messageId)
@@ -144,19 +160,19 @@ namespace DarkGalaxyProject.Services.PlayerServices
         {
             var research = data.ResearchTrees.FirstOrDefault(r => r.Id == researchId);
 
-            var systemMilkyCoin = data.Resources.FirstOrDefault(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
+            var systemPaper = data.Resources.FirstOrDefault(r => r.SystemId == systemId && r.Type == ResourceType.Paper);
 
             if(research.IsLearned == true)
             {
                 return "You have already done this research!";
             }
 
-            if(systemMilkyCoin.Quantity < research.Price)
+            if(systemPaper.Quantity < research.Price)
             {
-                return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
+                return $"You don't have enough {systemPaper.Type.ToString()}";
             }
 
-            systemMilkyCoin.Quantity -= research.Price;
+            systemPaper.Quantity -= research.Price;
             research.IsLearned = true;
 
             data.SaveChanges();

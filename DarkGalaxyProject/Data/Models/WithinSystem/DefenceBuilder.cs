@@ -16,6 +16,8 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int Count { get; set; }
 
+        public int Price => (int)DefensiveStructureType * 1000 * Count;
+
         public int BuildTime => (int)DefensiveStructureType * 5 * Count;
 
         public DateTime? FinishedBuildingTime { get; set; }

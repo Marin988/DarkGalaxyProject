@@ -16,5 +16,6 @@ namespace DarkGalaxyProject.Data.Enums
         TransportShip = 7,
         FourthFleet = 8,
         FifthFleet = 9,
+        HeavyDefence = 10
     }
 }

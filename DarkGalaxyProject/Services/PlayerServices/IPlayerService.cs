@@ -7,6 +7,8 @@ namespace DarkGalaxyProject.Services.PlayerServices
 {
     public interface IPlayerService
     {
+        public IEnumerable<ProfileServiceModel> AllPlayers();
+
         public MessageServiceModel Message(string messageId);
 
         public IEnumerable<MessageListingServiceModel> PlayerMessages(string playerId);

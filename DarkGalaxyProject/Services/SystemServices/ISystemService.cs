@@ -27,9 +27,9 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public string SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int destinationSystemPosition, string systemId, int cargo);
 
-        public string StartBuildingShip(string systemId, string shipType, int count);
+        public string StartBuildingShip(string systemId, string shipType, int count, string playerId);
 
-        public string StartBuildingDefence(string systemId, string defenceType, int count);
+        public string StartBuildingDefence(string systemId, string defenceType, int count, string playerId);
 
         public string AddFleet(string systemId, string playerId);
 

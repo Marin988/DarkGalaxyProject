@@ -39,6 +39,14 @@ namespace DarkGalaxyProject.Controllers
         }
 
         [Authorize]
+        public IActionResult AllPlayers()
+        {
+            var allPlayers = players.AllPlayers();
+
+            return View(allPlayers);
+        }
+
+        [Authorize]
         public IActionResult Researches(string playerId)
         {
             var researches = players.Researches(playerId);

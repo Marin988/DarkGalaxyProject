@@ -11,6 +11,8 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public string ShipType { get; set; }
 
+        public int PricePerShip { get; set; }
+
         public int BuildTime { get; set; }
 
         public DateTime? FinishedBuildingTime { get; set; }

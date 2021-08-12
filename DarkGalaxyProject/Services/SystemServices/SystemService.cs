@@ -90,7 +90,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                     FinishedBuildingTime = sp.FinishedBuildingTime,
                     systemId = sp.SystemId,
                     DefenceType = sp.DefensiveStructureType.ToString(),
-                    Count = sp.Count
+                    Count = sp.Count,
+                    PricePerDefence = sp.Price
                 })
                 .ToList();
 
@@ -295,7 +296,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                     FinishedBuildingTime = sp.FinishedBuildingTime,
                     systemId = sp.SystemId,
                     ShipType = sp.ShipType.ToString(),
-                    Count = sp.Count
+                    Count = sp.Count,
+                    PricePerShip = sp.Price
                 })
                 .ToList();
 
@@ -324,22 +326,34 @@ namespace DarkGalaxyProject.Services.SystemServices
             return ships;
         }
 
-        public string StartBuildingDefence(string systemId, string defenceType, int count)
+        public string StartBuildingDefence(string systemId, string defenceTypeString, int count, string playerId)
         {
             var system = data.Systems.Include(s => s.DefenceBuildingQueue).First(s => s.Id == systemId);
 
-            var defencetype = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceType);
+            var defenceType = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceTypeString);
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
 
-            if(systemMilkyCoin.Quantity < (int)defencetype * 100 * count)
+            var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defenceType);
+
+            if (playerId != system.PlayerId)
+            {
+                return $"Only the player, whom this system belongs to can build ships";
+            }
+
+            var research = data.ResearchTrees.First(r => r.PlayerId == playerId && r.ResearchType == ResearchType.HeavyDefence);
+
+            if (defenceType == DefensiveStructureType.SpaceStation && !research.IsLearned)
+            {
+                return $"You must learn {research.ResearchType.ToString()} to be able to build {DefensiveStructureType.SpaceStation.ToString()}";
+            }
+
+            if (systemMilkyCoin.Quantity < defenceBuildingQueue.Price)
             {
                 return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
             }
 
-            systemMilkyCoin.Quantity -= (int)defencetype * 100 * count;
-
-            var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defencetype);
+            systemMilkyCoin.Quantity -= defenceBuildingQueue.Price;
 
             defenceBuildingQueue.Count = count;
 
@@ -347,16 +361,19 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             data.SaveChanges();
 
-            return null;
+            return $"You have started building a {defenceBuildingQueue.DefensiveStructureType.ToString()} for {defenceBuildingQueue.Price}";
         }
 
-        public string StartBuildingShip(string systemId, string shipType, int count)
+        public string StartBuildingShip(string systemId, string shipType, int count, string playerId)
         {
             var system = data.Systems.Include(s => s.ShipBuildingQueue).First(s => s.Id == systemId);
 
             var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
 
-            var playerId = system.PlayerId;
+            if(playerId != system.PlayerId)
+            {
+                return $"Only the player, whom this system belongs to can build ships";
+            }
 
             ResearchType researchType = 0;
             switch (shiptype)
@@ -388,16 +405,16 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
 
-            if (systemMilkyCoin.Quantity < (int)shiptype * 500 * count)
+            if (systemMilkyCoin.Quantity < shipbuildingQueue.Price)
             {
                 return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
             }
 
-            systemMilkyCoin.Quantity -= (int)shiptype * 500 * count;
+            systemMilkyCoin.Quantity -= shipbuildingQueue.Price;
 
             data.SaveChanges();
 
-            return "You have successfuly built a colonizer";
+            return $"You have started building a {shipbuildingQueue.ShipType.ToString()} for {shipbuildingQueue.Price}";
         }
 
         public bool SwitchSystem(string systemId, string playerId)

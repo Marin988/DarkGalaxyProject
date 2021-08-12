@@ -64,27 +64,33 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             var system = data.Systems.First(s => s.Id == systemId);
 
+            if (system.PlayerId != playerId)
+            {
+                return "You can only upgprade buildings built in your systems.";
+            }
+
             var milkyCoin = data.Resources.First(r => r.Type == ResourceType.MilkyCoin && r.SystemId == systemId);
+            var energy = data.Resources.First(r => r.Type == ResourceType.Energy && r.SystemId == systemId);
 
             if (milkyCoin.Quantity < factory.UpgradeCost)
             {
                 return $"You don't have enough {milkyCoin.Type.ToString()}.";
             }
+            else if(energy.Quantity < factory.UpgradeCost / 10)
+            {
+                return $"You don't have enough {energy.Type.ToString()}.";
+            }
             else
             {
                 milkyCoin.Quantity -= factory.UpgradeCost;
+                energy.Quantity -= factory.UpgradeCost / 10;
 
                 factory.UpgradeFinishTime = DateTime.Now.AddSeconds(factory.UpgradeTimeLength);
-
-                if (system.PlayerId != playerId)
-                {
-                    return "You can only upgprade buildings built in your systems.";
-                }
 
                 data.SaveChanges();
             }
 
-            return null;
+            return $"You have started an upgrade for {factory.UpgradeCost} {milkyCoin.Type.ToString()} and {factory.UpgradeCost / 10} {energy.Type.ToString()}";
         }
 
         public string Terraform(string planetId, string playerId)

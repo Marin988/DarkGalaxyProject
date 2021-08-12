@@ -13,6 +13,8 @@ namespace DarkGalaxyProject.Data.Models
 
         public int Count { get; set; }
 
+        public int Price => (int)ShipType * 1000 * Count;
+
         public int BuildTime => (int)ShipType * Count;
 
         public DateTime? FinishedBuildingTime { get; set; }

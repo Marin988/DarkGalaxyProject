@@ -1,0 +1,21 @@
+﻿@using DarkGalaxyProject.Services.PlayerServices
+@model List<ProfileServiceModel>
+
+@{
+    ViewData["Title"] = "All players";
+}
+
+<h1>
+    All players
+</h1>
+
+<ul>
+    @foreach (var Profile in Model)
+    {
+        <li>
+            <span>UserName: @Profile.UserName</span><br>
+            <span>Alliance: @(Profile.AllianceName != null ? Profile.AllianceName : "None")</span><br>
+            <span>Systems: @Profile.Systems</span><br>
+        </li>
+    }
+</ul> 

@@ -13,6 +13,8 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public int BuildTime { get; set; }
 
+        public int PricePerDefence { get; set; }
+
         public DateTime? FinishedBuildingTime { get; set; }
 
         public int Count { get; set; }

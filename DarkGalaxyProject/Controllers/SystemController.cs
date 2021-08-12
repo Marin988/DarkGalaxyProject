@@ -141,7 +141,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult StartBuilding(string systemId, string shipType, int count)
         {
-            var message = systems.StartBuildingShip(systemId, shipType, count);
+            var message = systems.StartBuildingShip(systemId, shipType, count, userManager.GetUserId(User));
 
             TempData["Message"] = message;
 
@@ -152,7 +152,7 @@ namespace DarkGalaxyProject.Controllers
         [HttpPost]
         public IActionResult StartBuildingDefence(string systemId, string defenceType, int count)
         {
-            var message = systems.StartBuildingDefence(systemId, defenceType, count);
+            var message = systems.StartBuildingDefence(systemId, defenceType, count, userManager.GetUserId(User));
 
             TempData["Message"] = message;
 
