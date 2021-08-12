@@ -12,5 +12,7 @@ namespace DarkGalaxyProject.Services.SystemServices
         public DateTime? ArrivalTime { get; set; }
 
         public bool Outgoing { get; set; }
+
+        public int? DestinationSystemPosition { get; set; }
     }
 }

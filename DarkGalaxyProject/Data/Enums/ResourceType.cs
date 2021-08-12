@@ -9,6 +9,7 @@ namespace DarkGalaxyProject.Data.Enums
     {
         MilkyCoin = 0,
         Fuel = 1,
-        Paper = 2
+        Paper = 2,
+        Energy = 3
     }
 }

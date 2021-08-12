@@ -11,7 +11,7 @@ namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20210801110133_missionType")]
-    partial class missionType
+    partial class MissionType
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

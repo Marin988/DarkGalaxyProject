@@ -2,7 +2,7 @@
 
 namespace DarkGalaxyProject.Data.Migrations
 {
-    public partial class missionType : Migration
+    public partial class MissionType : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

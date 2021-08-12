@@ -7,7 +7,7 @@ namespace DarkGalaxyProject.Models.System
 {
     public class BuildDefenceFormViewModel
     {
-        public string systemId { get; set; }
+        public string SystemId { get; set; }
 
         public string DefenceType { get; set; }
 

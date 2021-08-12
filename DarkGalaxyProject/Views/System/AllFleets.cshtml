@@ -1,0 +1,19 @@
+﻿@using DarkGalaxyProject.Services.SystemServices
+@model List<FleetServiceModel>
+
+
+
+<ul>
+    @foreach (var fleet in Model)
+    {
+    <li>
+        <span>Ships count: @fleet.Ships.Count</span><br>
+        <span>ArrivalTime: @fleet.ArrivalTime</span><br>
+        <span>Destination system position: @fleet.DestinationSystemPosition</span><br>
+        @if (fleet.ArrivalTime != null)
+        {
+            <span>@(fleet.Outgoing ? "Outgoing" : "Incoming")</span><br>
+        }
+    </li>
+    }
+</ul>

@@ -38,12 +38,41 @@ namespace DarkGalaxyProject.BackgroundTasks
                     foreach (var resource in resources)
                     {
                         var planetsId = dbContext.Planets.Where(p => p.SystemId == resource.SystemId).Select(p => p.Id).ToList();
+                        var sun = dbContext.Suns.First(s => s.SystemId == resource.SystemId);
 
                         var totalIncome = 0;
 
+                        FactoryType factoryType = 0;
+
+                        switch (resource.Type)
+                        {
+                            case ResourceType.MilkyCoin:
+                                factoryType = FactoryType.Factory;
+                                break;
+                            case ResourceType.Fuel:
+                                factoryType = FactoryType.Factory;
+                                break;
+                            case ResourceType.Paper:
+                                factoryType = FactoryType.ResearchBuilding;
+                                break;
+                            case ResourceType.Energy:
+                                factoryType = FactoryType.SolarPanel;
+                                break;
+                        }
+
                         foreach (var planetId in planetsId)
                         {
-                            totalIncome += dbContext.Factories.First(f => f.PlanetId == planetId).Income;
+                            totalIncome += dbContext.Factories.First(f => f.PlanetId == planetId && f.FactoryType == factoryType).Income;
+                        }
+
+                        if(resource.Type == ResourceType.Energy)
+                        {
+                            totalIncome *= (int)sun.Type;
+                        }
+
+                        if(resource.Type == ResourceType.Fuel)
+                        {
+                            totalIncome /= 2;
                         }
 
                         resource.Quantity += totalIncome;
@@ -112,7 +141,7 @@ namespace DarkGalaxyProject.BackgroundTasks
                     }
 
 
-                    await dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();//cancel token None - read about it
 
                     await Task.Delay(1000, stoppingToken);
                 }
@@ -162,7 +191,8 @@ namespace DarkGalaxyProject.BackgroundTasks
 
             if (fleet.MissionType == MissionType.Colonize)//I may add transport function in here later // separate method
             {
-                Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
+                fleet = Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
+                ShipsOnMission = fleet.Ships.OrderByDescending(s => s.Type).ToList();
                 Colonize(playerId, fleet, destinationSystem, ShipsOnMission, data);
             }//NOTE
 
@@ -173,15 +203,28 @@ namespace DarkGalaxyProject.BackgroundTasks
 
         private void Colonize(string playerId, Fleet fleet, Data.Models.System destinationSystem, List<Ship> ShipsOnMission, ApplicationDbContext data)
         {
-            var colonizer = fleet.Ships.First(s => s.Type == ShipType.Colonizer);
+            var colonizer = fleet.Ships.FirstOrDefault(s => s.Type == ShipType.Colonizer);
+            string messageTitle;
+            string messageContent;
+
+            if (colonizer == null || ShipsOnMission.Count == 0)
+            {
+                fleet.ArrivalTime = null;
+                messageTitle = $"Colonization failed";
+                messageContent = $"Your coloniser was destroyed at system {destinationSystem.Position}";
+
+                ReportMessage(playerId, messageTitle, messageContent, data);
+                return;
+            }
+
             if (ShipsOnMission.Count == 1)
             {
                 fleet.ArrivalTime = null;
             }
             destinationSystem.PlayerId = playerId;
             data.Ships.Remove(colonizer);
-            var messageTitle = $"Colonised system";
-            var messageContent = $"Successfully colonised system {destinationSystem.Position}";
+            messageTitle = $"Colonised system";
+            messageContent = $"Successfully colonised system {destinationSystem.Position}";
 
             ReportMessage(playerId, messageTitle, messageContent, data);
         }
@@ -236,7 +279,7 @@ namespace DarkGalaxyProject.BackgroundTasks
 
         }
 
-        private void Battle(Fleet fleet, Data.Models.System destinationSystem, List<Ship> ShipsOnMission, string playerId, string destinationSystemPlayerId, ApplicationDbContext data)
+        private Fleet Battle(Fleet fleet, Data.Models.System destinationSystem, List<Ship> ShipsOnMission, string playerId, string destinationSystemPlayerId, ApplicationDbContext data)
         {
             var attackerHP = ShipsOnMission.Sum(s => s.HP);
             var attackerDMG = ShipsOnMission.Sum(s => s.Damage);
@@ -389,6 +432,9 @@ namespace DarkGalaxyProject.BackgroundTasks
                     ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent, data);
                 }
             }
+
+            fleet.Ships = ShipsOnMission;
+            return fleet;
         }
 
         private void ReportMessage(string playerId, string messageTitle, string messageContent, ApplicationDbContext data)

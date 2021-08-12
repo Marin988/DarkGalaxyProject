@@ -52,6 +52,34 @@ namespace DarkGalaxyProject.Services.SystemServices
             return systems;
         }
 
+        public IEnumerable<FleetServiceModel> AllFleets(string playerId)
+        {
+            var playersFleets = data.Systems
+                .Include(s => s.Fleets)
+                .ThenInclude(f => f.Ships)
+                .Where(s => s.PlayerId == playerId || s.CurrentPlayerId == playerId)
+                .ToList()
+                .SelectMany(s => s.Fleets.Select(f => new FleetServiceModel
+                {
+                    Ships = f.Ships.Select(sh => new ShipServiceModel
+                    {
+                        Damage = sh.Damage,
+                        HP = sh.HP,
+                        Speed = sh.Speed,
+                        Storage = sh.Storage,
+                        Type = sh.Type.ToString()
+                    })
+                    .ToList(),
+                    ArrivalTime = f.ArrivalTime,
+                    Outgoing = f.Outgoing,
+                    DestinationSystemPosition = f.DestinationSystemPoistion
+                })
+                .ToList())
+                .ToList();
+
+            return playersFleets;
+        }
+
         public IEnumerable<DefenceBuilderServiceModel> DefenceBuilders(string systemId)
         {
             var defenceBuilders = data.DefenceBuilders
@@ -201,7 +229,7 @@ namespace DarkGalaxyProject.Services.SystemServices
             fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
 
             var systemFuel = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.Fuel);
-            systemFuel.Quantity -= flightLength * 10;
+            systemFuel.Quantity -= flightLength * 100;
 
             data.SaveChanges();
 

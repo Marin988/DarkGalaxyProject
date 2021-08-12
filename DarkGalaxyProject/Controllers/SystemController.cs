@@ -86,6 +86,14 @@ namespace DarkGalaxyProject.Controllers
         }
 
         [Authorize]
+        public IActionResult AllFleets()
+        {
+            var playersFleets = systems.AllFleets(userManager.GetUserId(User));
+
+            return View(playersFleets);
+        }
+
+        [Authorize]
         public IActionResult PlayerSystems(string PlayerId)
         {
             var playerSystems = systems.PlayerSystems(PlayerId);

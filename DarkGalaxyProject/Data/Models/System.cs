@@ -17,6 +17,7 @@ namespace DarkGalaxyProject.Data.Models
                 new Resource { Quantity = 2000, Type = ResourceType.Fuel },
                 new Resource { Quantity = 5000, Type = ResourceType.MilkyCoin },
                 new Resource { Quantity = 0, Type = ResourceType.Paper },
+                new Resource { Quantity = 100, Type = ResourceType.Energy },
             };
             Suns = new List<Sun>();
             DefensiveStructures = new List<DefensiveStructure>();
