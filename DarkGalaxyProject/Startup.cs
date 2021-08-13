@@ -2,7 +2,6 @@ using DarkGalaxyProject.BackgroundTasks;
 using DarkGalaxyProject.Contracts;
 using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Models;
-using DarkGalaxyProject.Hubs;
 using DarkGalaxyProject.Infrastructure.Extensions;
 using DarkGalaxyProject.Seeders;
 using DarkGalaxyProject.Services.AllianceServices;

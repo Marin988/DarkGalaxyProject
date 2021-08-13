@@ -47,9 +47,7 @@ namespace DarkGalaxyProject.BackgroundTasks
 
                         var totalIncome = 0;
 
-                        FactoryType factoryType = 0;
-
-                        factoryType = factoryTypeDependingOnResource(resource, factoryType);
+                        var factoryType = factoryTypeDependingOnResource(resource);
 
                         foreach (var planetId in planetsId)
                         {
@@ -92,8 +90,10 @@ namespace DarkGalaxyProject.BackgroundTasks
             }
         }
 
-        private static FactoryType factoryTypeDependingOnResource(Resource resource, FactoryType factoryType)
+        private static FactoryType factoryTypeDependingOnResource(Resource resource)
         {
+            FactoryType factoryType = 0;
+
             switch (resource.Type)
             {
                 case ResourceType.MilkyCoin:
