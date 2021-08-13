@@ -1,9 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using DarkGalaxyProject.Data.Enums
-@using DarkGalaxyProject.Data
 @inject SignInManager<Player> SignInManager
 @inject UserManager<Player> UserManager
-@inject ApplicationDbContext dbContext
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,13 +12,14 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <style>
         #mysystems {
-            width: 20%;
+            width: 5%;
             float: left;
         }
-        ,
-        #currentSystem {
-            background-color: #fff;
-            box-shadow: 0 0 60px 30px #fff, 0 0 100px 60px #f0f, 0 0 140px 90px #0ff;
+        #systemResources {
+            display: inline;
+        }
+        #ul_system_resources li{
+            display: inline;
         }
     </style>
 </head>
@@ -62,9 +60,6 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Player" asp-action="AllPlayers">All Players</a>
                             </li>
-                            <li class="nav-item">
-                                <p>@(dbContext.Resources.First(r => r.SystemId == UserManager.GetUserAsync(User).Result.CurrentSystemId && r.Type == ResourceType.MilkyCoin).Type.ToString() ?? null) - @((int?)dbContext.Resources.First(r => r.SystemId == UserManager.GetUserAsync(User).Result.CurrentSystemId && r.Type == ResourceType.MilkyCoin).Quantity ?? 0)</p>
-                            </li>
                         }
                     </ul>
                     <partial name="_LoginPartial" />
@@ -74,10 +69,13 @@
     </header>
     @if (SignInManager.IsSignedIn(User))
     {
-        <partial name="_PlayerSystemsOverview" />
+        <div id="playerSystems">
+        </div>
+        <div id="systemResources" class="text-center">
+        </div>
     }
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="" >
             @RenderBody()
         </main>
     </div>
@@ -90,6 +88,20 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        window.onload = function () {
+            $(document).ready(function () {
+                $('#playerSystems').load('@Url.Action("PlayerSystemsOverview", "Partial", new { playerId = UserManager.GetUserId(User) })');
+            });
+
+            $(document).ready(function () {
+                 $('#systemResources').load('@Url.Action("SystemResources", "Partial", new { playerId = UserManager.GetUserId(User) })');
+                setInterval(function () {
+                    $('#systemResources').load('@Url.Action("SystemResources", "Partial", new { playerId = UserManager.GetUserId(User) })');
+                }, 1000);
+            });
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

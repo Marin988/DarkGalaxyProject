@@ -7,6 +7,7 @@ using DarkGalaxyProject.Infrastructure.Extensions;
 using DarkGalaxyProject.Seeders;
 using DarkGalaxyProject.Services.AllianceServices;
 using DarkGalaxyProject.Services.Auction;
+using DarkGalaxyProject.Services.PartialServices;
 using DarkGalaxyProject.Services.PlanetServices;
 using DarkGalaxyProject.Services.PlayerServices;
 using DarkGalaxyProject.Services.SystemServices;
@@ -65,6 +66,7 @@ namespace DarkGalaxyProject
             services.AddTransient<IPlanetService, PlanetService>();
             services.AddTransient<IPlayerService, PlayerService>();
             services.AddTransient<ISystemService, SystemService>();
+            services.AddTransient<IPartialService, PartialService>();
 
             //services.AddSignalR();
         }

@@ -353,6 +353,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
             var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defenceType);
+            defenceBuildingQueue.Count = count;
 
             if (systemMilkyCoin.Quantity < defenceBuildingQueue.Price)
             {
@@ -360,7 +361,6 @@ namespace DarkGalaxyProject.Services.SystemServices
             }
 
             systemMilkyCoin.Quantity -= defenceBuildingQueue.Price;
-            defenceBuildingQueue.Count = count;
 
             defenceBuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(defenceBuildingQueue.BuildTime);
 
@@ -430,8 +430,10 @@ namespace DarkGalaxyProject.Services.SystemServices
         public bool SwitchSystem(string systemId, string playerId)
         {
             var player = data.Players.First(p => p.Id == playerId);
+            var system = data.Systems.First(s => s.Id == systemId);
 
             player.CurrentSystemId = systemId;
+            system.CurrentPlayerId = playerId;
 
             data.SaveChanges();
 

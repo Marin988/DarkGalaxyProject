@@ -1,0 +1,12 @@
+﻿@using DarkGalaxyProject.Services.PartialServices.Models
+@model List<ResourceServiceModel>
+
+
+<ul id="ul_system_resources">
+    @foreach (var resource in Model)
+    {
+        <li>
+            @resource.Type.ToString() - @resource.Quantity ||||||||||
+        </li>
+    }
+</ul>
