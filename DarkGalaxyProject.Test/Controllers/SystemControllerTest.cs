@@ -5,6 +5,7 @@ using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using DarkGalaxyProject.Models.System;
 using DarkGalaxyProject.Services.SystemServices;
+using DarkGalaxyProject.Services.SystemServices.Models;
 using MyTested.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

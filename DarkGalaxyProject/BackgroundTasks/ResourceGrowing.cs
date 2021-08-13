@@ -45,24 +45,7 @@ namespace DarkGalaxyProject.BackgroundTasks
                         var planetsId = dbContext.Planets.Where(p => p.SystemId == resource.SystemId).Select(p => p.Id).ToList();
                         var sun = dbContext.Suns.First(s => s.SystemId == resource.SystemId);
 
-                        var totalIncome = 0;
-
-                        var factoryType = factoryTypeDependingOnResource(resource);
-
-                        foreach (var planetId in planetsId)
-                        {
-                            totalIncome += dbContext.Factories.First(f => f.PlanetId == planetId && f.FactoryType == factoryType).Income;
-                        }
-
-                        if (resource.Type == ResourceType.Energy)
-                        {
-                            totalIncome *= (int)sun.Type;
-                        }
-
-                        if (resource.Type == ResourceType.Fuel)
-                        {
-                            totalIncome /= 2;
-                        }
+                        int totalIncome = CalculateTotalIncome(dbContext, resource, planetsId, sun);
 
                         resource.Quantity += totalIncome;
                     }
@@ -88,6 +71,30 @@ namespace DarkGalaxyProject.BackgroundTasks
                     await Task.Delay(waitTime, stoppingToken);
                 }
             }
+        }
+
+        private static int CalculateTotalIncome(ApplicationDbContext dbContext, Resource resource, List<string> planetsId, Sun sun)
+        {
+            var totalIncome = 0;
+
+            var factoryType = factoryTypeDependingOnResource(resource);
+
+            foreach (var planetId in planetsId)
+            {
+                totalIncome += dbContext.Factories.First(f => f.PlanetId == planetId && f.FactoryType == factoryType).Income;
+            }
+
+            if (resource.Type == ResourceType.Energy)
+            {
+                totalIncome *= (int)sun.Type;
+            }
+
+            if (resource.Type == ResourceType.Fuel)
+            {
+                totalIncome /= 2;
+            }
+
+            return totalIncome;
         }
 
         private static FactoryType factoryTypeDependingOnResource(Resource resource)

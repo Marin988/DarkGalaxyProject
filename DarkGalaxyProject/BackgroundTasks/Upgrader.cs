@@ -29,47 +29,17 @@ namespace DarkGalaxyProject.BackgroundTasks
 
                     if (dbContext.Factories.Any(f => f.UpgradeFinishTime <= DateTime.Now))
                     {
-                        foreach (var factory in dbContext.Factories.Where(f => f.UpgradeFinishTime <= DateTime.Now))
-                        {
-                            factory.Level += 1;
-                            factory.UpgradeFinishTime = null;
-                        }
+                        BuildFactories(dbContext);
                     }
 
                     if (dbContext.ShipBuilders.Any(s => s.FinishedBuildingTime <= DateTime.Now))
                     {
-                        List<Ship> ships = new List<Ship>();
-                        foreach (var shipBuilder in dbContext.ShipBuilders.Where(s => s.FinishedBuildingTime <= DateTime.Now))
-                        {
-                            var playerId = dbContext.Systems.First(s => s.Id == shipBuilder.SystemId).PlayerId;
-
-                            for (int i = 0; i < shipBuilder.Count; i++)
-                            {
-                                ships.Add(new Ship(shipBuilder.ShipType, shipBuilder.SystemId, playerId));
-                            }
-
-                            shipBuilder.FinishedBuildingTime = null;
-                            shipBuilder.Count = 0;
-                        }
-
-                        dbContext.AddRange(ships);
+                        BuildShips(dbContext);
                     }
 
                     if (dbContext.DefenceBuilders.Any(d => d.FinishedBuildingTime <= DateTime.Now))
                     {
-                        List<DefensiveStructure> defences = new List<DefensiveStructure>();
-                        foreach (var defenceBuilder in dbContext.DefenceBuilders.Where(d => d.FinishedBuildingTime <= DateTime.Now))
-                        {
-                            for (int i = 0; i < defenceBuilder.Count; i++)
-                            {
-                                defences.Add(new DefensiveStructure(defenceBuilder.DefensiveStructureType, defenceBuilder.SystemId));
-                            }
-
-                            defenceBuilder.FinishedBuildingTime = null;
-                            defenceBuilder.Count = 0;
-                        }
-
-                        dbContext.AddRange(defences);
+                        BuildDefences(dbContext);
                     }
 
                     try
@@ -88,6 +58,52 @@ namespace DarkGalaxyProject.BackgroundTasks
                     await Task.Delay(1000, stoppingToken);
                 }
             }
+        }
+
+        private static void BuildFactories(ApplicationDbContext dbContext)
+        {
+            foreach (var factory in dbContext.Factories.Where(f => f.UpgradeFinishTime <= DateTime.Now))
+            {
+                factory.Level += 1;
+                factory.UpgradeFinishTime = null;
+            }
+        }
+
+        private static void BuildDefences(ApplicationDbContext dbContext)
+        {
+            List<DefensiveStructure> defences = new List<DefensiveStructure>();
+            foreach (var defenceBuilder in dbContext.DefenceBuilders.Where(d => d.FinishedBuildingTime <= DateTime.Now))
+            {
+                for (int i = 0; i < defenceBuilder.Count; i++)
+                {
+                    defences.Add(new DefensiveStructure(defenceBuilder.DefensiveStructureType, defenceBuilder.SystemId));
+                }
+
+                defenceBuilder.FinishedBuildingTime = null;
+                defenceBuilder.Count = 0;
+            }
+
+            dbContext.AddRange(defences);
+        }
+
+        private static void BuildShips(ApplicationDbContext dbContext)
+        {
+            List<Ship> ships = new List<Ship>();
+
+            foreach (var shipBuilder in dbContext.ShipBuilders.Where(s => s.FinishedBuildingTime <= DateTime.Now))
+            {
+                var playerId = dbContext.Systems.First(s => s.Id == shipBuilder.SystemId).PlayerId;
+
+                for (int i = 0; i < shipBuilder.Count; i++)
+                {
+                    ships.Add(new Ship(shipBuilder.ShipType, shipBuilder.SystemId, playerId));
+                }
+
+                shipBuilder.FinishedBuildingTime = null;
+                shipBuilder.Count = 0;
+            }
+
+            dbContext.AddRange(ships);
         }
     }
 }

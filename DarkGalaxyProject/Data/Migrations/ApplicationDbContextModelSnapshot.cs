@@ -25,6 +25,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LeaderId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -55,6 +56,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ShipType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -102,7 +104,8 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(240)
+                        .HasColumnType("nvarchar(240)");
 
                     b.Property<string>("ReceiverId")
                         .IsRequired()
@@ -116,7 +119,8 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -153,26 +157,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasIndex("PlayerId");
 
                     b.ToTable("ResearchTrees");
-                });
-
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.Others.Technology", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("KnowledgeCost")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Technologies");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.Player", b =>
@@ -264,30 +248,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.ShipBuilder", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("FinishedBuildingTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ShipType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SystemId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SystemId");
-
-                    b.ToTable("ShipBuilders");
-                });
-
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.System", b =>
                 {
                     b.Property<string>("Id")
@@ -297,8 +257,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PlayerId")
                         .HasColumnType("nvarchar(450)");
@@ -331,6 +290,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SystemId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -405,6 +365,7 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("SystemId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -509,6 +470,31 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasIndex("SystemId");
 
                     b.ToTable("Ships");
+                });
+
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.ShipBuilder", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("FinishedBuildingTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ShipType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SystemId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SystemId");
+
+                    b.ToTable("ShipBuilders");
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Sun", b =>
@@ -765,13 +751,6 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("CurrentSystem");
                 });
 
-            modelBuilder.Entity("DarkGalaxyProject.Data.Models.ShipBuilder", b =>
-                {
-                    b.HasOne("DarkGalaxyProject.Data.Models.System", null)
-                        .WithMany("ShipBuildingQueue")
-                        .HasForeignKey("SystemId");
-                });
-
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.System", b =>
                 {
                     b.HasOne("DarkGalaxyProject.Data.Models.Player", "Player")
@@ -786,7 +765,9 @@ namespace DarkGalaxyProject.Data.Migrations
                 {
                     b.HasOne("DarkGalaxyProject.Data.Models.System", null)
                         .WithMany("DefenceBuildingQueue")
-                        .HasForeignKey("SystemId");
+                        .HasForeignKey("SystemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.DefensiveStructure", b =>
@@ -815,7 +796,9 @@ namespace DarkGalaxyProject.Data.Migrations
                 {
                     b.HasOne("DarkGalaxyProject.Data.Models.System", null)
                         .WithMany("Fleets")
-                        .HasForeignKey("SystemId");
+                        .HasForeignKey("SystemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Planet", b =>
@@ -861,6 +844,15 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.Navigation("Player");
 
                     b.Navigation("System");
+                });
+
+            modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.ShipBuilder", b =>
+                {
+                    b.HasOne("DarkGalaxyProject.Data.Models.System", null)
+                        .WithMany("ShipBuildingQueue")
+                        .HasForeignKey("SystemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DarkGalaxyProject.Data.Models.WithinSystem.Sun", b =>

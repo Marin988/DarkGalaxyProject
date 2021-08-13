@@ -20,12 +20,13 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int Income => Level * 10 * (int)FactoryType;
 
-        public int UpgradeCost => Level * 3000;
+        public int UpgradeCost => Level * 3000 + 3000;
 
-        public int UpgradeTimeLength => Level * 10;
+        public int UpgradeTimeLength => Level * 10 + 10;
 
         public int BuildingSpace => Level * 100;
 
+        [Required]
         public FactoryType FactoryType { get; set; }
 
         public DateTime? UpgradeFinishTime { get; set; }

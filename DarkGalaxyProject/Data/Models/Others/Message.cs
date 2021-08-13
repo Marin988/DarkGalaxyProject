@@ -13,23 +13,22 @@ namespace DarkGalaxyProject.Data.Models.Others
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
         [Required]
+        [StringLength(20, MinimumLength = 2)]
         public string Title { get; set; }
 
         [Required]
+        [StringLength(240, MinimumLength = 5)]
         public string Content { get; set; }
 
         public DateTime TimeOfSending { get; set; }
 
-        //[Required]
         public string SenderId { get; set; }
 
-        //[ForeignKey("SenderId")]
         public Player Sender { get; set; }
 
         [Required]
         public string ReceiverId { get; set; }
 
-        //[ForeignKey("ReceiverId")]
         public Player Receiver { get; set; }
     }
 }

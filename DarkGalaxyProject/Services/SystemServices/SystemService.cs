@@ -2,6 +2,7 @@
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Data.Models.WithinSystem;
+using DarkGalaxyProject.Services.SystemServices.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -165,18 +166,17 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public string SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int destinationSystemPosition, string systemId, int cargo)
         {
-            var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
-            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId).First(f => f.ArrivalTime == null);
-            var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
-
-            List<Ship> ships = GetShips(battleShipCount, colonizerCount, transportShipCount, system);//maybe add validations in here
-
             var destinationSystem = data.Systems.FirstOrDefault(s => s.Position == destinationSystemPosition);
 
             if (destinationSystem == null || destinationSystemPosition == 0)
             {
                 return $"A system with position {destinationSystemPosition} doesn't exist! (or is 0)";
             }
+
+            var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
+            var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
+
+            List<Ship> ships = GetShips(battleShipCount, colonizerCount, transportShipCount, system);//maybe add validations in here
 
             if (ships.Count == 0 && missionTypeEnum != MissionType.Spy)
             {
@@ -203,7 +203,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                 return "You cannot deploy ships and transport resources to systems not belonging to a player.";
             }
 
-            if (cargo > 0 && missionTypeEnum != MissionType.Attack && missionTypeEnum != MissionType.Colonize && missionTypeEnum != MissionType.Spy)
+            if (cargo > 0 && missionTypeEnum != MissionType.Attack && missionTypeEnum != MissionType.Spy)
             {
                 var systemMilkyCoin = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.MilkyCoin);
 
@@ -226,6 +226,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                 ships.Add(system.Ships.First(s => s.Type == ShipType.Espionage));
             }
 
+            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId).First(f => f.ArrivalTime == null);
+
             PrepareShipsForMission(cargo, fleet, missionTypeEnum, ships);
 
             fleet.MissionType = missionTypeEnum;
@@ -239,7 +241,46 @@ namespace DarkGalaxyProject.Services.SystemServices
             var systemFuel = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.Fuel);
             systemFuel.Quantity -= flightLength * 500;
 
-            data.SaveChanges();
+            var saved = false;
+
+            while (!saved)
+            {
+                try
+                {
+                    // Attempt to save changes to the database
+                    data.SaveChanges();
+                    saved = true;
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    foreach (var entry in ex.Entries)
+                    {
+                        if (entry.Entity is Resource)
+                        {
+                            var proposedValues = entry.CurrentValues;
+                            var databaseValues = entry.GetDatabaseValues();
+
+                            foreach (var property in proposedValues.Properties)
+                            {
+                                var proposedValue = proposedValues[property];
+                                var databaseValue = databaseValues[property];
+
+                                // TODO: decide which value should be written to database
+                                // proposedValues[property] = <value to be saved>;
+                            }
+
+                            // Refresh original values to bypass next concurrency check
+                            entry.OriginalValues.SetValues(databaseValues);
+                        }
+                        else
+                        {
+                            throw new NotSupportedException(
+                                "Don't know how to handle concurrency conflicts for "
+                                + entry.Metadata.Name);
+                        }
+                    }
+                }
+            }
 
             return $"Successfully sent {fleet.Ships.Count()} ships on mission {missionType}";
         }
@@ -337,14 +378,13 @@ namespace DarkGalaxyProject.Services.SystemServices
         {
             var system = data.Systems.Include(s => s.DefenceBuildingQueue).First(s => s.Id == systemId);
 
-            var defenceType = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceTypeString);
-
             if (playerId != system.PlayerId)
             {
                 return $"Only the player, whom this system belongs to can build defences";
             }
 
             var research = data.ResearchTrees.First(r => r.PlayerId == playerId && r.ResearchType == ResearchType.HeavyDefence);
+            var defenceType = (DefensiveStructureType)Enum.Parse(typeof(DefensiveStructureType), defenceTypeString);
 
             if (defenceType == DefensiveStructureType.SpaceStation && !research.IsLearned)
             {
@@ -374,14 +414,14 @@ namespace DarkGalaxyProject.Services.SystemServices
         {
             var system = data.Systems.Include(s => s.ShipBuildingQueue).First(s => s.Id == systemId);
 
-            var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
-
             if (playerId != system.PlayerId)
             {
                 return $"Only the player, whom this system belongs to can build ships";
             }
 
+            var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
             ResearchType researchType = 0;
+
             switch (shiptype)
             {
                 case ShipType.Colonizer:
@@ -431,6 +471,14 @@ namespace DarkGalaxyProject.Services.SystemServices
         {
             var player = data.Players.First(p => p.Id == playerId);
             var system = data.Systems.First(s => s.Id == systemId);
+            var currentSystemsCheck = data.Systems
+                .Where(s => s.CurrentPlayerId == playerId)
+                .ToList();
+            foreach (var curentSystem in currentSystemsCheck)
+            {
+                curentSystem.CurrentPlayerId = null;
+            }
+            
 
             player.CurrentSystemId = systemId;
             system.CurrentPlayerId = playerId;

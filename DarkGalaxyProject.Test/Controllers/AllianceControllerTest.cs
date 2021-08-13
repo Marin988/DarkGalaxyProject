@@ -4,6 +4,7 @@ using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Models.Alliance;
 using DarkGalaxyProject.Services.AllianceServices;
+using DarkGalaxyProject.Services.AllianceServices.Models;
 using MyTested.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;

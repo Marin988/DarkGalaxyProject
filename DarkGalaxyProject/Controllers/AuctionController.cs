@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
 using DarkGalaxyProject.Data.Enums;
-using DarkGalaxyProject.Services.Auction;
+using DarkGalaxyProject.Services.AuctionServices;
 
 namespace DarkGalaxyProject.Controllers
 {
@@ -77,9 +77,9 @@ namespace DarkGalaxyProject.Controllers
         {
             var playerId = userManager.GetUserId(User);
 
-            auctionDeals.Buy(dealId, playerId);
+            var message = auctionDeals.Buy(dealId, playerId);
 
-            //if false return error
+            TempData["Message"] = message;
 
             return Redirect("All");
         }

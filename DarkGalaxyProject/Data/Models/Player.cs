@@ -22,11 +22,6 @@ namespace DarkGalaxyProject.Data.Models
             ResearcheTree = new List<ResearchTree>();
         }
 
-        //[Required]
-        //[MaxLength(20)]
-        //[MinLength(5)]
-        //public string PlayerName { get; set; }
-
         public string AllianceId { get; set; }
 
         public Alliance Alliance { get; set; }

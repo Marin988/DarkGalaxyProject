@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DarkGalaxyProject.Data.Models;
+using DarkGalaxyProject.Services.AllianceServices.Models;
 
 namespace DarkGalaxyProject.Services.AllianceServices
 {
@@ -37,7 +38,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
             var candidate = data.Players.First(p => p.Id == candidateId);
             var alliance = data.Alliances.First(a => a.Id == allianceId);
 
-            if(playerId != alliance.Leader.Id) //alliance.LeaderId is still null if only Player.AllianceLeaderId is set
+            if(playerId != alliance.Leader.Id)
             {
                 return "Only the leader can accept members!";
             }

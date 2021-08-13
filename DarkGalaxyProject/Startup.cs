@@ -5,7 +5,7 @@ using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Infrastructure.Extensions;
 using DarkGalaxyProject.Seeders;
 using DarkGalaxyProject.Services.AllianceServices;
-using DarkGalaxyProject.Services.Auction;
+using DarkGalaxyProject.Services.AuctionServices;
 using DarkGalaxyProject.Services.PartialServices;
 using DarkGalaxyProject.Services.PlanetServices;
 using DarkGalaxyProject.Services.PlayerServices;

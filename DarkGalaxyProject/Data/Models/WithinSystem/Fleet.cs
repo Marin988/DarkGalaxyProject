@@ -1,6 +1,7 @@
 ﻿using DarkGalaxyProject.Data.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,6 +25,7 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public MissionType MissionType { get; set; }
 
+        [Required]
         public string SystemId { get; set; }
 
         public IEnumerable<Ship> Ships { get; set; }

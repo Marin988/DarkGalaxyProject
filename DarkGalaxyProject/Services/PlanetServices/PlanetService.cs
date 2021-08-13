@@ -51,16 +51,16 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
         public string StartUpgrade(string buildingId, string planetId, string playerId)
         {
-            var planet = data.Planets.First(p => p.Id == planetId);
-
-            var systemId = planet.SystemId;
-
             var factory = data.Factories.First(f => f.Id == buildingId);
 
             if (factory.UpgradeFinishTime != null)
             {
                 return "This building is already in the process of upgrading";
             }
+
+            var planet = data.Planets.First(p => p.Id == planetId);
+
+            var systemId = planet.SystemId;
 
             var system = data.Systems.First(s => s.Id == systemId);
 
@@ -111,18 +111,18 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
 
-            if (systemMilkyCoin.Quantity < 40000)
+            if (systemMilkyCoin.Quantity < planet.TerraformPrice)
             {
                 return $"You don't have enough {systemMilkyCoin.Type.ToString()} to terraform this planet";
             }
 
-            systemMilkyCoin.Quantity -= 40000;
+            systemMilkyCoin.Quantity -= planet.TerraformPrice;
 
             planet.IsTerraformed = true;
 
             data.SaveChanges();
 
-            return $"You have successfully terraformed this planet in exchange for 40000 {systemMilkyCoin.Type.ToString()}";
+            return $"You have successfully terraformed this planet in exchange for {planet.TerraformPrice} {systemMilkyCoin.Type.ToString()}";
         }
     }
 }

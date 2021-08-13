@@ -19,7 +19,6 @@ namespace DarkGalaxyProject.Data
         public DbSet<Sun> Suns { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<ResearchTree> ResearchTrees { get; set; }
-        public DbSet<Technology> Technologies { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Models.System> Systems { get; set; }
         public DbSet<Ship> Ships { get; set; }

@@ -1,6 +1,7 @@
 ﻿using DarkGalaxyProject.Data.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
+        [Required]
         public string SystemId { get; set; }
 
         public DefensiveStructureType DefensiveStructureType { get; set; }

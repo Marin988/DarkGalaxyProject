@@ -1,4 +1,5 @@
 ﻿using DarkGalaxyProject.Services.AllianceServices;
+using DarkGalaxyProject.Services.AllianceServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

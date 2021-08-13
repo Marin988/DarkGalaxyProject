@@ -30,7 +30,6 @@ namespace DarkGalaxyProject.Data.Models
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
         //[Required]
-        [MaxLength(20)]
         public string Name { get; set; }
 
         [Range(1, 1000)]

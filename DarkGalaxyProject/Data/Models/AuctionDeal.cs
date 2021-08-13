@@ -12,8 +12,10 @@ namespace DarkGalaxyProject.Data.Models
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
+        [Range(1, 1000)]
         public int Quantity { get; set; } 
 
+        [Required]
         public string ShipType { get; set; }
 
         public int Price { get; set; }

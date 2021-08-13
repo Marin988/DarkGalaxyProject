@@ -6,10 +6,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
-    public class Planet : IPlanet
+    public class Planet 
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
+        [Required]
         public int Position { get; set; }
 
         [Required]
@@ -18,7 +19,10 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public PlanetType Type { get; set; }
 
+        [Required]
         public bool IsTerraformed { get; set; }
+
+        public int TerraformPrice => 120000 / (int)Type;
 
         public int BuiltUpSpace { get; set; }
 

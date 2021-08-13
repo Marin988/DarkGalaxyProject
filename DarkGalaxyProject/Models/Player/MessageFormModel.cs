@@ -14,8 +14,11 @@ namespace DarkGalaxyProject.Models.Player
         public string ReceiverName { get; set; }
 
         [Required]
+        [StringLength(20, MinimumLength = 2)]
         public string Title { get; set; }
+
         [Required]
+        [StringLength(240, MinimumLength = 5)]
         public string Content { get; set; }
 
     }

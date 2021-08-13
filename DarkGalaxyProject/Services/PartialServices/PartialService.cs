@@ -39,11 +39,13 @@ namespace DarkGalaxyProject.Services.PartialServices
 
             var resources = data.Resources
                 .Where(r => r.SystemId == currentSystemId)
+                .ToList()
                 .Select(r => new ResourceServiceModel
                 {
                     Quantity = r.Quantity,
                     Type = r.Type.ToString()
                 })
+                .OrderByDescending(r => r.Type)
                 .ToList();
 
             return resources;

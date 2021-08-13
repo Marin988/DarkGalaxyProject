@@ -71,7 +71,6 @@ namespace DarkGalaxyProject.BackgroundTasks
 
             if (fleet == null)
             {
-                //add errors
                 return false;
             }
 
@@ -85,29 +84,28 @@ namespace DarkGalaxyProject.BackgroundTasks
             fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
             fleet.DestinationSystemPoistion = null;
 
-            if (fleet.MissionType == MissionType.Attack) // separate method
+            if (fleet.MissionType == MissionType.Attack) 
             {
                 Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
-            } // separate method
+            } 
 
-            if ((fleet.MissionType == MissionType.Transport || fleet.MissionType == MissionType.Deploy) && ShipsOnMission.Sum(s => s.Storage) > 0)
+            if (fleet.MissionType == MissionType.Deploy)
             {
-                CargoUnload(playerId, destinationSystem, ShipsOnMission, data);
+                DeployShips(playerId, fleet, destinationSystem, ShipsOnMission, data);
             }
 
 
-            if (fleet.MissionType == MissionType.Deploy)//I may add transport function in here later // separate method
-            {
-                DeployShips(playerId, fleet, destinationSystem, ShipsOnMission, data);
-            }//NOTE
-
-
-            if (fleet.MissionType == MissionType.Colonize)//I may add transport function in here later // separate method
+            if (fleet.MissionType == MissionType.Colonize)
             {
                 fleet = Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
                 ShipsOnMission = fleet.Ships.OrderByDescending(s => s.Type).ToList();
                 Colonize(playerId, fleet, destinationSystem, ShipsOnMission, data);
-            }//NOTE
+            }
+
+            if ((fleet.MissionType == MissionType.Transport || fleet.MissionType == MissionType.Deploy || fleet.MissionType == MissionType.Colonize) && ShipsOnMission.Sum(s => s.Storage) > 0)
+            {
+                CargoUnload(playerId, destinationSystem, ShipsOnMission, data);
+            }
 
             if (fleet.MissionType == MissionType.Spy)
             {
@@ -116,8 +114,6 @@ namespace DarkGalaxyProject.BackgroundTasks
 
                 ReportMessage(playerId, MessageTitle, MessageContent, data);
             }
-
-            //data.SaveChanges();
 
             return true;
         }
@@ -160,7 +156,7 @@ namespace DarkGalaxyProject.BackgroundTasks
                 ship.SystemId = destinationSystem.Id;
                 ship.FleetId = null;
                 ship.OnMission = false;
-                ship.PlayerId = destinationSystem.PlayerId;//check if dest system has a playerId if you let that be acceptable in your business logic
+                ship.PlayerId = destinationSystem.PlayerId;
             }
             var recieverPlayerId = destinationSystem.PlayerId;
 

@@ -1,6 +1,7 @@
 ﻿using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models.Others;
+using DarkGalaxyProject.Services.PlayerServices.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -177,7 +178,7 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
             data.SaveChanges();
 
-            return "";
+            return null;
         }
     }
 }

@@ -31,6 +31,7 @@ namespace DarkGalaxyProject.Data.Models
 
         public IEnumerable<ChatMessage> Messages { get; set; }
 
+        [Required]
         public string LeaderId { get; set; }
         public Player Leader { get; set; }
     }
