@@ -50,6 +50,8 @@ namespace DarkGalaxyProject
             services.AddControllersWithViews();
 
             services.AddHostedService<ResourceGrowing>();
+            services.AddHostedService<FleetMovement>();
+            services.AddHostedService<Upgrader>();
 
             services.AddMemoryCache();
 
