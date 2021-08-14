@@ -20,10 +20,10 @@
 <span>Build Defence</span>
 <form>
     <div class="form-group">
-        <select id="defenceType" class="form-control" asp-items="Html.GetEnumSelectList<DefensiveStructureType>()"></select>
+        <select id="defenceType" class="form-control" onchange="totalPrice()" asp-items="Html.GetEnumSelectList<DefensiveStructureType>()"></select>
     </div>
     <div class="form-group">
-        <input id="count" class="form-control" />
+        <input id="count" oninput="totalPrice()" class="form-control" />
     </div>
     <div class="form-group">
         <input id="systemId" hidden value=@Model.First().systemId class="form-control" />
@@ -33,11 +33,15 @@
     </div>
 </form>
 
+<p id="totalPrice"></p>
 <p id="timer"></p>
 
 @section Scripts {
     <script>
         @defenceType = $("#defenceType").val().toString();
+        var priceForSatelite = @Model.First(s => s.DefenceType == DefensiveStructureType.Satelite.ToString()).PricePerUnit;
+        var priceForSpaceStation = @Model.First(s => s.DefenceType == DefensiveStructureType.SpaceStation.ToString()).PricePerUnit;
+
 
         @if(Model.Any(p => p.FinishedBuildingTime.HasValue))
         {
@@ -120,7 +124,23 @@
                         setTimeout(function () { location.reload(); }, 200);
                     }
                 }, 1000);
-            } 
+            }
+        }
+
+        function totalPrice() {
+            var count = document.getElementById('count').value;
+            var defenceType = document.getElementById('defenceType').value.toString();
+            var price = 0;
+
+            if (defenceType == @((int)DefensiveStructureType.Satelite)) {
+                price = priceForSatelite;
+            }
+            if (defenceType == @((int)DefensiveStructureType.SpaceStation)) {
+                price = priceForSpaceStation;
+            }
+
+            var finalPrice = count * price;
+            document.getElementById('totalPrice').innerText = 'Final price: ' + finalPrice;
         }
 
     </script>

@@ -19,6 +19,8 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int? DestinationSystemPoistion { get; set; }
 
+        public int FuelPricePerSystemTravelled => 500;//* ships.sum(s => s.shiptype)
+
         public DateTime? ArrivalTime { get; set; }
 
         public bool Outgoing { get; set; }

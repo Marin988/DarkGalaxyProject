@@ -13,6 +13,8 @@ namespace DarkGalaxyProject.Services.SystemServices.Models
 
         public bool Outgoing { get; set; }
 
+        public int FuelPricePerSystemTravelled { get; set; }
+
         public int? DestinationSystemPosition { get; set; }
     }
 }

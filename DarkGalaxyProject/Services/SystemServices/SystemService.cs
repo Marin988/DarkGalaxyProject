@@ -73,7 +73,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                     .ToList(),
                     ArrivalTime = f.ArrivalTime,
                     Outgoing = f.Outgoing,
-                    DestinationSystemPosition = f.DestinationSystemPoistion
+                    DestinationSystemPosition = f.DestinationSystemPoistion,
                 })
                 .ToList())
                 .ToList();
@@ -92,7 +92,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                     systemId = sp.SystemId,
                     DefenceType = sp.DefensiveStructureType.ToString(),
                     Count = sp.Count,
-                    PricePerDefence = sp.Price
+                    PricePerUnit = sp.PricePerUnit,
+                    TotalPrice = sp.TotalPrice
                 })
                 .ToList();
 
@@ -118,7 +119,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                         Type = s.Type.ToString(),
                         OnMission = s.OnMission
                     })
-                    .ToList()
+                    .ToList(),
+                    FuelPricePerSystemTravelled = f.FuelPricePerSystemTravelled
                 })
                 .ToList();
 
@@ -194,7 +196,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                 return "You cannot send ships to the same system";
             }
 
-            if (missionTypeEnum == MissionType.Colonize)//method  ColonizeErrorChecker
+            if (missionTypeEnum == MissionType.Colonize)
             {
                 var error = ColoniseErrorChecker(destinationSystemPosition, system, ships);
 
@@ -245,7 +247,7 @@ namespace DarkGalaxyProject.Services.SystemServices
             fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
 
             var systemFuel = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.Fuel);
-            systemFuel.Quantity -= flightLength * 500;
+            systemFuel.Quantity -= flightLength * fleet.FuelPricePerSystemTravelled;
 
             var saved = false;
 
@@ -351,7 +353,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                     systemId = sp.SystemId,
                     ShipType = sp.ShipType.ToString(),
                     Count = sp.Count,
-                    PricePerShip = sp.Price
+                    TotalPrice = sp.TotalPrice,
+                    PricePerShip = sp.PricePerShip
                 })
                 .ToList();
 
@@ -406,19 +409,19 @@ namespace DarkGalaxyProject.Services.SystemServices
             var defenceBuildingQueue = system.DefenceBuildingQueue.First(s => s.DefensiveStructureType == defenceType);
             defenceBuildingQueue.Count = count;
 
-            if (systemMilkyCoin.Quantity < defenceBuildingQueue.Price)
+            if (systemMilkyCoin.Quantity < defenceBuildingQueue.TotalPrice)
             {
-                return $"You need {defenceBuildingQueue.Price} {systemMilkyCoin.Type.ToString()} to build {count} {defenceBuildingQueue.DefensiveStructureType.ToString()}s, but only have {systemMilkyCoin.Quantity}";
+                return $"You need {defenceBuildingQueue.TotalPrice} {systemMilkyCoin.Type.ToString()} to build {count} {defenceBuildingQueue.DefensiveStructureType.ToString()}s, but only have {systemMilkyCoin.Quantity}";
             }
 
-            systemMilkyCoin.Quantity -= defenceBuildingQueue.Price;
+            systemMilkyCoin.Quantity -= defenceBuildingQueue.TotalPrice;
 
             defenceBuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(defenceBuildingQueue.BuildTime);
 
 
             data.SaveChanges();
 
-            return $"You have started building {count} {defenceBuildingQueue.DefensiveStructureType.ToString()}s for {defenceBuildingQueue.Price}";
+            return $"You have started building {count} {defenceBuildingQueue.DefensiveStructureType.ToString()}s for {defenceBuildingQueue.TotalPrice}";
         }
 
         public string StartBuildingShip(string systemId, string shipType, int count, string playerId)
@@ -468,19 +471,19 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == systemId && r.Type == ResourceType.MilkyCoin);
 
-            if (systemMilkyCoin.Quantity < shipbuildingQueue.Price)
+            if (systemMilkyCoin.Quantity < shipbuildingQueue.TotalPrice)
             {
-                return $"You need {shipbuildingQueue.Price} {systemMilkyCoin.Type.ToString()} to build {count} {shipbuildingQueue.ToString()}s, but only have {systemMilkyCoin.Quantity}";
+                return $"You need {shipbuildingQueue.TotalPrice} {systemMilkyCoin.Type.ToString()} to build {count} {shipbuildingQueue.ToString()}s, but only have {systemMilkyCoin.Quantity}";
             }
 
-            systemMilkyCoin.Quantity -= shipbuildingQueue.Price;
+            systemMilkyCoin.Quantity -= shipbuildingQueue.TotalPrice;
 
             shipbuildingQueue.FinishedBuildingTime = DateTime.Now.AddSeconds(shipbuildingQueue.BuildTime);
 
 
             data.SaveChanges();
 
-            return $"You have started building {count} {shipbuildingQueue.ShipType.ToString()}s for {shipbuildingQueue.Price}";
+            return $"You have started building {count} {shipbuildingQueue.ShipType.ToString()}s for {shipbuildingQueue.TotalPrice}";
         }
 
         public bool SwitchSystem(string systemId, string playerId)

@@ -75,7 +75,7 @@
         </div>
     }
     <div class="container">
-        <main role="main" class="" >
+        <main role="main" class="">
             @RenderBody()
         </main>
     </div>
@@ -88,8 +88,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
     <script>
-        window.onload = function () {
             $(document).ready(function () {
                 $('#playerSystems').load('@Url.Action("PlayerSystemsOverview", "Partial", new { playerId = UserManager.GetUserId(User) })');
             });
@@ -100,8 +100,6 @@
                     $('#systemResources').load('@Url.Action("SystemResources", "Partial", new { playerId = UserManager.GetUserId(User) })');
                 }, 1000);
             });
-        }
     </script>
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

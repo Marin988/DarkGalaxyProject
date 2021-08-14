@@ -20,10 +20,10 @@
 <span>Build ship</span>
 <form>
     <div class="form-group">
-        <select id="shipType" class="form-control" asp-items="Html.GetEnumSelectList<ShipType>()"></select>
+        <select id="shipType" class="form-control" onchange="totalPrice()" asp-items="Html.GetEnumSelectList<ShipType>()"></select>
     </div>
     <div class="form-group">
-        <input id="count" class="form-control" />
+        <input id="count" oninput="totalPrice()" class="form-control" />
     </div>
     <div class="form-group">
         <input id="systemId" hidden value=@Model.First().systemId class="form-control" />
@@ -33,18 +33,21 @@
     </div>
 </form>
 
+<p id="totalPrice"></p>
+
 <p id="timer"></p>
 
 @section Scripts {
     <script>
         @shipType = $("#shipType").val().toString();
+        var priceForBattleShip = @Model.First(s => s.ShipType == ShipType.BattleShip.ToString()).PricePerShip;
+        var priceForTransportShip = @Model.First(s => s.ShipType == ShipType.TransportShip.ToString()).PricePerShip;
+        var priceForEspionage = @Model.First(s => s.ShipType == ShipType.Espionage.ToString()).PricePerShip;
 
         @if(Model.Any(p => p.FinishedBuildingTime.HasValue))
         {
             shipType = Model.FirstOrDefault(p => p.FinishedBuildingTime.HasValue).ShipType;
         }
-
-
 
         @{
             var Ship = Model.FirstOrDefault(p => p.ShipType == shipType);
@@ -53,8 +56,6 @@
                 Ship = Model.FirstOrDefault();
             }
         }
-
-        //var count = Model.First(s => s.ShipType.ToString() == shipType).j;
 
         window.onload = function () {
             if ('@Ship.FinishedBuildingTime.HasValue' != 'False') {
@@ -87,7 +88,7 @@
                         var datastring = "shipType=" + shipType + "&systemId=" + systemId + "&count=" + count;
                         $.ajax({
                             type: "post",
-                            url: "StartBuilding", 
+                            url: "StartBuilding",
                             data: datastring,
                             success: function (response) {
                                 setTimeout(function () { window.location.href = response.redirectToUrl; }, 200);
@@ -125,7 +126,26 @@
                         setTimeout(function () { location.reload(); }, 200);
                     }
                 }, 1000);
-            } 
+            }
+        }
+
+        function totalPrice() {
+            var count = document.getElementById('count').value;
+            var shipType = document.getElementById('shipType').value.toString();
+            var price = 0;
+
+            if (shipType == @((int)ShipType.BattleShip)) {
+                price = priceForBattleShip;
+            }
+            if (shipType == @((int)ShipType.TransportShip)) {
+                price = priceForTransportShip;
+            }
+            if (shipType == @((int)ShipType.Espionage)) {
+                price = priceForEspionage;
+            }
+
+            var finalPrice = count * price;
+            document.getElementById('totalPrice').innerText = 'Final price: ' + finalPrice;
         }
 
     </script>

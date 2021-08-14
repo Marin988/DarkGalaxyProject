@@ -14,6 +14,8 @@ namespace DarkGalaxyProject.Services.SystemServices.Models
 
         public int PricePerShip { get; set; }
 
+        public int TotalPrice { get; set; }
+
         public int BuildTime { get; set; }
 
         public DateTime? FinishedBuildingTime { get; set; }

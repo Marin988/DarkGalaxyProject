@@ -39,27 +39,27 @@
     <form>
         <div class="form-group">
             <label asp-for="BattleShipCount" class="control-label">Battle ship</label>
-            <input id="battleShipCount" class="form-control" />
+            <input id="battleShipCount" oninput="showFuelPrice()" class="form-control" />
             <span asp-validation-for="BattleShipCount" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="TransportShipCount" class="control-label">Transport ship</label>
-            <input id="transportShipCount" class="form-control" />
+            <input id="transportShipCount" oninput="showFuelPrice()" class="form-control" />
             <span asp-validation-for="TransportShipCount" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="ColonizerCount" class="control-label">Colonizer</label>
-            <input id="colonizerCount" class="form-control" />
+            <input id="colonizerCount" oninput="showFuelPrice()" class="form-control" />
             <span asp-validation-for="ColonizerCount" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="DestinationSystemPosition" class="control-label">Targeted system's position</label>
-            <input id="destinationSystemPosition" class="form-control" />
+            <input id="destinationSystemPosition" oninput="showFuelPrice()" class="form-control" />
             <span asp-validation-for="DestinationSystemPosition" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Cargo" class="control-label">Cargo</label>
-            <input id="cargo" class="form-control" />
+            <input id="cargo" oninput="showFuelPrice()" class="form-control" />
             <span asp-validation-for="Cargo" class="text-danger"></span>
         </div>
         <div class="form-group">
@@ -78,6 +78,8 @@
         </div>
     </form>
 
+    <p id="totalFuelPrice"></p>
+
     <form asp-action="AddFleet" method="post">
         <div class="form-group">
             <input name="systemId" hidden value="@Model.HostSystemInfo.HostSystemId" class="form-control" />
@@ -90,6 +92,8 @@
 
 @section Scripts {
     <script>
+        var fuelPricePerSystemTravelled = @Model.Fleets.First().FuelPricePerSystemTravelled;
+
         window.onload = function () {
             if ('@Model.Fleets.Any(f => f.ArrivalTime.HasValue)' == 'True') { //Model.Fleets.Any(ArrivaTime.HasValue)
                 @foreach (var fleet in Model.Fleets.Where(f => f.ArrivalTime.HasValue))
@@ -182,5 +186,15 @@
                 }, 1000);
             }
         }
+
+        function showFuelPrice() {
+            var destinationSystemPosition = document.getElementById('destinationSystemPosition').value;
+            var hostSystemPosition = document.getElementById('hostSystemPosition').value;
+
+            var totalFuelCost = Math.abs(hostSystemPosition - destinationSystemPosition) * fuelPricePerSystemTravelled;
+
+            document.getElementById('totalFuelPrice').innerHTML = 'Total fuel needed for this mission: ' + totalFuelCost;
+        }
+
     </script>
 }
