@@ -13,6 +13,8 @@ namespace DarkGalaxyProject.Services.PlayerServices.Models
 
         public string ReceiverName { get; set; }
 
+        public bool Seen { get; set; }
+
         public DateTime? Time { get; set; }
 
         public string Title { get; set; }

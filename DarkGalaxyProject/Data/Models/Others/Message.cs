@@ -20,6 +20,8 @@ namespace DarkGalaxyProject.Data.Models.Others
         [StringLength(240, MinimumLength = 5)]
         public string Content { get; set; }
 
+        public bool Seen { get; set; }
+
         public DateTime TimeOfSending { get; set; }
 
         public string SenderId { get; set; }

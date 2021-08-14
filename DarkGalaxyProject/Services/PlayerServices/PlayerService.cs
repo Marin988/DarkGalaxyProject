@@ -61,7 +61,8 @@ namespace DarkGalaxyProject.Services.PlayerServices
                     Title = m.Title,
                     ReceiverId = m.ReceiverId == playerId ? m.SenderId : m.ReceiverId,
                     ReceiverName = m.ReceiverId == playerId ? m.Sender.UserName : m.Receiver.UserName,
-                    Time = m.TimeOfSending
+                    Time = m.TimeOfSending,
+                    Seen = m.ReceiverId == playerId ? m.Seen : true
                 })
                 .ToList()
                 .OrderByDescending(m => m.Time)
@@ -98,6 +99,18 @@ namespace DarkGalaxyProject.Services.PlayerServices
                 .FirstOrDefault();
 
             return player;
+        }
+
+        public string ReadMessage(string messageId)
+        {
+            var message = data.Messages
+                .First(m => m.Id == messageId);
+
+            message.Seen = true;
+
+            data.SaveChanges();
+
+            return null;
         }
 
         public ResearchListServiceModel Researches(string playerId)
@@ -148,7 +161,8 @@ namespace DarkGalaxyProject.Services.PlayerServices
                 ReceiverId = receiver.Id,
                 SenderId = senderId,
                 Title = title,
-                TimeOfSending = DateTime.Now
+                TimeOfSending = DateTime.Now,
+                Seen = false
             });
 
             data.SaveChanges();

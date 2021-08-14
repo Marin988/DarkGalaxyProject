@@ -165,7 +165,8 @@ namespace DarkGalaxyProject.Services.AuctionServices
                 ReceiverId = playerId,
                 TimeOfSending = DateTime.Now,
                 Title = messageTitle,
-                Content = messageContent
+                Content = messageContent,
+                Seen = false
             };
 
             data.Messages.Add(reportMessage);

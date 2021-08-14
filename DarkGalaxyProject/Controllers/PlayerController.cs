@@ -169,14 +169,28 @@ namespace DarkGalaxyProject.Controllers
         {
             var Errormessage = players.SendMessage(message.Content, message.ReceiverName, message.SenderId, message.Title);
 
-            TempData["Message"] = Errormessage;
-
             if(Errormessage != null)
             {
+                TempData["Message"] = Errormessage;
                 return Redirect($"SendMessage?playerId={userManager.GetUserId(User)}");
             }
 
             return Redirect($"Messages?playerId={userManager.GetUserId(User)}");
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult ReadMessage(string messageId)
+        {
+            var errorMessage = players.ReadMessage(messageId);
+
+            if(errorMessage != null)
+            {
+                TempData["Message"] = errorMessage;
+                //return somewhere else
+            }
+
+            return Redirect($"Message?messageId={messageId}");
         }
     }
 }

@@ -11,13 +11,20 @@
 
 <ul>
     @foreach (var message in Model)
-                {
-                    <li>
-                        <span>@message.ReceiverName: @message.Title</span><br>
-                        <span>Time: @message.Time</span><br>
-                        <a href="Message?messageId=@message.Id">Read</a>
-                    </li>
-                }
+    {
+        <li>
+            <span>@message.ReceiverName: @message.Title</span><br>
+            <span>Time: @message.Time</span><br>
+            <form method="post" asp-action="ReadMessage">
+                <input hidden name="messageId", value=@message.Id />
+                <input type="submit" value="Read" />
+            </form>
+            @if (!message.Seen)
+            {
+                <h5>YOU HAVE NOT YET READ THIS MESSAGE</h5>
+            }
+        </li>
+    }
 </ul>
 
 <a class="nav-link text-dark" asp-area="" asp-controller="Player" asp-action="SendMessage">Write a new message</a>

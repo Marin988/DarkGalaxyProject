@@ -26,5 +26,7 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
         public string StudyResearch(string researchId, string systemId);
 
+        public string ReadMessage(string messageId);
+
     }
 }

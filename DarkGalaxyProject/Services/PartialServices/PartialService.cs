@@ -50,5 +50,14 @@ namespace DarkGalaxyProject.Services.PartialServices
 
             return resources;
         }
+
+        public int PlayerUnseenMessagesCount(string playerId)
+        {
+            var playerUnseenMessagesCount = data.Messages
+                .Where(m => m.ReceiverId == playerId && !m.Seen)
+                .Count();
+
+            return playerUnseenMessagesCount;
+        }
     }
 }

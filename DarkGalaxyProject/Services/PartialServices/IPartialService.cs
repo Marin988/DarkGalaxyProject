@@ -12,5 +12,7 @@ namespace DarkGalaxyProject.Services.PartialServices
         public IEnumerable<SystemPartialServiceModel> PlayerSystems(string playerId);
 
         public IEnumerable<ResourceServiceModel> SystemResources(string playerId);
+
+        public int PlayerUnseenMessagesCount(string playerId);
     }
 }

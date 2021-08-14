@@ -3,6 +3,7 @@ using DarkGalaxyProject.Services.PartialServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,14 @@ namespace DarkGalaxyProject.Controllers
             var playerSystems = partialService.PlayerSystems(playerId);
 
             return PartialView(playerSystems);
+        }
+
+        [Authorize]
+        public IActionResult GetUnseenMessagesCount(string playerId)
+        {
+            var playerUnseenMessagesCount = partialService.PlayerUnseenMessagesCount(playerId);
+
+            return Ok(JsonConvert.SerializeObject(playerUnseenMessagesCount));
         }
     }
 }

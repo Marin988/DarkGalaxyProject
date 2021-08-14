@@ -15,10 +15,12 @@
             width: 5%;
             float: left;
         }
+
         #systemResources {
             display: inline;
         }
-        #ul_system_resources li{
+
+        #ul_system_resources li {
             display: inline;
         }
     </style>
@@ -52,6 +54,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Home">Alliance</a>
                             </li>
                             <li class="nav-item">
+                                <p id="unseenMessages"></p>
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Player" asp-action="Messages" asp-route-playerId="@UserManager.GetUserId(User)">Messages</a>
                             </li>
                             <li>
@@ -90,6 +93,8 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>
+        var unseenMessages = document.getElementById('unseenMessages');
+
             $(document).ready(function () {
                 $('#playerSystems').load('@Url.Action("PlayerSystemsOverview", "Partial", new { playerId = UserManager.GetUserId(User) })');
             });
@@ -100,6 +105,18 @@
                     $('#systemResources').load('@Url.Action("SystemResources", "Partial", new { playerId = UserManager.GetUserId(User) })');
                 }, 1000);
             });
+
+    $(document).ready(function () {
+        $.ajax({
+            url: '/Partial/GetUnseenMessagesCount',
+            data: { playerId: '@UserManager.GetUserId(User)' },
+            cache: false,
+            type: "GET",
+            success: function (data) {
+                unseenMessages.innerHTML = data;
+            }
+        })
+    });
     </script>
 </body>
 </html>
