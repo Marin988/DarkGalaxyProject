@@ -27,6 +27,8 @@ namespace DarkGalaxyProject.Services.AllianceServices
         public bool Apply(string allianceId, string playerId);
         public string PromoteToLeader(string allianceId, string playerId, string leaderId);
 
+        public string ChangeDescription(string allianceId, string description);
+
 
     }
 }

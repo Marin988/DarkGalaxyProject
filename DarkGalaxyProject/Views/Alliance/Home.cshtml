@@ -1,10 +1,19 @@
 ﻿@using DarkGalaxyProject.Data.Enums
 @using DarkGalaxyProject.Services.AllianceServices.Models
+@using Microsoft.AspNetCore.Identity
 @model AllianceServiceModel
+@inject UserManager<Player> UserManager
 
 @{
     ViewData["Title"] = "AlliancePage";
 }
+
+<div id="errorMessages">
+    @if (TempData["Message"] != null)
+    {
+        <p>@TempData["Message"]</p>
+    }
+</div>
 
 <h1>@Model.Name</h1>
 
@@ -16,13 +25,16 @@
                 <span>Leader: @Model.Leader</span>
             </li>
             <li>
-                <span>Members: @Model.MembersCount</span>
+                <a class="text-dark" asp-area="" asp-controller="Alliance" asp-action="Members" asp-route-allianceId="@Model.Id">Members: @Model.MembersCount</a>
             </li>
-            <li class="bs-popover-left">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Members" asp-route-allianceId="@Model.Id">Members</a>
+            <li>
+                <a class="text-dark" asp-area="" asp-controller="Alliance" asp-action="Chat" asp-route-allianceId="@Model.Id">Chat</a>
             </li>
-            <li class="bs-popover-left">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Chat" asp-route-allianceId="@Model.Id">Chat</a>
+            <li>
+                Description: <textarea id="description" disabled> @Model.Description</textarea>
+                <div id="editDescription">
+                    <button id="edit" onclick="editDescription()">Edit</button>
+                </div>
             </li>
         </ul>
     </div>
@@ -33,5 +45,44 @@
 </div>
 
 @section Scripts {
+    <script>
+        function editDescription() {
+            if ('@UserManager.GetUserId(User)' != '@Model.LeaderId') {
+                var errorMessage = document.createElement('h5');
+                errorMessage.textContent = 'Only the leader of this alliance can change its description';
+                var errorMessagesDiv = document.getElementById('errorMessages');
+                errorMessagesDiv.appendChild(errorMessage);
+                return;
+            }
+
+            var myDiv = document.getElementById('editDescription');
+            var description = document.getElementById('description');
+            description.removeAttribute('disabled');
+            var saveButton = document.createElement('button');
+            saveButton.textContent = "Save";
+            saveButton.setAttribute('id', 'save');
+            saveButton.setAttribute('onclick', 'saveDescription()');
+
+            myDiv.appendChild(saveButton);
+        }
+
+        function saveDescription() {
+            if ('@UserManager.GetUserId(User)' != '@Model.LeaderId') {
+                return;
+            }
+
+            var newDescription = document.getElementById('description').value;
+
+            var datastring = "allianceId=" + "@Model.Id" + "&description=" + newDescription;
+            $.ajax({
+                type: "post",
+                url: "ChangeDescription",
+                data: datastring,
+                success: function (response) {
+                    setTimeout(function () { window.location.href = response.redirectToUrl; }, 200);
+                }
+            });
+        }
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

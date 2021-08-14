@@ -8,28 +8,20 @@
 <h1>
     All systems
 </h1>
-@*<div class="col-md-4">*@
-    <ul>
-        @foreach (var system in Model.Systems)
-        {
-            <li>
-                <span>Position: @system.Position</span><br>
-                <span>Type: @system.Type</span><br>
-                <form action="Colonize" method="post">
-                    <input type="hidden" name="systemId" value=@system.Id>
-                    <div class="form-group">
-                        <input type="submit" value="Colonize" class="btn btn-primary" />
-                    </div>
-                </form>
-                <a asp-controller="System" asp-action="ViewSystem" class="btn btn-block btn-primary" asp-route-ID="@system.Id">ViewSystem</a>
-            </li>
-        }
-    </ul>
+<ul>
+    @foreach (var system in Model.Systems)
+    {
+        <li>
+            <span>Position: @system.Position</span><br>
+            <span>Type: @system.Type</span><br>
+            <a asp-controller="System" asp-action="Fleet" class="btn btn-block btn-primary" asp-route-systemId="@Model.CurrentSystemId">Send fleet</a>
+            <a asp-controller="System" asp-action="ViewSystem" class="btn btn-block btn-primary" asp-route-ID="@system.Id">ViewSystem</a>
+        </li>
+    }
+</ul>
 <div class="row">
     <div class="col-md-6">
         <a asp-controller="System" asp-action="AllSystems" asp-route-page="@(Model.Page - 1)">Previous page</a>
         <a asp-controller="System" asp-action="AllSystems" asp-route-page="@(Model.Page + 1)">Next page</a>
     </div>
 </div>
-
-@*</div>*@

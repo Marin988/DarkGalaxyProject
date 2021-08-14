@@ -587,5 +587,14 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             return "You have successfully added a new fleet";
         }
+
+        public string CurrentSystemId(string playerId)
+        {
+            var currentSystemId = data.Players
+                .First(p => p.Id == playerId)
+                .CurrentSystemId;
+
+            return currentSystemId;
+        }
     }
 }

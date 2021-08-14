@@ -27,6 +27,10 @@ namespace DarkGalaxyProject.Data.Models
         [MinLength(3)]
         public string Name { get; set; }
 
+        [MinLength(6)]
+        [MaxLength(120)]
+        public string Description { get; set; }
+
         public IEnumerable<Player> Members { get; set; }
 
         public IEnumerable<Player> Candidates { get; set; }

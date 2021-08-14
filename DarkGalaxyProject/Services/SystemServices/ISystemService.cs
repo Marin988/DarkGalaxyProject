@@ -35,5 +35,7 @@ namespace DarkGalaxyProject.Services.SystemServices
         public string AddFleet(string systemId, string playerId);
 
         public IEnumerable<FleetServiceModel> AllFleets(string playerId);
+
+        public string CurrentSystemId(string playerId);
     }
 }

@@ -12,5 +12,7 @@ namespace DarkGalaxyProject.Models.System
         public IEnumerable<SystemServiceModel> Systems { get; set; }
 
         public int Page { get; set; }
+
+        public string CurrentSystemId { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
             var candidate = data.Players.First(p => p.Id == candidateId);
             var alliance = data.Alliances.First(a => a.Id == allianceId);
 
-            if(playerId != alliance.Leader.Id)
+            if(playerId != alliance.LeaderId)
             {
                 return "Only the leader can accept members!";
             }
@@ -116,7 +116,9 @@ namespace DarkGalaxyProject.Services.AllianceServices
                     Id = a.Id,
                     Name = a.Name,
                     Leader = a.Leader.UserName,
-                    MembersCount = a.Members.Count()
+                    MembersCount = a.Members.Count(),
+                    Description = a.Description,
+                    LeaderId = a.Leader.Id
                 })
                 .First();
 
@@ -225,6 +227,23 @@ namespace DarkGalaxyProject.Services.AllianceServices
                 Content = content,
                 PlayerId = playerId
             });
+
+            data.SaveChanges();
+
+            return null;
+        }
+
+        public string ChangeDescription(string allianceId, string description)
+        {
+            var alliance = data.Alliances
+                .First(a => a.Id == allianceId);
+
+            if(description == null || description.Length < 6 || description.Length > 120)
+            {
+                return "Description should be between 6 and 120 symbols!";
+            }
+
+            alliance.Description = description;
 
             data.SaveChanges();
 

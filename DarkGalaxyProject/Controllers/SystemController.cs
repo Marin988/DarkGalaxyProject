@@ -77,10 +77,13 @@ namespace DarkGalaxyProject.Controllers
                 cache.Set(allSystemsCacheKey, allSystems, cacheOptions);
             }
 
+            var currentSystemId = systems.CurrentSystemId(userManager.GetUserId(User));
+
             var pageSystems = new SystemPageViewModel
             {
                 Systems = allSystems,
-                Page = page
+                Page = page,
+                CurrentSystemId = currentSystemId
             };
 
             return View(pageSystems);

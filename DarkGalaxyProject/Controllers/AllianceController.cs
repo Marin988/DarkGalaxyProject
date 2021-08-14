@@ -156,5 +156,15 @@ namespace DarkGalaxyProject.Controllers
             return Redirect($"Members?allianceId={allianceId}");
         }
 
+        [Authorize]
+        [HttpPost]
+        public IActionResult ChangeDescription(string allianceId, string description)
+        {
+            var message = alliances.ChangeDescription(allianceId, description);
+
+            TempData["Message"] = message;
+
+            return Json(new { redirectToUrl = Url.Action("Home", "Alliance") } );
+        }
     }
 }
