@@ -42,7 +42,7 @@ namespace DarkGalaxyProject.Controllers
 
             TempData["Message"] = message;
 
-            return Redirect($"ViewPlanet?planetId={planetId}");
+            return Json(new { redirectToUrl = Url.Action("ViewPlanet", "Planet", new { planetId = planetId }) });
         }
 
         [Authorize]

@@ -14,6 +14,7 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public ShipType ShipType { get; set; }
 
+        [Range(1, 1000)]
         public int Count { get; set; }
 
         public int Price => (int)ShipType * 1000 * Count;

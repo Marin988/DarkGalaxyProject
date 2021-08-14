@@ -88,9 +88,11 @@
                         $.ajax({
                             type: "post",
                             url: "StartBuilding", 
-                            data: datastring
+                            data: datastring,
+                            success: function (response) {
+                                setTimeout(function () { window.location.href = response.redirectToUrl; }, 200);
+                            }
                         });
-                        setTimeout(function () { location.reload(); }, 200);
                     });
             }
         }

@@ -18,6 +18,7 @@ namespace DarkGalaxyProject.Data.Models
         [Required]
         public string ShipType { get; set; }
 
+        [Range(100, 10000000)]
         public int Price { get; set; }
 
         public string BuyerId { get; set; }

@@ -121,7 +121,7 @@ namespace DarkGalaxyProject.Data
                 .HasMany(a => a.Messages)
                 .WithOne(m => m.Alliance)
                 .HasForeignKey(m => m.AllianceId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             base.OnModelCreating(builder);

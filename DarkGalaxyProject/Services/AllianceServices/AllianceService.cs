@@ -88,14 +88,12 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
             alliance.Members.ToList().Add(player);
 
-            data.Alliances.Add(alliance);
-
-            data.SaveChanges();
-
             player.AllianceId = alliance.Id;
 
             alliance.LeaderId = playerId;
             player.AllianceLeaderId = alliance.Id;
+
+            data.Alliances.Add(alliance);
 
             data.SaveChanges();
 
@@ -139,13 +137,13 @@ namespace DarkGalaxyProject.Services.AllianceServices
         {
             var player = data.Players.First(p => p.Id == playerId);
             var alliance = data.Alliances.First(a => a.Id == player.AllianceId);
+            var chatMessages = data.ChatMessages.Where(c => c.AllianceId == alliance.Id);
 
-            if(alliance.LeaderId == playerId)
+            if (alliance.LeaderId == playerId)
             {
+                player.AllianceId = null;
                 data.Alliances.Remove(alliance);
             }
-
-            player.AllianceId = null;
 
             data.SaveChanges();
 
@@ -198,6 +196,11 @@ namespace DarkGalaxyProject.Services.AllianceServices
                 return "You can only promote members of this alliance";
             }
 
+            if (player.Id == alliance.Leader.Id)
+            {
+                return "You are already the leader of this alliance";
+            }
+
             leader.AllianceLeaderId = null;
 
             leader.AllianceId = allianceId;
@@ -209,8 +212,13 @@ namespace DarkGalaxyProject.Services.AllianceServices
             return null;
         }
 
-        public bool Send(string allianceId, string content, string playerId)
+        public string Send(string allianceId, string content, string playerId)
         {
+            if(content == null)
+            {
+                return "Message should contain at least one letter or digit";
+            }
+
             data.ChatMessages.Add(new ChatMessage
             {
                 AllianceId = allianceId,
@@ -220,7 +228,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
             data.SaveChanges();
 
-            return true;
+            return null;
         }
     }
 }

@@ -91,10 +91,12 @@
                     $.ajax({
                         type: "post",
                         url: "StartUpgrade",
-                        data: datastring
+                        data: datastring,
+                        success: function (response) {
+                            setTimeout(function () { window.location.href = response.redirectToUrl; }, 200);
+                        }
                     });
                 });
-                setTimeout(function () { location.reload(); }, 200); //If I don't set timeout sometimes the timer still isn't out
         }
 
         function upgrade(UpgradeFinishTime, factoryType, timerIndex) {

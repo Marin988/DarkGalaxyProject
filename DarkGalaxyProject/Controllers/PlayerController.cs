@@ -171,6 +171,11 @@ namespace DarkGalaxyProject.Controllers
 
             TempData["Message"] = Errormessage;
 
+            if(Errormessage != null)
+            {
+                return Redirect($"SendMessage?playerId={userManager.GetUserId(User)}");
+            }
+
             return Redirect($"Messages?playerId={userManager.GetUserId(User)}");
         }
     }

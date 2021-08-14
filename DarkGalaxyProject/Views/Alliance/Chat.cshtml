@@ -5,6 +5,10 @@
     ViewData["Title"] = "AllAliances";
 }
 
+@if (TempData["Message"] != null)
+{
+    <p> @TempData["Message"] </p>
+}
 
 @foreach (var message in Model.Messages)
 {

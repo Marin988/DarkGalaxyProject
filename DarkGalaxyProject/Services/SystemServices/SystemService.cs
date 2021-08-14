@@ -376,6 +376,11 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public string StartBuildingDefence(string systemId, string defenceTypeString, int count, string playerId)
         {
+            if (count < 1)
+            {
+                return "Count has to be more than 0";
+            }
+
             var system = data.Systems.Include(s => s.DefenceBuildingQueue).First(s => s.Id == systemId);
 
             if (playerId != system.PlayerId)
@@ -397,7 +402,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             if (systemMilkyCoin.Quantity < defenceBuildingQueue.Price)
             {
-                return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
+                return $"You need {defenceBuildingQueue.Price} {systemMilkyCoin.Type.ToString()} to build {count} {defenceBuildingQueue.DefensiveStructureType.ToString()}s, but only have {systemMilkyCoin.Quantity}";
             }
 
             systemMilkyCoin.Quantity -= defenceBuildingQueue.Price;
@@ -407,11 +412,16 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             data.SaveChanges();
 
-            return $"You have started building a {defenceBuildingQueue.DefensiveStructureType.ToString()} for {defenceBuildingQueue.Price}";
+            return $"You have started building {count} {defenceBuildingQueue.DefensiveStructureType.ToString()}s for {defenceBuildingQueue.Price}";
         }
 
         public string StartBuildingShip(string systemId, string shipType, int count, string playerId)
         {
+            if(count < 1)
+            {
+                return "Count has to be more than 0";
+            }
+
             var system = data.Systems.Include(s => s.ShipBuildingQueue).First(s => s.Id == systemId);
 
             if (playerId != system.PlayerId)
@@ -454,7 +464,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             if (systemMilkyCoin.Quantity < shipbuildingQueue.Price)
             {
-                return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
+                return $"You need {shipbuildingQueue.Price} {systemMilkyCoin.Type.ToString()} to build {count} {shipbuildingQueue.ToString()}s, but only have {systemMilkyCoin.Quantity}";
             }
 
             systemMilkyCoin.Quantity -= shipbuildingQueue.Price;
@@ -464,7 +474,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             data.SaveChanges();
 
-            return $"You have started building a {shipbuildingQueue.ShipType.ToString()} for {shipbuildingQueue.Price}";
+            return $"You have started building {count} {shipbuildingQueue.ShipType.ToString()}s for {shipbuildingQueue.Price}";
         }
 
         public bool SwitchSystem(string systemId, string playerId)

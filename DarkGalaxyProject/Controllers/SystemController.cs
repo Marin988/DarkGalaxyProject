@@ -146,7 +146,7 @@ namespace DarkGalaxyProject.Controllers
 
             TempData["Message"] = message;
 
-            return Redirect($"Shipyard?systemId={systemId}");
+            return Json(new { redirectToUrl = Url.Action("Shipyard", "System", new { systemId = systemId }) });
         }
 
         [Authorize]
@@ -157,7 +157,7 @@ namespace DarkGalaxyProject.Controllers
 
             TempData["Message"] = message;
 
-            return Redirect($"DefenceStructureBuilder?systemId={systemId}");
+            return Json(new { redirectToUrl = Url.Action("DefensiveStructureBuilder", "System", new { systemId = systemId }) });
         }
 
         [Authorize]

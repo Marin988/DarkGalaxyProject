@@ -88,11 +88,12 @@ namespace DarkGalaxyProject.Services.AuctionServices
 
         public string CreateDeal(int price, string sellerId, int quantity, string shipType)
         {
-            var shipsForSale = ShipsForSale(sellerId, shipType, quantity);
+            var shipTypeEnum = (ShipType)Enum.Parse(typeof(ShipType), shipType);
+            var shipsForSale = ShipsForSale(sellerId, shipTypeEnum, quantity);
 
-            if(shipsForSale.Count() != quantity)
+            if (shipsForSale.Count() != quantity)
             {
-                return $"You only have {shipsForSale.Count()} available ships of type {shipType.ToString()}.";
+                return $"You only have {shipsForSale.Count()} available ships of type {shipTypeEnum.ToString()}.";
             }
             if(quantity <= 0)
             {
@@ -147,10 +148,10 @@ namespace DarkGalaxyProject.Services.AuctionServices
             return true;
         }
 
-        public IEnumerable<Ship> ShipsForSale(string playerId, string shipType, int quantity)
+        public IEnumerable<Ship> ShipsForSale(string playerId, ShipType shipType, int quantity)
         {
             var shipsForSale = data.Ships
-                .Where(s => s.PlayerId == playerId && s.Type == (ShipType)Enum.Parse(typeof(ShipType), shipType) && !s.OnMission && s.DealId == null)
+                .Where(s => s.PlayerId == playerId && s.Type == shipType && !s.OnMission && s.DealId == null)
                 .Take(quantity)
                 .ToList();
 

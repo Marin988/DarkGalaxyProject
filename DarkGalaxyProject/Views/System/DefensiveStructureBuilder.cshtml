@@ -44,8 +44,6 @@
             defenceType = Model.FirstOrDefault(p => p.FinishedBuildingTime.HasValue).DefenceType;
         }
 
-
-
         @{
             var Defence = Model.FirstOrDefault(p => p.DefenceType == defenceType);
             if(Defence == null)
@@ -84,9 +82,12 @@
                         $.ajax({
                             type: "post",
                             url: "StartBuildingDefence",
-                            data: datastring
+                            data: datastring,
+                            data: datastring,
+                            success: function (response) {
+                                setTimeout(function () { window.location.href = response.redirectToUrl; }, 200);
+                            }
                         });
-                        setTimeout(function () { location.reload(); }, 200);
                     });
             }
         }

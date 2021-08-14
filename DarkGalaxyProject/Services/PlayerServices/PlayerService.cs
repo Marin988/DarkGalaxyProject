@@ -131,16 +131,21 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
         public string SendMessage(string content, string receiverName, string senderId, string title)
         {
-            var receiverId = data.Players.FirstOrDefault(p => p.UserName == receiverName).Id;
-            if(receiverId == null)
+            var receiver = data.Players.FirstOrDefault(p => p.UserName == receiverName);
+            if(receiver == null)
             {
                 return "There is no player with such name";
+            }
+
+            if(receiver.Id == senderId)
+            {
+                return "You can't send messages to yourself";
             }
 
             data.Messages.Add(new Message
             {
                 Content = content,
-                ReceiverId = data.Players.First(p => p.UserName == receiverName).Id,
+                ReceiverId = receiver.Id,
                 SenderId = senderId,
                 Title = title,
                 TimeOfSending = DateTime.Now

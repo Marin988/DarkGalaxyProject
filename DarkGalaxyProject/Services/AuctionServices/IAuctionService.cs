@@ -12,7 +12,7 @@ namespace DarkGalaxyProject.Services.AuctionServices
     {
         public IEnumerable<DealServiceModel> All();
 
-        public IEnumerable<Ship> ShipsForSale(string playerId, string shipType, int shipCount);//Shouldn't this be ShipServiceModel?!?
+        public IEnumerable<Ship> ShipsForSale(string playerId, ShipType shipType, int shipCount);//Shouldn't this be ShipServiceModel?!?
 
         public string CreateDeal(int price, string sellerId, int quantity, string shipType);
 

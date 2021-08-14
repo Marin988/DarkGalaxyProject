@@ -51,9 +51,10 @@ namespace DarkGalaxyProject.Controllers
         {
             var message = auctionDeals.CreateDeal(dealModel.Price, userManager.GetUserId(User), dealModel.ShipCount, dealModel.ShipType);
 
-            if(message != null)
+            TempData["Message"] = message;
+
+            if (message != null)
             {
-                TempData["Message"] = message;
                 return Redirect("Create");
             }
 

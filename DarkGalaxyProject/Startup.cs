@@ -44,7 +44,7 @@ namespace DarkGalaxyProject
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<Player>(options => options.SignIn.RequireConfirmedAccount = false) 
+            services.AddDefaultIdentity<Player>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
 
@@ -53,11 +53,6 @@ namespace DarkGalaxyProject
             services.AddHostedService<Upgrader>();
 
             services.AddMemoryCache();
-
-            //services.AddControllersWithViews(options =>
-            //{
-            //    options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
-            //});
 
 
             services.AddTransient<IDatabaseSeeder, SystemsSeeder>();
@@ -68,8 +63,6 @@ namespace DarkGalaxyProject
             services.AddTransient<IPlayerService, PlayerService>();
             services.AddTransient<ISystemService, SystemService>();
             services.AddTransient<IPartialService, PartialService>();
-
-            //services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,7 +89,6 @@ namespace DarkGalaxyProject
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapHub<ResourceHub>("/resourcehub");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

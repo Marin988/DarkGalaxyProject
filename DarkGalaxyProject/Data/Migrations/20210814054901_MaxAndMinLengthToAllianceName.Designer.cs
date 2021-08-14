@@ -4,14 +4,16 @@ using DarkGalaxyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210814054901_MaxAndMinLengthToAllianceName")]
+    partial class MaxAndMinLengthToAllianceName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -678,7 +680,7 @@ namespace DarkGalaxyProject.Data.Migrations
                     b.HasOne("DarkGalaxyProject.Data.Models.Alliance", "Alliance")
                         .WithMany("Messages")
                         .HasForeignKey("AllianceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DarkGalaxyProject.Data.Models.Player", "Player")

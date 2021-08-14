@@ -6,6 +6,11 @@
     ViewData["Title"] = "Shipyard";
 }
 
+@if (TempData["Message"] != null)
+{
+    <p> @TempData["Message"] </p>
+}
+
 <h1>
     Create a deal
 </h1>

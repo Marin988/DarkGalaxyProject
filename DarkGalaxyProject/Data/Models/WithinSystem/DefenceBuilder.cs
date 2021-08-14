@@ -14,8 +14,10 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public string SystemId { get; set; }
 
+        [Required]
         public DefensiveStructureType DefensiveStructureType { get; set; }
 
+        [Range(1, 1000)]
         public int Count { get; set; }
 
         public int Price => (int)DefensiveStructureType * 1000 * Count;

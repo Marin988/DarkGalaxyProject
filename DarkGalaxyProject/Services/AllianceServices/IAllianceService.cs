@@ -20,7 +20,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
         public IEnumerable<ChatMessageServiceModel> ChatMessages(string allianceId);
 
-        public bool Send(string allianceId, string content, string playerId);
+        public string Send(string allianceId, string content, string playerId);
         public bool Create(string playerId, string allianceName);
         public bool Leave(string playerId);
         public string AcceptCandidate(string allianceId, string candidateId, string playerId);
