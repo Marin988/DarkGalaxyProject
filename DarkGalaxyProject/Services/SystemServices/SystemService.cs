@@ -166,6 +166,13 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public string SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int destinationSystemPosition, string systemId, int cargo)
         {
+            var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
+
+            if(battleShipCount < 1 && colonizerCount < 1 && transportShipCount < 1 && missionTypeEnum != MissionType.Spy)
+            {
+                return "You cannot send a fleet of 0 ships";
+            }
+
             var destinationSystem = data.Systems.FirstOrDefault(s => s.Position == destinationSystemPosition);
 
             if (destinationSystem == null || destinationSystemPosition == 0)
@@ -174,13 +181,12 @@ namespace DarkGalaxyProject.Services.SystemServices
             }
 
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
-            var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
 
             List<Ship> ships = GetShips(battleShipCount, colonizerCount, transportShipCount, system);//maybe add validations in here
 
             if (ships.Count == 0 && missionTypeEnum != MissionType.Spy)
             {
-                return "You cannot send a fleet of 0 ships";
+                return "You don't have any ships";
             }
 
             if (destinationSystemPosition == system.Position)

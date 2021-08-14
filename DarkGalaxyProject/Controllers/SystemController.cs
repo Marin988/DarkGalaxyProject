@@ -135,7 +135,7 @@ namespace DarkGalaxyProject.Controllers
 
             TempData["Message"] = message;
 
-            return Redirect($"Fleet?systemId={systemId}");
+            return Json(new { redirectToUrl = Url.Action("Fleet", "System", new { systemId = systemId }) }); 
         }
 
         [Authorize]

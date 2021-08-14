@@ -128,9 +128,11 @@
                     $.ajax({
                         type: "post",
                         url: "SendFleet",
-                        data: datastring
-                    });
-                    setTimeout(function () { location.reload(); }, 200);
+                        data: datastring,
+                        success: function (response) {
+                            setTimeout(function () { window.location.href = response.redirectToUrl; }, 200);
+                        }
+                    })
                 });
             } else {
                 var result = '';
