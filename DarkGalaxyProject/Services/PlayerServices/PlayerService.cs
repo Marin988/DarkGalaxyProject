@@ -78,7 +78,9 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
             foreach (var researchType in Enum.GetValues(typeof(ResearchType)))
             {
-                researches.Add(new ResearchTree(playerId, (ResearchType)researchType));
+                var researchStats = data.ResearchTreeStats.First(r => r.ResearchType == (ResearchType)researchType);
+
+                researches.Add(new ResearchTree(playerId, (ResearchType)researchType, researchStats.Name, researchStats.Description, researchStats.Price));
             }
 
             data.ResearchTrees.AddRange(researches);

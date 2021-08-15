@@ -55,11 +55,14 @@ namespace DarkGalaxyProject.Controllers
 
             var candidates = alliances.Candidates(allianceId);
 
+            var leaderId = alliances.LeaderId(allianceId);
+
             var membersAndCandidates = new MembersCandidatesViewModel
             {
                 Members = members,
                 Candidates = candidates,
-                AllianceId = allianceId
+                AllianceId = allianceId,
+                AllianceLeaderId = leaderId
             };
 
             return View(membersAndCandidates);

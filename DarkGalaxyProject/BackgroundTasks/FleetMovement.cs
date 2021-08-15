@@ -89,12 +89,6 @@ namespace DarkGalaxyProject.BackgroundTasks
                 Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
             } 
 
-            if (fleet.MissionType == MissionType.Deploy)
-            {
-                DeployShips(playerId, fleet, destinationSystem, ShipsOnMission, data);
-            }
-
-
             if (fleet.MissionType == MissionType.Colonize)
             {
                 fleet = Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
@@ -107,9 +101,14 @@ namespace DarkGalaxyProject.BackgroundTasks
                 CargoUnload(playerId, destinationSystem, ShipsOnMission, data);
             }
 
+            if (fleet.MissionType == MissionType.Deploy)
+            {
+                DeployShips(playerId, fleet, destinationSystem, ShipsOnMission, data);
+            }
+
             if (fleet.MissionType == MissionType.Spy)
             {
-                var MessageTitle = "Spy results";
+                var MessageTitle = $"Spy results on system {destinationSystem.Position}";
                 var MessageContent = $"Your espionage probe sent to system {destinationSystem.Position} determined their total strength of defence to be {destinationSystem.DefensiveStructures.Sum(d => d.HP) + destinationSystem.Ships.Where(s => !s.OnMission).Sum(s => s.HP)}.";
 
                 ReportMessage(playerId, MessageTitle, MessageContent, data);
@@ -198,6 +197,8 @@ namespace DarkGalaxyProject.BackgroundTasks
 
         private Fleet Battle(Fleet fleet, Data.Models.System destinationSystem, List<Ship> ShipsOnMission, string playerId, string destinationSystemPlayerId, ApplicationDbContext data)
         {
+            var attackerSystemPosition = data.Systems.First(s => s.Id == fleet.SystemId).Position;
+
             var attackerHP = ShipsOnMission.Sum(s => s.HP);
             var attackerDMG = ShipsOnMission.Sum(s => s.Damage);
 
@@ -216,8 +217,8 @@ namespace DarkGalaxyProject.BackgroundTasks
                 data.Ships.RemoveRange(DefenderFleet);
                 data.DefensiveStructures.RemoveRange(Defence);
 
-                AttackerMessageContent += $"Attack successful.{DefenderFleet.Count()} ships and {Defence.Count()} defensive structures were destroyed.";
-                DefenderMessageContent += $"You were attacked by {ShipsOnMission.Count} ships.All of your {DefenderFleet.Count()} ships and {Defence.Count()} defensive structures were destroyed.";
+                AttackerMessageContent += $"Attack on system {destinationSystem.Position} successful.{DefenderFleet.Count()} ships and {Defence.Count()} defensive structures were destroyed.";
+                DefenderMessageContent += $"You were attacked by {ShipsOnMission.Count} ships coming from planet {attackerSystemPosition}.All of your {DefenderFleet.Count()} ships and {Defence.Count()} defensive structures were destroyed.";
 
                 //data.DefensiveStructures.RemoveRange(Defence.Where(d => d.HP <= 0));
                 //data.Ships.RemoveRange(DefenderFleet.Where(d => d.HP <= 0));
@@ -276,9 +277,11 @@ namespace DarkGalaxyProject.BackgroundTasks
             if (defenderDMG >= attackerHP)
             {
                 data.Ships.RemoveRange(ShipsOnMission);
+                data.DefensiveStructures.RemoveRange(Defence.Where(d => d.HP <= 0));
+                Defence.ToList().RemoveAll(d => d.HP <= 0);
 
-                AttackerMessageContent += $"Your {ShipsOnMission.Count} ships were destroyed by the enemy defences, surviving your attack with {Defence.Sum(d => d.HP) + DefenderFleet.Sum(d => d.HP)} HP left.";
-                DefenderMessageContent += $"Your defences destroyed all {ShipsOnMission.Count} of the enemy's ships, surviving the attack with {Defence.Sum(d => d.HP) + DefenderFleet.Sum(d => d.HP)} HP left.";
+                AttackerMessageContent += $"Your {ShipsOnMission.Count} ships were destroyed by the enemy defences, surviving your attack with {Defence.Where(d => d.HP > 0).Sum(d => d.HP) + DefenderFleet.Where(d => d.HP > 0).Sum(d => d.HP)} HP left.";
+                DefenderMessageContent += $"Your defences destroyed all {ShipsOnMission.Count} of the enemy's ships, surviving the attack with {Defence.Where(d => d.HP > 0).Sum(d => d.HP) + DefenderFleet.Where(d => d.HP > 0).Sum(d => d.HP)} HP left.";
 
                 ShipsOnMission.RemoveAll(s => s.OnMission);
                 fleet.ArrivalTime = null;
@@ -290,7 +293,7 @@ namespace DarkGalaxyProject.BackgroundTasks
             }
             else
             {
-                foreach (var ship in ShipsOnMission)
+                foreach (var ship in ShipsOnMission.OrderBy(s => s.Storage))
                 {
                     var shipHP = ship.HP;
                     if (ship.HP <= defenderDMG)
@@ -306,10 +309,10 @@ namespace DarkGalaxyProject.BackgroundTasks
                     defenderDMG -= shipHP;
                 }
 
-                if (ShipsOnMission.Any(s => s.HP <= 0 && s.Type != ShipType.Colonizer))
+                if (ShipsOnMission.Any(s => s.HP <= 0))
                 {
-                    data.Ships.RemoveRange(ShipsOnMission.Where(s => s.HP <= 0 && s.Type != ShipType.Colonizer));
-                    ShipsOnMission.RemoveAll(s => s.HP <= 0 && s.Type != ShipType.Colonizer);
+                    data.Ships.RemoveRange(ShipsOnMission.Where(s => s.HP <= 0));
+                    ShipsOnMission.RemoveAll(s => s.HP <= 0);
                 }
             }
 
@@ -340,13 +343,16 @@ namespace DarkGalaxyProject.BackgroundTasks
                     }
                 }
 
-                AttackerMessageContent += $"The enemy defences were destroyed, your fleet looted {loot} {systemResource.Type.ToString()}s and is coming back.";
-                DefenderMessageContent += $"The enemy ships looted {loot} {systemResource.Type.ToString()}s.";
-
-                ReportMessage(playerId, messageTitle, AttackerMessageContent, data);
-                if (destinationSystemPlayerId != null)
+                if(fleet.MissionType == MissionType.Attack)
                 {
-                    ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent, data);
+                    AttackerMessageContent += $"The enemy defences were destroyed, your fleet looted {loot} {systemResource.Type.ToString()}s and is coming back.";
+                    DefenderMessageContent += $"The enemy ships looted {loot} {systemResource.Type.ToString()}s.";
+
+                    ReportMessage(playerId, messageTitle, AttackerMessageContent, data);
+                    if (destinationSystemPlayerId != null)
+                    {
+                        ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent, data);
+                    }
                 }
             }
 

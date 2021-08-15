@@ -43,6 +43,7 @@
         var priceForBattleShip = @Model.First(s => s.ShipType == ShipType.BattleShip.ToString()).PricePerShip;
         var priceForTransportShip = @Model.First(s => s.ShipType == ShipType.TransportShip.ToString()).PricePerShip;
         var priceForEspionage = @Model.First(s => s.ShipType == ShipType.Espionage.ToString()).PricePerShip;
+        var priceForColonizer = @Model.First(s => s.ShipType == ShipType.Colonizer.ToString()).PricePerShip;
 
         @if(Model.Any(p => p.FinishedBuildingTime.HasValue))
         {
@@ -142,6 +143,9 @@
             }
             if (shipType == @((int)ShipType.Espionage)) {
                 price = priceForEspionage;
+            }
+            if (shipType == @((int)ShipType.Colonizer)) {
+                price = priceForColonizer;
             }
 
             var finalPrice = count * price;

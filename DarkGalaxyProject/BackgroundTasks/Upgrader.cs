@@ -53,8 +53,6 @@ namespace DarkGalaxyProject.BackgroundTasks
                         Console.WriteLine($"Source: Upgrader");
                     }
 
-                    //await dbContext.SaveChangesAsync();//cancel token None - read about it
-
                     await Task.Delay(1000, stoppingToken);
                 }
             }
@@ -64,7 +62,18 @@ namespace DarkGalaxyProject.BackgroundTasks
         {
             foreach (var factory in dbContext.Factories.Where(f => f.UpgradeFinishTime <= DateTime.Now))
             {
+                var factoryStats = dbContext.FactoryStats.FirstOrDefault(f => f.FactoryType == factory.FactoryType && f.Level == factory.Level + 1);
+
+                if(factoryStats == null)//max level? take care of that upon starting the upgrade
+                {
+                    return;
+                }
+
                 factory.Level += 1;
+                factory.Income = factoryStats.Income;
+                factory.UpgradeCost = factoryStats.UpgradeCost;
+                factory.UpgradeTimeLength = factoryStats.UpgradeTimeLength;
+                factory.BuildingSpace = factoryStats.BuildingSpace;
                 factory.UpgradeFinishTime = null;
             }
         }
@@ -74,9 +83,11 @@ namespace DarkGalaxyProject.BackgroundTasks
             List<DefensiveStructure> defences = new List<DefensiveStructure>();
             foreach (var defenceBuilder in dbContext.DefenceBuilders.Where(d => d.FinishedBuildingTime <= DateTime.Now))
             {
+                var defenceStats = dbContext.DefensiveStructureStats.First(d => d.Type == defenceBuilder.DefensiveStructureType);
+
                 for (int i = 0; i < defenceBuilder.Count; i++)
                 {
-                    defences.Add(new DefensiveStructure(defenceBuilder.DefensiveStructureType, defenceBuilder.SystemId));
+                    defences.Add(new DefensiveStructure(defenceBuilder.DefensiveStructureType, defenceBuilder.SystemId, defenceStats.MaxHP, defenceStats.Damage));
                 }
 
                 defenceBuilder.FinishedBuildingTime = null;
@@ -93,10 +104,11 @@ namespace DarkGalaxyProject.BackgroundTasks
             foreach (var shipBuilder in dbContext.ShipBuilders.Where(s => s.FinishedBuildingTime <= DateTime.Now))
             {
                 var playerId = dbContext.Systems.First(s => s.Id == shipBuilder.SystemId).PlayerId;
+                var shipStats = dbContext.ShipStats.First(s => s.Type == shipBuilder.ShipType);
 
                 for (int i = 0; i < shipBuilder.Count; i++)
                 {
-                    ships.Add(new Ship(shipBuilder.ShipType, shipBuilder.SystemId, playerId));
+                    ships.Add(new Ship(shipBuilder.ShipType, shipBuilder.SystemId, playerId, shipStats.Damage, shipStats.MaxHP, shipStats.MaxStorage, shipStats.Speed, shipStats.FuelExpense));
                 }
 
                 shipBuilder.FinishedBuildingTime = null;

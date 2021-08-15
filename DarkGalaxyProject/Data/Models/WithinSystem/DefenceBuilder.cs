@@ -20,11 +20,11 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Range(1, 1000)]
         public int Count { get; set; }
 
-        public int PricePerUnit => (int)DefensiveStructureType * 1000;
+        public int PricePerUnit { get; init; }
 
         public int TotalPrice => PricePerUnit * Count;
 
-        public int BuildTime => (int)DefensiveStructureType * 5 * Count;
+        public int BuildTime { get; init; }
 
         public DateTime? FinishedBuildingTime { get; set; }
     }

@@ -13,5 +13,7 @@ namespace DarkGalaxyProject.Models.Alliance
         public IEnumerable<MemberServiceModel> Candidates { get; set; }
 
         public string AllianceId { get; set; }
+
+        public string AllianceLeaderId { get; set; }
     }
 }

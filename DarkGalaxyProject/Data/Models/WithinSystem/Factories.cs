@@ -9,22 +9,31 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
     public class Factories
     {
-        public Factories()
+        public Factories(int income, int upgradeCost, int upgradeEnergyCost, int upgradeTimeLength, int buildingSpace, FactoryType factoryType, string planetId)
         {
             Level = 0;
+            Income = income;
+            UpgradeCost = upgradeCost;
+            UpgradeEnergyCost = upgradeEnergyCost;
+            UpgradeTimeLength = upgradeTimeLength;
+            BuildingSpace = buildingSpace;
+            FactoryType = factoryType;
+            PlanetId = planetId;
         }
 
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; init; } = Guid.NewGuid().ToString();
 
         public int Level { get; set; }
 
-        public int Income => Level * 10 * (int)FactoryType;
+        public int Income { get; set; }
 
-        public int UpgradeCost => Level * 3000 + 3000;
+        public int UpgradeCost { get; set; }
 
-        public int UpgradeTimeLength => Level * 10 + 10;
+        public int UpgradeEnergyCost { get; set; }
 
-        public int BuildingSpace => Level * 100;
+        public int UpgradeTimeLength { get; set; }
+
+        public int BuildingSpace { get; set; }
 
         [Required]
         public FactoryType FactoryType { get; set; }

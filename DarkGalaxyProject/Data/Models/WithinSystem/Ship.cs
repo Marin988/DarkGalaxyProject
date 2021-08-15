@@ -9,12 +9,17 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
     public class Ship
     {
-        public Ship(ShipType type, string systemId, string playerId)
+        public Ship(ShipType type, string systemId, string playerId, int damage, int maxHP, int maxStorage, int speed, int fuelExpense)
         {
             Type = type;
             SystemId = systemId;
-            HP = MaxHP;
+            HP = maxHP;
             PlayerId = playerId;
+            Damage = damage;
+            MaxHP = maxHP;
+            MaxStorage = maxStorage;
+            Speed = speed;
+            FuelExpense = fuelExpense;
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();
@@ -22,17 +27,19 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public ShipType Type { get; set; }
 
-        public int Damage => (int)Type * 10;
+        public int Damage { get; init; }
 
-        public int MaxHP => (int)Type * 10;
+        public int MaxHP { get; init; }
 
         public int HP { get; set; }
 
-        public int MaxStorage => (int)Type * 500;
+        public int MaxStorage { get; init; }
 
         public int Storage { get; set; }
 
-        public int Speed => (int)Type * 10;
+        public int Speed { get; init; }
+
+        public int FuelExpense { get; init; }
 
         public string FleetId { get; set; }
 

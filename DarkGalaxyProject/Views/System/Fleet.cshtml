@@ -119,7 +119,6 @@
         }
 
         function SendFleet() {
-            if ('@Model.Fleets.All(f => f.ArrivalTime.HasValue)' == 'False') {//if(Fleets.Any(f => f.ArrivalTime.HasValue == false))
                 $(document).ready(function () {
                     var battleShipCount = $("#battleShipCount").val();
                     var colonizerCount = $("#colonizerCount").val();
@@ -138,14 +137,6 @@
                         }
                     })
                 });
-            } else {
-                var result = '';
-                @foreach(var fleet in Model.Fleets)
-                {
-                    <text>result += '@(fleet.ArrivalTime.HasValue ? fleet.ArrivalTime.Value : "empty date")' + ' , ';</text>
-                }
-                alert(result);
-            }
         }
 
         function moveTheFleet(ArrivalTime, outgoing, timerIndex) {

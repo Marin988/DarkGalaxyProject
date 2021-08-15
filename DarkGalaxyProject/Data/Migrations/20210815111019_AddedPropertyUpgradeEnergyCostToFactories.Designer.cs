@@ -4,14 +4,16 @@ using DarkGalaxyProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DarkGalaxyProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210815111019_AddedPropertyUpgradeEnergyCostToFactories")]
+    partial class AddedPropertyUpgradeEnergyCostToFactories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,8 +129,8 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -345,9 +347,6 @@ namespace DarkGalaxyProject.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Damage")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FuelExpense")
                         .HasColumnType("int");
 
                     b.Property<int>("MaxHP")
@@ -588,9 +587,6 @@ namespace DarkGalaxyProject.Data.Migrations
 
                     b.Property<string>("FleetId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("FuelExpense")
-                        .HasColumnType("int");
 
                     b.Property<int>("HP")
                         .HasColumnType("int");

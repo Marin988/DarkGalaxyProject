@@ -118,11 +118,20 @@ namespace DarkGalaxyProject.Services.AllianceServices
                     Leader = a.Leader.UserName,
                     MembersCount = a.Members.Count(),
                     Description = a.Description,
-                    LeaderId = a.Leader.Id
+                    LeaderId = a.LeaderId
                 })
                 .First();
 
             return alliance;
+        }
+
+        public string LeaderId(string allianceId)
+        {
+            var leaderId = data.Alliances
+                .First(a => a.Id == allianceId)
+                .LeaderId;
+
+            return leaderId;
         }
 
         public bool IsInAlliance(string playerId)
@@ -139,11 +148,17 @@ namespace DarkGalaxyProject.Services.AllianceServices
         {
             var player = data.Players.First(p => p.Id == playerId);
             var alliance = data.Alliances.First(a => a.Id == player.AllianceId);
-            var chatMessages = data.ChatMessages.Where(c => c.AllianceId == alliance.Id);
+
+            player.AllianceId = null;
 
             if (alliance.LeaderId == playerId)
             {
-                player.AllianceId = null;
+                var allianceMembers = data.Players.Where(p => p.AllianceId == alliance.Id).ToList();
+                foreach (var member in allianceMembers)
+                {
+                    member.AllianceId = null;
+                }
+
                 data.Alliances.Remove(alliance);
             }
 
@@ -188,7 +203,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
             var leader = data.Players.First(p => p.Id == leaderId);
             var alliance = data.Alliances.First(a => a.Id == allianceId);
 
-            if(leaderId != alliance.Leader.Id)
+            if(leaderId != alliance.LeaderId)
             {
                 return "Only the leader can promote other members";
             }
@@ -198,16 +213,12 @@ namespace DarkGalaxyProject.Services.AllianceServices
                 return "You can only promote members of this alliance";
             }
 
-            if (player.Id == alliance.Leader.Id)
+            if (player.Id == alliance.LeaderId)
             {
                 return "You are already the leader of this alliance";
             }
 
-            leader.AllianceLeaderId = null;
-
-            leader.AllianceId = allianceId;
-
-            player.AllianceLeaderId = allianceId;
+            alliance.LeaderId = playerId;
 
             data.SaveChanges();
 
@@ -219,6 +230,12 @@ namespace DarkGalaxyProject.Services.AllianceServices
             if(content == null)
             {
                 return "Message should contain at least one letter or digit";
+            }
+
+            var player = data.Players.First(p => p.Id == playerId);
+            if(player.AllianceId != allianceId)
+            {
+                return "Only members of this alliance can participate in this chat!";
             }
 
             data.ChatMessages.Add(new ChatMessage

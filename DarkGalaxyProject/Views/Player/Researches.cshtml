@@ -5,25 +5,30 @@
     ViewData["Title"] = "Your researches";
 }
 
+@if (TempData["Message"] != null)
+{
+    <h5>@TempData["Message"]</h5>
+}
+
 <ul>
     @foreach (var research in Model.Researches)
     {
-    <li>
-        <span>Research type: @research.ResearchType</span><br>
-        <span>Description: @research.Description</span><br>
-        <span>@(research.IsLearned ? "Learned" : "Not learned yet")</span><br>
-        @if (!research.IsLearned)
-        {
-            <span>Price: @research.Price</span><br>
-            <form action="StudyResearch" method="post">
-                <input type="hidden" name="researchId" value=@research.Id>
-                <input type="hidden" name="systemId" value=@Model.CurrentSystemId>
-                <input type="hidden" name="playerId" value=@Model.PlayerId>
-                <div class="form-group">
-                    <input type="submit" value="Learn" class="btn btn-primary" />
-                </div>
-            </form>
-        }
-    </li>
+        <li>
+            <span>Research type: @research.ResearchType</span><br>
+            <span>Description: @research.Description</span><br>
+            <span>@(research.IsLearned ? "Learned" : "Not learned yet")</span><br>
+            @if (!research.IsLearned)
+            {
+                <span>Price: @research.Price</span><br>
+                <form action="StudyResearch" method="post">
+                    <input type="hidden" name="researchId" value=@research.Id>
+                    <input type="hidden" name="systemId" value=@Model.CurrentSystemId>
+                    <input type="hidden" name="playerId" value=@Model.PlayerId>
+                    <div class="form-group">
+                        <input type="submit" value="Learn" class="btn btn-primary" />
+                    </div>
+                </form>
+            }
+        </li>
     }
 </ul>

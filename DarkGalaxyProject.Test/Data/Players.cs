@@ -13,7 +13,7 @@ namespace DarkGalaxyProject.Test.Data
     public class Players
     {
         public static ResearchTree Research(string playerId, string researchId)
-            => new ResearchTree(playerId, ResearchType.BattleShip) { Id = researchId };
+            => new ResearchTree(playerId, ResearchType.BattleShip, null, null, 0) { Id = researchId };
 
         public static Player Player(string playerId)
             => new Player { Id = playerId };

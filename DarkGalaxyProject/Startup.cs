@@ -54,7 +54,7 @@ namespace DarkGalaxyProject
 
             services.AddMemoryCache();
 
-
+            services.AddTransient<IDatabaseSeeder, EntityStatsSeeder>();
             services.AddTransient<IDatabaseSeeder, SystemsSeeder>();
             services.AddTransient<IDatabaseSeeder, PlayersSeeder>();
             services.AddTransient<IAuctionService, AuctionService>();

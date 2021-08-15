@@ -36,7 +36,7 @@ namespace DarkGalaxyProject.Test.Data
             };
 
         public static IEnumerable<Ship> Ships()
-            => Enumerable.Range(0, 5).Select(s => new Ship(ShipType.BattleShip, "1", "1"));
+            => Enumerable.Range(0, 5).Select(s => new Ship(ShipType.BattleShip, "1", "1", 0, 0, 0, 0, 0));
 
         public static IEnumerable<Fleet> Fleets()
             => Enumerable.Range(0, 5).Select(f => new Fleet("1"));
@@ -48,7 +48,7 @@ namespace DarkGalaxyProject.Test.Data
             => new DarkGalaxyProject.Data.Models.System { Id = systemId, PlayerId = playerId, Resources = new List<Resource>() { MilkyCoin(systemId) } };
 
         public static ResearchTree Research(string playerId, string shiptype)
-            => new ResearchTree(playerId, (ResearchType)Enum.Parse(typeof(ResearchType), shiptype)) { IsLearned = true };
+            => new ResearchTree(playerId, (ResearchType)Enum.Parse(typeof(ResearchType), shiptype), null, null, 0) { IsLearned = true };
 
         public static ShipBuilder ShipBuilder(string systemId, string shiptype)
             => new ShipBuilder { SystemId = systemId, ShipType = (ShipType)Enum.Parse(typeof(ShipType), shiptype) };
@@ -63,7 +63,7 @@ namespace DarkGalaxyProject.Test.Data
             => new Fleet(systemId);
 
         public static Ship Ship(string shiptype, string systemId, string playerId)
-            => new Ship((ShipType)Enum.Parse(typeof(ShipType), shiptype), systemId, playerId);
+            => new Ship((ShipType)Enum.Parse(typeof(ShipType), shiptype), systemId, playerId, 0, 0, 0, 0, 0);
 
     }
 }

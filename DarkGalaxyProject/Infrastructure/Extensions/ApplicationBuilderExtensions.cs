@@ -17,14 +17,13 @@ namespace DarkGalaxyProject.Infrastructure.Extensions
             using var serviceScope = app.ApplicationServices.CreateScope();
             var services = serviceScope.ServiceProvider;
 
-            var data = services.GetService<ApplicationDbContext>();
+            //var data = services.GetService<ApplicationDbContext>();
 
             var seeders = services.GetServices<IDatabaseSeeder>();
 
             foreach (var seeder in seeders)
             {
                 seeder.Seed();
-                //seeder.SeedUsers();
             }
 
             return app;

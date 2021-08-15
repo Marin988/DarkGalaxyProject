@@ -29,6 +29,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
         public string ChangeDescription(string allianceId, string description);
 
+        public string LeaderId(string allianceId);
 
     }
 }

@@ -13,7 +13,7 @@ namespace DarkGalaxyProject.Data.Models.Others
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
         [Required]
-        [StringLength(20, MinimumLength = 2)]
+        [StringLength(36, MinimumLength = 2)]
         public string Title { get; set; }
 
         [Required]

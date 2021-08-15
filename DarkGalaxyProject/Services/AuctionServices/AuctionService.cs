@@ -68,6 +68,9 @@ namespace DarkGalaxyProject.Services.AuctionServices
             buyerMilkyCoin.Quantity -= deal.Price;
             sellerMilkyCoin.Quantity += deal.Price;
 
+            var shipsCount = deal.ShipsForSale.Count();
+            var shipsType = deal.ShipsForSale.First().Type.ToString();
+
             foreach (var ship in deal.ShipsForSale)
             {
                 ship.DealId = null;
@@ -76,14 +79,14 @@ namespace DarkGalaxyProject.Services.AuctionServices
             }
 
             var sellerMessageTitle = "Sold item";
-            var sellerMessageContent = $"{deal.Quantity} of {deal.ShipType.ToString()} were sold for {deal.Price}.";
+            var sellerMessageContent = $"{deal.Quantity} of {shipsType} were sold for {deal.Price}.";
             var buyerMessageTitle = "Bought item";
-            var buyerMessageContent = $"You bought {deal.Quantity} of {deal.ShipType.ToString()} for {deal.Price}.";
+            var buyerMessageContent = $"You bought {deal.Quantity} of {shipsType} for {deal.Price}.";
 
             ReportMessage(deal.SellerId, sellerMessageTitle, sellerMessageContent);
             ReportMessage(deal.BuyerId, buyerMessageTitle, buyerMessageContent);
 
-            return $"Successfully purchased {deal.ShipsForSale.Count()} ships of type {deal.ShipsForSale.First().Type.ToString()}";
+            return $"Successfully purchased {shipsCount} ships of type {shipsType}";
         }
 
         public string CreateDeal(int price, string sellerId, int quantity, string shipType)

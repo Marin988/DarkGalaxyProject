@@ -9,26 +9,28 @@ namespace DarkGalaxyProject.Data.Models.Others
 {
     public class ResearchTree
     {
-        public ResearchTree(string playerId, ResearchType researchType)
+        public ResearchTree(string playerId, ResearchType researchType, string name, string description, int price)
         {
             IsLearned = false;
             PlayerId = playerId;
             ResearchType = researchType;
+            Name = name;
+            Description = description;
+            Price = price;
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
         public bool IsLearned { get; set; }
 
-        public string Name { get; set; }//maybe i don't need a name if I can use researchType as name
+        public string Name { get; init; }
 
+        [Required]
         public ResearchType ResearchType { get; set; }
 
-        public string Description { get; set; }
+        public string Description { get; init; }
 
-        //image
-
-        public int Price => 1000 * (int)ResearchType;
+        public int Price { get; init; }
 
         [Required]
         public string PlayerId { get; set; }

@@ -56,7 +56,7 @@ namespace DarkGalaxyProject.Services.SystemServices
         public IEnumerable<FleetServiceModel> AllFleets(string playerId)
         {
             var playersFleets = data.Systems
-                .Include(s => s.Fleets)
+                .Include(s => s.Fleets.Where(f => f.ArrivalTime != null))
                 .ThenInclude(f => f.Ships)
                 .Where(s => s.PlayerId == playerId || s.CurrentPlayerId == playerId)
                 .ToList()
@@ -168,6 +168,13 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public string SendFleet(int battleShipCount, int colonizerCount, int transportShipCount, string missionType, int destinationSystemPosition, string systemId, int cargo)
         {
+            var AvailableFleet = data.Fleets.FirstOrDefault(f => f.SystemId == systemId && f.ArrivalTime == null);
+
+            if(AvailableFleet == null)
+            {
+                return "You don't have available fleets";
+            }
+
             var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
 
             if(battleShipCount < 1 && colonizerCount < 1 && transportShipCount < 1 && missionTypeEnum != MissionType.Spy)
@@ -177,14 +184,14 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var destinationSystem = data.Systems.FirstOrDefault(s => s.Position == destinationSystemPosition);
 
-            if (destinationSystem == null || destinationSystemPosition == 0)
+            if (destinationSystem == null || destinationSystemPosition < 1 || destinationSystemPosition > 100)
             {
-                return $"A system with position {destinationSystemPosition} doesn't exist! (or is 0)";
+                return $"A system with position {destinationSystemPosition} doesn't exist!";
             }
 
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
-            List<Ship> ships = GetShips(battleShipCount, colonizerCount, transportShipCount, system);//maybe add validations in here
+            List<Ship> ships = GetShips(battleShipCount, colonizerCount, transportShipCount, system);
 
             if (ships.Count == 0 && missionTypeEnum != MissionType.Spy)
             {
@@ -211,7 +218,17 @@ namespace DarkGalaxyProject.Services.SystemServices
                 return "You cannot deploy ships and transport resources to systems not belonging to a player.";
             }
 
-            if (cargo > 0 && missionTypeEnum != MissionType.Attack && missionTypeEnum != MissionType.Spy)
+            if((missionTypeEnum == MissionType.Spy || missionTypeEnum == MissionType.Attack) && cargo > 0)
+            {
+                return "You cannot transport resources when spying or attacking.";
+            }
+
+            if (cargo > ships.Sum(s => s.MaxStorage))
+            {
+                cargo = ships.Sum(s => s.MaxStorage);
+            }
+
+            if (cargo > 0)
             {
                 var systemMilkyCoin = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.MilkyCoin);
 
@@ -230,23 +247,32 @@ namespace DarkGalaxyProject.Services.SystemServices
                 {
                     return "You can't spy without espionages";
                 }
+                if (ships.Any())
+                {
+                    return "You can only send epsionages to a spy mission. If you have one, it will automatically be added to your fleet";
+                }
 
                 ships.Add(system.Ships.First(s => s.Type == ShipType.Espionage));
             }
 
+            var systemFuel = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.Fuel);
+            var flightLength = Math.Abs(system.Position - destinationSystemPosition);
+
             var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId).First(f => f.ArrivalTime == null);
 
-            PrepareShipsForMission(cargo, fleet, missionTypeEnum, ships);
+            if (systemFuel.Quantity < flightLength * fleet.FuelPricePerSystemTravelled)
+            {
+                return $"You need {flightLength * fleet.FuelPricePerSystemTravelled} fuel for this mission, but only have {systemFuel.Quantity}";
+            }
+
+                PrepareShipsForMission(cargo, fleet, missionTypeEnum, ships);
 
             fleet.MissionType = missionTypeEnum;
             fleet.Outgoing = true;
             fleet.Ships.ToList().AddRange(ships);
             fleet.DestinationSystemPoistion = destinationSystemPosition;
-
-            var flightLength = Math.Abs(system.Position - destinationSystemPosition);
             fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
 
-            var systemFuel = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.Fuel);
             systemFuel.Quantity -= flightLength * fleet.FuelPricePerSystemTravelled;
 
             var saved = false;
@@ -290,7 +316,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                 }
             }
 
-            return $"Successfully sent {fleet.Ships.Count()} ships on mission {missionType}";
+            return $"Successfully sent {fleet.Ships.Count()} ships on mission {missionTypeEnum.ToString()}";
         }
 
         private static List<Ship> GetShips(int battleShipCount, int colonizerCount, int transportShipCount, Data.Models.System system)
@@ -310,9 +336,9 @@ namespace DarkGalaxyProject.Services.SystemServices
                 ship.OnMission = true;
                 ship.FleetId = fleet.Id;
 
-                if (missionTypeEnum == MissionType.Transport || cargo > 0) //possible issue - If there are ships already loaded they might
-                {                                                         //be the ones i get in the fleet UNLESS I order them by cargo 
-                    int load = ship.MaxStorage - ship.Storage;//or maybe just this
+                if (cargo > 0) 
+                {                                                         
+                    int load = ship.MaxStorage - ship.Storage;
                     if (cargo < load)
                     {
                         load = cargo;
@@ -321,7 +347,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                     ship.Storage += load;
                     cargo -= load;
                 }
-            }//issue note (above next to if)
+            }
         }
 
         private string ColoniseErrorChecker(int destinationSystemPosition, Data.Models.System system, List<Ship> ships)
@@ -574,7 +600,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             if (systemMilkyCoin.Quantity < 10000 * fleetCount)
             {
-                return $"You don't have enough {systemMilkyCoin.Type.ToString()}";
+                return $"You need {10000 * fleetCount} {systemMilkyCoin.Type.ToString()}, but you only have {systemMilkyCoin.Quantity}";
             }
 
             systemMilkyCoin.Quantity -= 10000 * fleetCount;

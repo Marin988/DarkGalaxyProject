@@ -9,20 +9,22 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
     public class DefensiveStructure
     {
-        public DefensiveStructure(DefensiveStructureType type, string systemId)
+        public DefensiveStructure(DefensiveStructureType type, string systemId, int maxHP, int damage)
         {
             Type = type;
             SystemId = systemId;
-            HP = MaxHP;
+            HP = maxHP;
+            MaxHP = maxHP;
+            Damage = damage;
         }
 
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
         public int HP { get; set; }
 
-        public int MaxHP => 1000 / (int)Type;
+        public int MaxHP { get; init; }
 
-        public int Damage => 1000 / (int)Type;
+        public int Damage { get; init; }
 
         [Required]
         public DefensiveStructureType Type { get; set; }

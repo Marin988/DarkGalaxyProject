@@ -19,9 +19,9 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int TotalPrice => PricePerShip * Count;
 
-        public int PricePerShip => (int)ShipType * 1000;
+        public int PricePerShip { get; init; }
 
-        public int BuildTime => (int)ShipType * Count;
+        public int BuildTime { get; init; }
 
         public DateTime? FinishedBuildingTime { get; set; }
     }

@@ -1,4 +1,5 @@
-﻿using DarkGalaxyProject.Data.Models.WithinSystem;
+﻿using DarkGalaxyProject.Data.Enums;
+using DarkGalaxyProject.Data.Models.WithinSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,6 @@ namespace DarkGalaxyProject.Test.Data
             => new Planet { Id = planetId, SystemId = systemId };
 
         public static Factories Factories(string planetId, string factoryId)
-            => new Factories { PlanetId = planetId, Id = factoryId };
+            => new Factories(0, 0, 0, 0, 0, FactoryType.Factory, planetId);
     }
 }

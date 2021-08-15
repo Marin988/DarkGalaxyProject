@@ -1,5 +1,6 @@
 ﻿using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.Others;
+using DarkGalaxyProject.Data.Models.Stats;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,10 @@ namespace DarkGalaxyProject.Data
         public DbSet<DefenceBuilder> DefenceBuilders { get; set; }
         public DbSet<Fleet> Fleets { get; set; }
         public DbSet<AuctionDeal> AuctionDeals { get; set; }
+        public DbSet<ShipStats> ShipStats { get; set; }
+        public DbSet<FactoryStats> FactoryStats { get; set; }
+        public DbSet<ResearchTreeStats> ResearchTreeStats { get; set; }
+        public DbSet<DefensiveStructureStats> DefensiveStructureStats { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

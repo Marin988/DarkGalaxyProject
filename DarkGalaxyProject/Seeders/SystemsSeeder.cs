@@ -52,7 +52,9 @@ namespace DarkGalaxyProject.Seeders
 
                     foreach (var factoryType in Enum.GetValues(typeof(FactoryType)))
                     {
-                        var factory = new Factories { PlanetId = planet.Id, FactoryType = (FactoryType)factoryType };
+                        var factoryStats = data.FactoryStats.First(f => f.FactoryType == (FactoryType)factoryType && f.Level == 0);
+
+                        var factory = new Factories(factoryStats.Income, factoryStats.UpgradeCost, factoryStats.UpgradeEnergyCost, factoryStats.UpgradeTimeLength, factoryStats.BuildingSpace, (FactoryType)factoryType, planet.Id);
                         factories.Add(factory);
                     }
 
@@ -61,20 +63,27 @@ namespace DarkGalaxyProject.Seeders
 
                 var defences = new List<DefensiveStructure>();
 
-                defences.AddRange(Enumerable.Range(0, (int)system.Type / 10).Select(d => new DefensiveStructure(DefensiveStructureType.SpaceStation, system.Id)));
+                var spaceStationStats = data.DefensiveStructureStats.First(d => d.Type == DefensiveStructureType.SpaceStation);
+                var sateliteStats = data.DefensiveStructureStats.First(d => d.Type == DefensiveStructureType.Satelite);
 
-                defences.AddRange(Enumerable.Range(0, (int)system.Type).Select(d => new DefensiveStructure(DefensiveStructureType.Satelite, system.Id)).ToList());
+                defences.AddRange(Enumerable.Range(0, (int)system.Type / 10).Select(d => new DefensiveStructure(DefensiveStructureType.SpaceStation, system.Id, spaceStationStats.MaxHP, spaceStationStats.Damage)));
+
+                defences.AddRange(Enumerable.Range(0, (int)system.Type).Select(d => new DefensiveStructure(DefensiveStructureType.Satelite, system.Id, sateliteStats.MaxHP, sateliteStats.Damage)).ToList());
 
                 var shipBuilders = new List<ShipBuilder>();
 
                 foreach (var item in Enum.GetValues(typeof(ShipType)))
                 {
+                    var shipBuilderStats = data.ShipStats.First(s => s.Type == (ShipType)item);
+
                     shipBuilders.Add(new ShipBuilder
                     {
                         Count = 0,
                         FinishedBuildingTime = null,
                         ShipType = (ShipType)item,
-                        SystemId = system.Id
+                        SystemId = system.Id,
+                        BuildTime = shipBuilderStats.BuildTime,
+                        PricePerShip = shipBuilderStats.Price
                     });
                 }
 
@@ -82,12 +91,16 @@ namespace DarkGalaxyProject.Seeders
 
                 foreach (var item in Enum.GetValues(typeof(DefensiveStructureType)))
                 {
+                    var defenceBuilderStats = data.DefensiveStructureStats.First(s => s.Type == (DefensiveStructureType)item);
+
                     defenceBuilders.Add(new DefenceBuilder
                     {
                         FinishedBuildingTime = null,
                         DefensiveStructureType = (DefensiveStructureType)item,
                         SystemId = system.Id,
-                        Count = 0
+                        Count = 0,
+                        BuildTime = defenceBuilderStats.BuildTime,
+                        PricePerUnit = defenceBuilderStats.Price
                     });
                 }
 
