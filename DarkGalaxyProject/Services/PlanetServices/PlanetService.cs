@@ -31,6 +31,10 @@ namespace DarkGalaxyProject.Services.PlanetServices
                     Name = p.Name,
                     Position = p.Position,
                     Type = p.Type.ToString(),
+                    PlayerId = playerId,
+                    IsTerraformed = p.IsTerraformed,
+                    BuiltUpSpace = p.BuiltUpSpace,
+                    BuildingCap = p.BuildingCap,
                     Factories = p.Factories.Select(f => new FactorySeviceModel
                     {
                         Id = f.Id,
@@ -41,11 +45,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
                         UpgradeTimeLength = f.UpgradeTimeLength,
                         Type = f.FactoryType.ToString()
                     })
-                    .ToList(),
-                    PlayerId = playerId,
-                    IsTerraformed = p.IsTerraformed,
-                    BuiltUpSpace = p.BuiltUpSpace,
-                    BuildingCap = p.BuildingCap
+                    .ToList()
                 })
                 .First();
 

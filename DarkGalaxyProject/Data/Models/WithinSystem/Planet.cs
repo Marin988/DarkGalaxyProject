@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
+    using static DataConstants.Planet;
+
     public class Planet 
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
@@ -22,11 +24,11 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public bool IsTerraformed { get; set; }
 
-        public int TerraformPrice => 120000 / (int)Type;
+        public int TerraformPrice => TerraformPriceConst / (int)Type;
 
         public int BuiltUpSpace { get; set; }
 
-        public int BuildingCap => 5000 * (int)Type;
+        public int BuildingCap => BuildingCapConst * (int)Type;
 
         public IEnumerable<Factories> Factories { get; set; }    
 

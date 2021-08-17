@@ -6,15 +6,13 @@
     <ul>
         @foreach (var system in Model)
         {
-            <li>
-                @system.Position @(system.CurrentPlayerId != null ? "Currently chosen" : null)
-                <form method="post" action="@Url.Action("SwitchSystem", "System", new { Area = "" })">
-                    <input hidden name="systemId" value=@system.Id />
-                    <input type="submit" value="View system" />
-                </form>
-            </li>
+        <li>
+            @system.Position @(system.CurrentPlayerId != null ? "Currently chosen" : null)
+            <form method="post" action="@Url.Action("SwitchSystem", "System", new { Area = "" })">
+                <input hidden name="systemId" value=@system.Id />
+                <input type="submit" value="View system" />
+            </form>
+        </li>
         }
     </ul>
 </div>
-
-@*//action="@Url.Action("SwitchSystem", "System")*@

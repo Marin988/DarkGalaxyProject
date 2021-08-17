@@ -158,6 +158,8 @@ namespace DarkGalaxyProject.Controllers
 
             var result = await userManager.CreateAsync(registeredUser, user.Password);
 
+            systemForUser.CurrentPlayerId = registeredUser.Id;
+
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);

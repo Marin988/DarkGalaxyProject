@@ -8,16 +8,18 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models.Others
 {
+    using static DataConstants.Message;
+
     public class Message : IMessage
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
         [Required]
-        [StringLength(36, MinimumLength = 2)]
+        [StringLength(TitleMaxLength, MinimumLength = TitleMinLength)]
         public string Title { get; set; }
 
         [Required]
-        [StringLength(240, MinimumLength = 5)]
+        [StringLength(ContentMaxLength, MinimumLength = ContentMinLength)]
         public string Content { get; set; }
 
         public bool Seen { get; set; }

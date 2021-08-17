@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models.Others
 {
+    using static DataConstants.ChatMessage;
+
     public class ChatMessage : IMessage
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
@@ -16,6 +18,7 @@ namespace DarkGalaxyProject.Data.Models.Others
         public ChatMessageType Type { get; set; }
 
         [Required]
+        [StringLength(MaxLength, MinimumLength = MinLength)]
         public string Content { get; set; }
 
         public DateTime TimeOfSending { get; } = DateTime.Now;

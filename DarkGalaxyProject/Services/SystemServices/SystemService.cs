@@ -112,7 +112,6 @@ namespace DarkGalaxyProject.Services.SystemServices
                         FuelExpense = s.FuelExpense
                     })
                     .ToList(),
-                    FuelPricePerSystemTravelled = f.FuelPricePerSystemTravelled
                 })
                 .ToList();
 
@@ -176,7 +175,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
 
-            if (battleShipCount < 1 && colonizerCount < 1 && transportShipCount < 1 && missionTypeEnum != MissionType.Spy)
+            if (battleShipCount < 1 && transportShipCount < 1 && missionTypeEnum != MissionType.Spy && missionTypeEnum != MissionType.Colonize)
             {
                 return "You cannot send a fleet of 0 ships";
             }
@@ -198,7 +197,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             List<Ship> ships = GetShips(battleShipCount, colonizerCount, transportShipCount, system);
 
-            if (ships.Count == 0 && missionTypeEnum != MissionType.Spy)
+            if (ships.Count == 0 && missionTypeEnum != MissionType.Spy && missionTypeEnum != MissionType.Colonize)
             {
                 return "You don't have any ships";
             }

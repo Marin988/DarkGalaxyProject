@@ -8,17 +8,19 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models
 {
+    using static DataConstants.AuctionDeal;
+
     public class AuctionDeal
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
-        [Range(1, 1000)]
+        [Range(MinQuantity, MaxQuantity)]
         public int Quantity { get; set; } 
 
         [Required]
         public string ShipType { get; set; }
 
-        [Range(100, 10000000)]
+        [Range(MinPrice, MaxPrice)]
         public int Price { get; set; }
 
         public string BuyerId { get; set; }

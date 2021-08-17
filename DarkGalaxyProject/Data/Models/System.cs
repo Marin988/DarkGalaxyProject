@@ -8,16 +8,18 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models
 {
+    using static DataConstants.System;
+
     public class System
     {
         public System()
         {
             Resources = new List<Resource>()
             {
-                new Resource { Quantity = 2000, Type = ResourceType.Fuel },
-                new Resource { Quantity = 5000, Type = ResourceType.MilkyCoin },
-                new Resource { Quantity = 0, Type = ResourceType.Paper },
-                new Resource { Quantity = 300, Type = ResourceType.Energy },
+                new Resource { Quantity = StartingFuelQuantity, Type = ResourceType.Fuel },
+                new Resource { Quantity = StartingMilkyCoinQuantity, Type = ResourceType.MilkyCoin },
+                new Resource { Quantity = StartingPaperQuantity, Type = ResourceType.Paper },
+                new Resource { Quantity = StartingEnergyQuantity, Type = ResourceType.Energy },
             };
             Suns = new List<Sun>();
             DefensiveStructures = new List<DefensiveStructure>();
@@ -29,10 +31,9 @@ namespace DarkGalaxyProject.Data.Models
 
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
-        //[Required]
         public string Name { get; set; }
 
-        [Range(1, 1000)]
+        [Range(MinPosition, MaxPosition)]
         public int Position { get; init; }
 
         [Required]

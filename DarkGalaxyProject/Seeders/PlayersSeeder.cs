@@ -2,9 +2,11 @@
 using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
+using DarkGalaxyProject.Data.Models.Stats;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using DarkGalaxyProject.Services.PlayerServices;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,21 +33,8 @@ namespace DarkGalaxyProject.Seeders
             {
                 Task.Run(async () =>
                 {
-                    var systemForBoss = data.Systems.First(s => s.PlayerId == null && s.Type == SystemType.Large);
-                    var systemResourcesBoss = data.Resources.Where(r => r.SystemId == systemForBoss.Id).ToList();
-
-                    var systemForFighter = data.Systems.First(s => s.PlayerId == null && s.Type == SystemType.Medium);
-                    var systemResourcesFighter = data.Resources.Where(r => r.SystemId == systemForFighter.Id).ToList();
-
-                    foreach (var resource in systemResourcesFighter)
-                    {
-                        resource.Quantity = 10000000;
-                    }
-
-                    foreach (var resource in systemResourcesBoss)
-                    {
-                        resource.Quantity = 10000000;
-                    }
+                    var systemForEmperor = data.Systems.Include(s => s.Resources).First(s => s.Position == 50);
+                    var systemForFighter = data.Systems.Include(s => s.Resources).First(s => s.Position == 51);
 
                     var shipStats = data.ShipStats.First(s => s.Type == ShipType.BattleShip);
 
@@ -56,19 +45,34 @@ namespace DarkGalaxyProject.Seeders
                         CurrentSystemId = systemForFighter.Id,
                         Systems = new List<Data.Models.System>() { systemForFighter }
                     };
-
-                    var TheBoss = new Player()
+                    var TheEmperor = new Player()
                     {
-                        Email = "TheBoss@abv.bg",
-                        UserName = "TheBoss",
-                        CurrentSystemId = systemForBoss.Id,
-                        Systems = new List<Data.Models.System>() { systemForBoss }
+                        Email = "TheEmperor@abv.bg",
+                        UserName = "TheEmperor",
+                        CurrentSystemId = systemForEmperor.Id,
+                        Systems = new List<Data.Models.System>() { systemForEmperor }
                     };
 
-                    var resultBoss = await userManager.CreateAsync(TheBoss, "a!1jJk09");
+                    systemForEmperor.CurrentPlayerId = TheEmperor.Id;
+                    systemForFighter.CurrentPlayerId = theFighter.Id;
+
+                    var resultBoss = await userManager.CreateAsync(TheEmperor, "a!1jJk09");
                     var resultFigher = await userManager.CreateAsync(theFighter, "a!1jJk09");
-                    AssignInitialShips(systemForBoss, shipStats, TheBoss, 2000);
-                    AssignInitialShips(systemForFighter, shipStats, theFighter, 1000);
+
+                    var systemsForEmperor = data.Systems.Include(s => s.Resources).Where(s => s.PlayerId == null).Take(5).ToList();
+                    AssignSystems(TheEmperor.Id, systemsForEmperor);
+                    data.SaveChanges();
+                    var systemsForFighter = data.Systems.Include(s => s.Resources).Where(s => s.PlayerId == null).Take(2).ToList();
+                    AssignSystems(theFighter.Id, systemsForFighter);
+
+                    systemsForEmperor.Add(systemForEmperor);
+                    systemsForFighter.Add(systemForFighter);
+
+                    SettingSystemResourcesAndAddingShips(systemsForEmperor, shipStats, TheEmperor.Id, data);
+                    SettingSystemResourcesAndAddingShips(systemsForFighter, shipStats, theFighter.Id, data);
+
+                    AssignInitialShips(systemForEmperor, shipStats, TheEmperor.Id, 1000, data);
+                    AssignInitialShips(systemForFighter, shipStats, theFighter.Id, 500, data);
 
                     if (!resultBoss.Succeeded)
                     {
@@ -80,7 +84,7 @@ namespace DarkGalaxyProject.Seeders
                         }
                     }
 
-                    players.PlayerResearches(TheBoss.Id);
+                    players.PlayerResearches(TheEmperor.Id);
                     players.PlayerResearches(theFighter.Id);
 
                     await data.SaveChangesAsync();
@@ -90,10 +94,30 @@ namespace DarkGalaxyProject.Seeders
             }
         }
 
-        private void AssignInitialShips(Data.Models.System system, Data.Models.Stats.ShipStats shipStats, Player player, int shipsNumber)
+        private static void AssignSystems(string playerId, List<Data.Models.System> systemsForEmperor)
         {
-            system.PlayerId = player.Id;
-            var ships = Enumerable.Range(0, shipsNumber).Select(d => new Ship(shipStats.Type, system.Id, player.Id, shipStats.Damage, shipStats.MaxHP, shipStats.MaxStorage, shipStats.Speed, shipStats.FuelExpense));
+            foreach (var system in systemsForEmperor)
+            {
+                system.PlayerId = playerId;
+            }
+        }
+
+        private static void SettingSystemResourcesAndAddingShips(List<Data.Models.System> systemsForEmperor, ShipStats shipStats, string playerId, ApplicationDbContext data)
+        {
+            foreach (var system in systemsForEmperor)
+            {
+                foreach (var resource in system.Resources)
+                {
+                    resource.Quantity = 10000000;
+                }
+                AssignInitialShips(system, shipStats, playerId, 50, data);
+            }
+        }
+
+        private static void AssignInitialShips(Data.Models.System system, ShipStats shipStats, string playerId, int shipsNumber, ApplicationDbContext data)
+        {
+            system.PlayerId = playerId;
+            var ships = Enumerable.Range(0, shipsNumber).Select(d => new Ship(shipStats.Type, system.Id, playerId, shipStats.Damage, shipStats.MaxHP, shipStats.MaxStorage, shipStats.Speed, shipStats.FuelExpense));
             data.Ships.AddRange(ships);
         }
     }

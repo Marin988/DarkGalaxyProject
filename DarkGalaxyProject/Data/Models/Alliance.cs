@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models
 {
+    using static DataConstants.Alliance;
+
     public class Alliance
     {
         public Alliance(string name)
@@ -23,12 +25,12 @@ namespace DarkGalaxyProject.Data.Models
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
         [Required]
-        [MaxLength(20)]
-        [MinLength(3)]
+        [MaxLength(NameMaxLength)]
+        [MinLength(NameMinLength)]
         public string Name { get; set; }
 
-        [MinLength(6)]
-        [MaxLength(120)]
+        [MinLength(DescriptionMinLength)]
+        [MaxLength(DescriptionMaxLength)]
         public string Description { get; set; }
 
         public IEnumerable<Player> Members { get; set; }

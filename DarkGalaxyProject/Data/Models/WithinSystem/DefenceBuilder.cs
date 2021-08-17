@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models.WithinSystem
 {
+    using static DataConstants.Builder;
+
     public class DefenceBuilder
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -17,7 +19,7 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
         [Required]
         public DefensiveStructureType DefensiveStructureType { get; set; }
 
-        [Range(1, 1000)]
+        [Range(MinCount, MaxCount)]
         public int Count { get; set; }
 
         public int PricePerUnit { get; init; }
