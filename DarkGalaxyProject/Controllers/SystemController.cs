@@ -63,6 +63,12 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult AllSystems(int page)
         {
+            if(page < 1 || page > 20)
+            {
+                TempData["Message"] = $"Page {page} doesn't exist";
+                return Redirect("AllSystems?page=1");
+            }
+
             string allSystemsCacheKey = $"AllSystems{page}";
 
             var allSystems = cache.Get<List<SystemServiceModel>>(allSystemsCacheKey);

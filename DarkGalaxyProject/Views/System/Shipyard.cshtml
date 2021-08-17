@@ -81,7 +81,6 @@
         var dateString = '@(Ship.FinishedBuildingTime.HasValue ? Ship.FinishedBuildingTime.Value : null)';
 
         function startBuilding() {
-            if (dateString == '') {
                     $(document).ready(function () {
                         var shipType = $("#shipType").val().toString();
                         var systemId = $("#systemId").val();
@@ -96,7 +95,6 @@
                             }
                         });
                     });
-            }
         }
 
         function buildShip() {
@@ -124,7 +122,7 @@
                     document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
                     if (timeleft - counter <= 0) {
                         clearInterval(_tick);
-                        setTimeout(function () { location.reload(); }, 200);
+                        setTimeout(function () { location.reload(); }, 1200);
                     }
                 }, 1000);
             }

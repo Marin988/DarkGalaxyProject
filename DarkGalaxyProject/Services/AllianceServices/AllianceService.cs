@@ -52,15 +52,33 @@ namespace DarkGalaxyProject.Services.AllianceServices
             return null;
         }
 
-        public bool Apply(string allianceId, string playerId)
+        public string RejectCandidate(string allianceId, string candidateId, string playerId)
+        {
+            var candidate = data.Players.First(p => p.Id == candidateId);
+            var alliance = data.Alliances.First(a => a.Id == allianceId);
+
+            if (playerId != alliance.LeaderId)
+            {
+                return "Only the leader can reject members!";
+            }
+
+            candidate.AllianceCandidateId = null;
+
+            data.SaveChanges();
+
+            return null;
+        }
+
+        public string Apply(string allianceId, string playerId)
         {
             var candidate = data.Players.First(p => p.Id == playerId);
+            var allianceName = data.Alliances.First(a => a.Id == allianceId).Name;
 
             candidate.AllianceCandidateId = allianceId;
 
             data.SaveChanges();
 
-            return true;
+            return $"You have applied to {allianceName}";
         }
 
         public IEnumerable<ChatMessageServiceModel> ChatMessages(string allianceId)

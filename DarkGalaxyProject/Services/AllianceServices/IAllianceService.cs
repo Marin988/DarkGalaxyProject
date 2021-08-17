@@ -24,7 +24,8 @@ namespace DarkGalaxyProject.Services.AllianceServices
         public bool Create(string playerId, string allianceName);
         public bool Leave(string playerId);
         public string AcceptCandidate(string allianceId, string candidateId, string playerId);
-        public bool Apply(string allianceId, string playerId);
+        public string RejectCandidate(string allianceId, string candidateId, string playerId);
+        public string Apply(string allianceId, string playerId);
         public string PromoteToLeader(string allianceId, string playerId, string leaderId);
 
         public string ChangeDescription(string allianceId, string description);

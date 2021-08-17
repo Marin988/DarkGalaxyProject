@@ -19,6 +19,10 @@ namespace DarkGalaxyProject.Services.PlanetServices.Models
 
         public bool IsTerraformed { get; set; }
 
+        public int BuiltUpSpace { get; set; }
+
+        public int BuildingCap { get; set; }
+
         public IEnumerable<FactorySeviceModel> Factories { get; set; }
     }
 }

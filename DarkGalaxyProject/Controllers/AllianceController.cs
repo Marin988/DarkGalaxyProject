@@ -28,9 +28,17 @@ namespace DarkGalaxyProject.Controllers
         [Authorize]
         public IActionResult All()
         {
+            var playerId = userManager.GetUserId(User);
             var AllAlliances = alliances.All();
+            var isInAlliance = alliances.IsInAlliance(playerId);
 
-            return View(AllAlliances);
+            var AllAlliancesViewModel = new AllAlliancesViewModel
+            {
+                Alliances = AllAlliances,
+                IsInAlliance = isInAlliance
+            };
+
+            return View(AllAlliancesViewModel);
         }
 
         [Authorize]
@@ -138,12 +146,25 @@ namespace DarkGalaxyProject.Controllers
             return Redirect($"Members?allianceId={allianceId}");
         }
 
+        [Authorize]
+        [HttpPost]
+        public IActionResult RejectCandidate(string allianceId, string candidateId)
+        {
+            var message = alliances.RejectCandidate(allianceId, candidateId, userManager.GetUserId(User));
+
+            TempData["Message"] = message;
+
+            return Redirect($"Members?allianceId={allianceId}");
+        }
+
 
         [Authorize]
         [HttpPost]
         public IActionResult Apply(string allianceId)
         {
-            alliances.Apply(allianceId, userManager.GetUserId(User));
+            var message = alliances.Apply(allianceId, userManager.GetUserId(User));
+
+            TempData["Message"] = message;
 
             return Redirect("All");
         }

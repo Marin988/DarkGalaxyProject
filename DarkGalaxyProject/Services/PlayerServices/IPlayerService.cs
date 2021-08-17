@@ -12,7 +12,7 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
         public MessageServiceModel Message(string messageId);
 
-        public IEnumerable<MessageListingServiceModel> PlayerMessages(string playerId);
+        public AllMessagesServiceModel PlayerMessages(string playerId, int page);
 
         public ProfileServiceModel Profile(string playerId);
 

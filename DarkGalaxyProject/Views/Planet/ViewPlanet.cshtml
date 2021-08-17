@@ -25,7 +25,7 @@
 
         @if (Model.IsTerraformed)
         {
-            foreach (var Factory in Model.Factories)
+            foreach (var Factory in Model.Factories.OrderBy(f => f.Type))
             {
                 <span>@Factory.Type ---> Level: @Factory.Level, Income -----> @Factory.Income, Upgrade Cost -----> @Factory.UpgradeCost Milky Coin and @(Factory.UpgradeCost / 10) Energy, Upgrade Time ------> @Factory.UpgradeTimeLength</span><br />
                 @if (Model.PlayerId == UserManager.GetUserId(User))
@@ -39,6 +39,8 @@
                     </form>
                 }
             }
+
+            <span>Planet building space: (@Model.BuiltUpSpace/@Model.BuildingCap)</span>
         }
         else
         {

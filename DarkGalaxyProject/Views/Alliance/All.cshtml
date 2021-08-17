@@ -1,42 +1,41 @@
-﻿@using DarkGalaxyProject.Services.AllianceServices.Models
+﻿@using DarkGalaxyProject.Models.Alliance
 
-@model List<AllianceServiceModel>
+@model AllAlliancesViewModel
 
 @{
     ViewData["Title"] = "All Alliances";
 }
 
-@foreach (var alliance in Model)
+@if (TempData["Message"] != null)
 {
-    <h5>@alliance.Name</h5>
-
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <ul>
-                <li>
-                    <span>Leader: @alliance.Leader</span>
-
-                </li>
-                <li>
-                    <span>Members: @alliance.MembersCount</span>
-                </li>
-                <li class="bs-popover-left">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Members" asp-route-allianceId="@alliance.Id">Members</a>
-                </li>
-                <li class="bs-popover-left">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Chat" asp-route-allianceId="@alliance.Id">Chat</a>
-                </li>
-            </ul>
-            <form asp-action="Apply">
-                <div class="form-group">
-                    <input type="text" id="allianceId" name="allianceId" hidden value=@alliance.Id class="form-control" />
-                    <input type="submit" value="Apply" class="btn btn-primary" />
-                </div>
-            </form>
-        </div>
-    </div>
+    <h5>@TempData["Message"]</h5>
 }
+
+<ul>
+    @foreach (var alliance in Model.Alliances)
+    {
+        <li>
+            <hr />
+            <div class="row">
+                <div class="col-md-4">
+                    <span>Name: @alliance.Name</span><br />
+                    <span>Leader: @alliance.Leader</span>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Alliance" asp-action="Members" asp-route-allianceId="@alliance.Id">Members: @alliance.MembersCount</a>
+
+                    @if (!Model.IsInAlliance)
+                    {
+                        <form asp-action="Apply">
+                            <div class="form-group">
+                                <input type="text" id="allianceId" name="allianceId" hidden value=@alliance.Id class="form-control" />
+                                <input type="submit" value="Apply" class="btn btn-primary" />
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </li>
+    }
+</ul>
 
 <div>
     <a asp-action="Index">Back to List</a>

@@ -1,5 +1,5 @@
-﻿using DarkGalaxyProject.Data.Models;
-using DarkGalaxyProject.Services.PartialServices;
+﻿using DarkGalaxyProject.Areas.Partials.Services;
+using DarkGalaxyProject.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DarkGalaxyProject.Controllers
+namespace DarkGalaxyProject.Areas.Partials.Controllers
 {
+    [Area(PartialConstants.AreaName)]
     public class PartialController : Controller
     {
         private readonly UserManager<Player> userManager;

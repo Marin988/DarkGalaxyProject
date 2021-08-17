@@ -32,15 +32,6 @@ namespace DarkGalaxyProject.Services.SystemServices
                     Id = s.Id,
                     Position = s.Position,
                     Type = s.Type.ToString(),
-                    Ships = s.Ships.Select(sh => new ShipServiceModel
-                    {
-                        Damage = sh.Damage,
-                        HP = sh.HP,
-                        Speed = sh.Speed,
-                        Storage = sh.Storage,
-                        Type = sh.Type.ToString()
-                    })
-                    .ToList(),
                     Planets = s.Planets.Select(p => new PlanetListingServiceModel
                     {
                         Id = p.Id,
@@ -117,7 +108,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                         MaxStorage = s.MaxStorage,
                         Storage = s.Storage,
                         Type = s.Type.ToString(),
-                        OnMission = s.OnMission
+                        OnMission = s.OnMission,
+                        FuelExpense = s.FuelExpense
                     })
                     .ToList(),
                     FuelPricePerSystemTravelled = f.FuelPricePerSystemTravelled
@@ -159,6 +151,13 @@ namespace DarkGalaxyProject.Services.SystemServices
                        Storage = sh.Storage,
                        Type = sh.Type.ToString()
                    })
+                   .ToList(),
+                   Defences = s.DefensiveStructures.Select(d => new DefenceServiceModel
+                   {
+                       Type = d.Type.ToString(),
+                       Damage = d.Damage,
+                       HP = d.HP
+                   })
                    .ToList()
                })
                .ToList();
@@ -170,19 +169,25 @@ namespace DarkGalaxyProject.Services.SystemServices
         {
             var AvailableFleet = data.Fleets.FirstOrDefault(f => f.SystemId == systemId && f.ArrivalTime == null);
 
-            if(AvailableFleet == null)
+            if (AvailableFleet == null)
             {
                 return "You don't have available fleets";
             }
 
             var missionTypeEnum = (MissionType)Enum.Parse(typeof(MissionType), missionType);
 
-            if(battleShipCount < 1 && colonizerCount < 1 && transportShipCount < 1 && missionTypeEnum != MissionType.Spy)
+            if (battleShipCount < 1 && colonizerCount < 1 && transportShipCount < 1 && missionTypeEnum != MissionType.Spy)
             {
                 return "You cannot send a fleet of 0 ships";
             }
 
             var destinationSystem = data.Systems.FirstOrDefault(s => s.Position == destinationSystemPosition);
+            var hostSystem = data.Systems.First(s => s.Id == systemId);
+
+            if ((missionTypeEnum == MissionType.Attack || missionTypeEnum == MissionType.Spy || missionTypeEnum == MissionType.Colonize) && destinationSystem.PlayerId == hostSystem.PlayerId)
+            {
+                return "You cannot attack, spy or colonize your own systems.";
+            }
 
             if (destinationSystem == null || destinationSystemPosition < 1 || destinationSystemPosition > 100)
             {
@@ -218,7 +223,12 @@ namespace DarkGalaxyProject.Services.SystemServices
                 return "You cannot deploy ships and transport resources to systems not belonging to a player.";
             }
 
-            if((missionTypeEnum == MissionType.Spy || missionTypeEnum == MissionType.Attack) && cargo > 0)
+            if(missionTypeEnum == MissionType.Colonize && destinationSystem.PlayerId != null)
+            {
+                return "You cannot colonise systems belonging to a player";
+            }
+
+            if ((missionTypeEnum == MissionType.Spy || missionTypeEnum == MissionType.Attack) && cargo > 0)
             {
                 return "You cannot transport resources when spying or attacking.";
             }
@@ -238,7 +248,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                 }
 
                 systemMilkyCoin.Quantity -= cargo;
-                data.SaveChanges();
+                //data.SaveChanges();
             }
 
             if (missionTypeEnum == MissionType.Spy)
@@ -260,20 +270,23 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId).First(f => f.ArrivalTime == null);
 
-            if (systemFuel.Quantity < flightLength * fleet.FuelPricePerSystemTravelled)
+            var fuelConsumption = ships.Sum(s => s.FuelExpense) * flightLength;
+            var fleetSpeed = ships.Min(s => s.Speed);
+
+            if (systemFuel.Quantity < fuelConsumption)
             {
-                return $"You need {flightLength * fleet.FuelPricePerSystemTravelled} fuel for this mission, but only have {systemFuel.Quantity}";
+                return $"You need {fuelConsumption} fuel for this mission, but only have {systemFuel.Quantity}";
             }
 
-                PrepareShipsForMission(cargo, fleet, missionTypeEnum, ships);
+            PrepareShipsForMission(cargo, fleet, missionTypeEnum, ships);
 
             fleet.MissionType = missionTypeEnum;
             fleet.Outgoing = true;
             fleet.Ships.ToList().AddRange(ships);
             fleet.DestinationSystemPoistion = destinationSystemPosition;
-            fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
+            fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength * 2000 / fleetSpeed);
 
-            systemFuel.Quantity -= flightLength * fleet.FuelPricePerSystemTravelled;
+            systemFuel.Quantity -= fuelConsumption;
 
             var saved = false;
 
@@ -316,7 +329,7 @@ namespace DarkGalaxyProject.Services.SystemServices
                 }
             }
 
-            return $"Successfully sent {fleet.Ships.Count()} ships on mission {missionTypeEnum.ToString()}";
+            return $"Successfully sent {fleet.Ships.Count()} ships on mission {missionTypeEnum.ToString()} to system {destinationSystemPosition}";
         }
 
         private static List<Ship> GetShips(int battleShipCount, int colonizerCount, int transportShipCount, Data.Models.System system)
@@ -336,8 +349,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                 ship.OnMission = true;
                 ship.FleetId = fleet.Id;
 
-                if (cargo > 0) 
-                {                                                         
+                if (cargo > 0)
+                {
                     int load = ship.MaxStorage - ship.Storage;
                     if (cargo < load)
                     {
@@ -402,7 +415,8 @@ namespace DarkGalaxyProject.Services.SystemServices
                     Type = s.Type.ToString(),
                     OnMission = s.OnMission,
                     DealId = s.DealId,
-                    FleetId = s.FleetId
+                    FleetId = s.FleetId,
+                    FuelExpense = s.FuelExpense
                 })
                 .ToList();
 
@@ -421,6 +435,11 @@ namespace DarkGalaxyProject.Services.SystemServices
             if (playerId != system.PlayerId)
             {
                 return $"Only the player, whom this system belongs to can build defences";
+            }
+
+            if (system.DefenceBuildingQueue.Any(s => s.FinishedBuildingTime != null))
+            {
+                return $"You are already building a defence";
             }
 
             var research = data.ResearchTrees.First(r => r.PlayerId == playerId && r.ResearchType == ResearchType.HeavyDefence);
@@ -447,12 +466,12 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             data.SaveChanges();
 
-            return $"You have started building {count} {defenceBuildingQueue.DefensiveStructureType.ToString()}s for {defenceBuildingQueue.TotalPrice}";
+            return $"You have started building {count} {defenceBuildingQueue.DefensiveStructureType.ToString()}s for {defenceBuildingQueue.TotalPrice} {systemMilkyCoin.Type.ToString()}";
         }
 
         public string StartBuildingShip(string systemId, string shipType, int count, string playerId)
         {
-            if(count < 1)
+            if (count < 1)
             {
                 return "Count has to be more than 0";
             }
@@ -462,6 +481,11 @@ namespace DarkGalaxyProject.Services.SystemServices
             if (playerId != system.PlayerId)
             {
                 return $"Only the player, whom this system belongs to can build ships";
+            }
+
+            if(system.ShipBuildingQueue.Any(s => s.FinishedBuildingTime != null))
+            {
+                return $"You are already building a ship";
             }
 
             var shiptype = (ShipType)Enum.Parse(typeof(ShipType), shipType);
@@ -509,7 +533,7 @@ namespace DarkGalaxyProject.Services.SystemServices
 
             data.SaveChanges();
 
-            return $"You have started building {count} {shipbuildingQueue.ShipType.ToString()}s for {shipbuildingQueue.TotalPrice}";
+            return $"You have started building {count} {shipbuildingQueue.ShipType.ToString()}s for {shipbuildingQueue.TotalPrice} {systemMilkyCoin.Type.ToString()}";
         }
 
         public bool SwitchSystem(string systemId, string playerId)
@@ -523,7 +547,7 @@ namespace DarkGalaxyProject.Services.SystemServices
             {
                 curentSystem.CurrentPlayerId = null;
             }
-            
+
 
             player.CurrentSystemId = systemId;
             system.CurrentPlayerId = playerId;
@@ -535,28 +559,31 @@ namespace DarkGalaxyProject.Services.SystemServices
 
         public SystemServiceModel System(string systemId)
         {
-            var system = data.Systems.Where(s => s.Id == systemId).Select(s => new SystemServiceModel
-            {
-                Id = s.Id,
-                PlayerId = s.PlayerId,
-                UserName = s.Player.UserName,
-                Position = s.Position,
-                Type = s.Type.ToString(),
-                Ships = s.Ships.Select(sh => new ShipServiceModel
+            var system = data.Systems
+                .Include(s => s.DefensiveStructures)
+                .Where(s => s.Id == systemId)
+                .Select(s => new SystemServiceModel
                 {
-                    Damage = sh.Damage,
-                    HP = sh.HP,
-                    Speed = sh.Speed,
-                    Storage = sh.Storage,
-                    Type = sh.Type.ToString()
-                }),
-                Planets = s.Planets.Select(p => new PlanetListingServiceModel
-                {
-                    Id = p.Id,
-                    Name = p.Name
+                    Id = s.Id,
+                    PlayerId = s.PlayerId,
+                    UserName = s.Player.UserName,
+                    Position = s.Position,
+                    Type = s.Type.ToString(),
+                    Planets = s.Planets.Select(p => new PlanetListingServiceModel
+                    {
+                        Id = p.Id,
+                        Name = p.Name
+                    })
+                    .OrderBy(p => p.Name)
+                    .ToList(),
+                    Defences = s.DefensiveStructures.Select(d => new DefenceServiceModel
+                    {
+                        Type = d.Type.ToString(),
+                        Damage = d.Damage,
+                        HP = d.HP
+                    })
+                    .ToList()
                 })
-               .ToList()
-            })
            .FirstOrDefault();
 
             return system;

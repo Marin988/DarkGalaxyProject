@@ -40,9 +40,12 @@ namespace DarkGalaxyProject.Services.PlanetServices
                         UpgradeFinishTime = f.UpgradeFinishTime,
                         UpgradeTimeLength = f.UpgradeTimeLength,
                         Type = f.FactoryType.ToString()
-                    }).ToList(),
+                    })
+                    .ToList(),
                     PlayerId = playerId,
-                    IsTerraformed = p.IsTerraformed
+                    IsTerraformed = p.IsTerraformed,
+                    BuiltUpSpace = p.BuiltUpSpace,
+                    BuildingCap = p.BuildingCap
                 })
                 .First();
 
@@ -62,6 +65,12 @@ namespace DarkGalaxyProject.Services.PlanetServices
             var systemId = planet.SystemId;
             var milkyCoin = data.Resources.First(r => r.Type == ResourceType.MilkyCoin && r.SystemId == systemId);
             var energy = data.Resources.First(r => r.Type == ResourceType.Energy && r.SystemId == systemId);
+            var factoryStats = data.FactoryStats.First(f => f.FactoryType == factory.FactoryType && f.Level == factory.Level + 1);
+
+            if(planet.BuiltUpSpace + factoryStats.BuildingSpace > planet.BuildingCap)
+            {
+                return "You don't have enough space on this planet to build that";
+            }
 
             if (milkyCoin.Quantity < factory.UpgradeCost)
             {

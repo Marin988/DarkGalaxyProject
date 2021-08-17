@@ -61,7 +61,6 @@ namespace DarkGalaxyProject.Services.AuctionServices
 
             if (buyerMilkyCoin.Quantity < deal.Price)
             {
-                //TODO: error not enough money
                 return $"You need {deal.Price} {buyerMilkyCoin.Type.ToString()}, but only have {buyerMilkyCoin.Quantity}";
             }
 
@@ -102,6 +101,10 @@ namespace DarkGalaxyProject.Services.AuctionServices
             {
                 return $"Ship count has to be more than 0.";
             }
+            if(price < 100)
+            {
+                return $"Price has to be at least 100";
+            }
 
 
             var deal = new AuctionDeal
@@ -124,7 +127,7 @@ namespace DarkGalaxyProject.Services.AuctionServices
 
             data.SaveChanges();
 
-            return "Your ships are on the auction";
+            return null;
         }
 
         public bool DeleteDeal(string dealId)

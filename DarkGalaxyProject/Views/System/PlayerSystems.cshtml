@@ -15,6 +15,7 @@
     <li>
         <span>Position: @system.Position</span><br>
         <span>Type: @system.Type</span><br>
+        <h6>Ships</h6>
         @foreach (var ship in system.Ships.GroupBy(s => s.Type))
         {
             <span>Count: @ship.Count()---------</span>
@@ -23,6 +24,14 @@
             <span>Speed: @ship.Sum(s => s.Speed)---------</span>
             <span>Storage: @ship.Sum(s => s.Storage)---------</span>
             <span>Type: @ship.First().Type</span><br>
+        }
+        <h6>Defences</h6>
+        @foreach (var defence in system.Defences.GroupBy(d => d.Type))
+        {
+            <span>Count: @defence.Count()------</span>
+            <span>HP: @defence.Sum(d => d.HP)-------</span>
+            <span>Damage: @defence.Sum(d => d.Damage)--------</span>
+            <span>Type: @defence.First().Type</span><br />
         }
         <form action="SwitchSystem" method="post">
             <input hidden name="systemId" value=@system.Id />

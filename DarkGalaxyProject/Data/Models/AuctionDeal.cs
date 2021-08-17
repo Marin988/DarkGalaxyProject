@@ -30,7 +30,6 @@ namespace DarkGalaxyProject.Data.Models
 
         public Player Seller { get; set; }
 
-        public IEnumerable<Ship> ShipsForSale { get; set; }//later might change that to IEnumerable<object>
-        //may also add dates (do I need two dates? For when it was released for selling and when it was sold)
+        public IEnumerable<Ship> ShipsForSale { get; set; }
     }
 }

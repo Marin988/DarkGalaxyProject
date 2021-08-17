@@ -52,8 +52,10 @@
 <ul>
     @foreach (var candidate in Model.Candidates)
     {
-        <li>
-            <span>Player @candidate.UserName with @candidate.Systems systems</span>
+    <li>
+        <span>Player @candidate.UserName with @candidate.Systems systems</span>
+        @if (UserManager.GetUserId(User) == Model.AllianceLeaderId)
+        {
             <form asp-action="AcceptCandidate">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
@@ -64,6 +66,17 @@
                     <input type="submit" value="Accept" class="btn btn-primary" />
                 </div>
             </form>
-        </li>
+            <form asp-action="RejectCandidate">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <input type="text" id="allianceId" name="allianceId" hidden value=@Model.AllianceId class="form-control" />
+                    <input type="text" id="candidateId" name="candidateId" hidden value=@candidate.Id class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Reject" class="btn btn-primary" />
+                </div>
+            </form>
+        }
+    </li>
     }
 </ul>

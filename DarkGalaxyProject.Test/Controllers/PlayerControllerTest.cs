@@ -92,7 +92,7 @@ namespace DarkGalaxyProject.Test.Controllers
             .Instance(instance => instance
                 .WithData(Player(playerId))
                 .WithData(Messages(playerId)))
-            .Calling(c => c.Messages(playerId))
+            .Calling(c => c.Messages(playerId, 1))
             .ShouldHave()
             .ActionAttributes(attributes => attributes
                 .RestrictingForAuthorizedRequests())

@@ -20,5 +20,7 @@ namespace DarkGalaxyProject.Services.SystemServices.Models
         public IEnumerable<PlanetListingServiceModel> Planets { get; set; }
 
         public IEnumerable<ShipServiceModel> Ships { get; set; }
+
+        public IEnumerable<DefenceServiceModel> Defences { get; set; }
     }
 }

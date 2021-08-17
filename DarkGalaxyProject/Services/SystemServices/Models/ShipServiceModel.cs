@@ -21,6 +21,8 @@ namespace DarkGalaxyProject.Services.SystemServices.Models
 
         public int Speed { get; set; }
 
+        public int FuelExpense { get; set; }
+
         public bool OnMission { get; set; }
 
         public string DealId { get; set; }

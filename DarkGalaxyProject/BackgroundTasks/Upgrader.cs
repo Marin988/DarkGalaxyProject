@@ -63,8 +63,9 @@ namespace DarkGalaxyProject.BackgroundTasks
             foreach (var factory in dbContext.Factories.Where(f => f.UpgradeFinishTime <= DateTime.Now))
             {
                 var factoryStats = dbContext.FactoryStats.FirstOrDefault(f => f.FactoryType == factory.FactoryType && f.Level == factory.Level + 1);
+                var planet = dbContext.Planets.First(p => p.Id == factory.PlanetId);
 
-                if(factoryStats == null)//max level? take care of that upon starting the upgrade
+                if (factoryStats == null)//max level? take care of that upon starting the upgrade
                 {
                     return;
                 }
@@ -75,6 +76,7 @@ namespace DarkGalaxyProject.BackgroundTasks
                 factory.UpgradeTimeLength = factoryStats.UpgradeTimeLength;
                 factory.BuildingSpace = factoryStats.BuildingSpace;
                 factory.UpgradeFinishTime = null;
+                planet.BuiltUpSpace += factory.BuildingSpace;
             }
         }
 
@@ -85,13 +87,18 @@ namespace DarkGalaxyProject.BackgroundTasks
             {
                 var defenceStats = dbContext.DefensiveStructureStats.First(d => d.Type == defenceBuilder.DefensiveStructureType);
 
-                for (int i = 0; i < defenceBuilder.Count; i++)
-                {
-                    defences.Add(new DefensiveStructure(defenceBuilder.DefensiveStructureType, defenceBuilder.SystemId, defenceStats.MaxHP, defenceStats.Damage));
-                }
+                defences.Add(new DefensiveStructure(defenceBuilder.DefensiveStructureType, defenceBuilder.SystemId, defenceStats.MaxHP, defenceStats.Damage));
 
-                defenceBuilder.FinishedBuildingTime = null;
-                defenceBuilder.Count = 0;
+                defenceBuilder.Count--;
+
+                if (defenceBuilder.Count > 0)
+                {
+                    defenceBuilder.FinishedBuildingTime = DateTime.Now.AddSeconds(defenceBuilder.BuildTime);
+                }
+                else
+                {
+                    defenceBuilder.FinishedBuildingTime = null;
+                }
             }
 
             dbContext.AddRange(defences);
@@ -106,13 +113,18 @@ namespace DarkGalaxyProject.BackgroundTasks
                 var playerId = dbContext.Systems.First(s => s.Id == shipBuilder.SystemId).PlayerId;
                 var shipStats = dbContext.ShipStats.First(s => s.Type == shipBuilder.ShipType);
 
-                for (int i = 0; i < shipBuilder.Count; i++)
-                {
-                    ships.Add(new Ship(shipBuilder.ShipType, shipBuilder.SystemId, playerId, shipStats.Damage, shipStats.MaxHP, shipStats.MaxStorage, shipStats.Speed, shipStats.FuelExpense));
-                }
+                ships.Add(new Ship(shipBuilder.ShipType, shipBuilder.SystemId, playerId, shipStats.Damage, shipStats.MaxHP, shipStats.MaxStorage, shipStats.Speed, shipStats.FuelExpense));
 
-                shipBuilder.FinishedBuildingTime = null;
-                shipBuilder.Count = 0;
+                shipBuilder.Count--;
+
+                if (shipBuilder.Count > 0)
+                {
+                    shipBuilder.FinishedBuildingTime = DateTime.Now.AddSeconds(shipBuilder.BuildTime);
+                }
+                else
+                {
+                    shipBuilder.FinishedBuildingTime = null;
+                }
             }
 
             dbContext.AddRange(ships);

@@ -20,24 +20,23 @@
             <a class="nav-link text-dark" asp-area="" asp-controller="Planet" asp-action="ViewPlanet" asp-route-planetId="@planet.Id">Planet @planet.Name</a>
         }
 
-        <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Fleet" asp-route-systemId="@Model.Id">Fleet</a>
-
         @if (Model.PlayerId == UserManager.GetUserId(User))
         {
+            <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Fleet" asp-route-systemId="@Model.Id">Fleet</a>
+
             <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="Shipyard" asp-route-systemId="@Model.Id">Shipyard</a>
 
             <a class="nav-link text-dark" asp-area="" asp-controller="System" asp-action="DefensiveStructureBuilder" asp-route-systemId="@Model.Id">DefensiveStructureBuilder</a>
         }
-        else
+        <h6>Defences</h6>
+
+        @foreach (var defence in Model.Defences.GroupBy(d => d.Type))
         {
-            //colonize here
+            <span>@defence.Count() @defence.First().Type/s -- Total HP:@defence.Sum(d => d.HP) -- Total DMG: @defence.Sum(d => d.Damage)</span><br />
         }
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

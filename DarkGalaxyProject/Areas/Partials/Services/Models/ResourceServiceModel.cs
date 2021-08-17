@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DarkGalaxyProject.Services.PartialServices.Models
+namespace DarkGalaxyProject.Areas.Partials.Services.Models
 {
     public class ResourceServiceModel
     {

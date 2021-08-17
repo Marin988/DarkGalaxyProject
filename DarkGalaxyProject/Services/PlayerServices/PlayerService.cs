@@ -51,10 +51,13 @@ namespace DarkGalaxyProject.Services.PlayerServices
             return message;
         }
 
-        public IEnumerable<MessageListingServiceModel> PlayerMessages(string playerId)
+        public AllMessagesServiceModel PlayerMessages(string playerId, int page)
         {
             var messages = data.Messages
                 .Where(m => m.ReceiverId == playerId || m.SenderId == playerId)
+                .OrderByDescending(m => m.TimeOfSending)
+                .Skip((page - 1) * 5)
+                .Take(5)
                 .Select(m => new MessageListingServiceModel
                 {
                     Id = m.Id,
@@ -62,13 +65,36 @@ namespace DarkGalaxyProject.Services.PlayerServices
                     ReceiverId = m.ReceiverId == playerId ? m.SenderId : m.ReceiverId,
                     ReceiverName = m.ReceiverId == playerId ? m.Sender.UserName : m.Receiver.UserName,
                     Time = m.TimeOfSending,
-                    Seen = m.ReceiverId == playerId ? m.Seen : true
+                    Seen = m.ReceiverId == playerId ? m.Seen : true,
+                    IsReceived = m.ReceiverId == playerId
                 })
-                .ToList()
-                .OrderByDescending(m => m.Time)
                 .ToList();
 
-            return messages;
+            var allMessagesCount = data.Messages
+                .Where(m => m.ReceiverId == playerId || m.SenderId == playerId)
+                .Count();
+
+            var allPagesCount = allMessagesCount / 5;
+            if(allMessagesCount % 5 > 0)
+            {
+                allPagesCount += 1;
+            }
+
+            if(allMessagesCount == 0)
+            {
+                allPagesCount = 1;
+            }
+
+            var allMessages = new AllMessagesServiceModel
+            {
+                Messages = messages,
+                Page = page,
+                AllPagesCount = allPagesCount,
+                PlayerId = playerId
+            };
+
+
+            return allMessages;
         }
 
         public bool PlayerResearches(string playerId)
@@ -119,6 +145,8 @@ namespace DarkGalaxyProject.Services.PlayerServices
         {
             var researches = data.ResearchTrees
                 .Where(r => r.PlayerId == playerId)
+                .ToList()
+                .OrderBy(r => r.Price)
                 .Select(r => new ResearchServiceModel
                 {
                     Id = r.Id,

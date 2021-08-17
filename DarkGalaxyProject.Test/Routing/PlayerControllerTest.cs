@@ -47,7 +47,7 @@ namespace DarkGalaxyProject.Test.Routing
             => MyRouting
             .Configuration()
             .ShouldMap("/Player/Messages?playerId=1")
-            .To<PlayerController>(c => c.Messages("1"));
+            .To<PlayerController>(c => c.Messages("1", 1));
 
         [Fact]
         public void ProfileShouldReturnCorrectRoute()

@@ -1,3 +1,4 @@
+using DarkGalaxyProject.Areas.Partials.Services;
 using DarkGalaxyProject.BackgroundTasks;
 using DarkGalaxyProject.Contracts;
 using DarkGalaxyProject.Data;
@@ -6,7 +7,6 @@ using DarkGalaxyProject.Infrastructure.Extensions;
 using DarkGalaxyProject.Seeders;
 using DarkGalaxyProject.Services.AllianceServices;
 using DarkGalaxyProject.Services.AuctionServices;
-using DarkGalaxyProject.Services.PartialServices;
 using DarkGalaxyProject.Services.PlanetServices;
 using DarkGalaxyProject.Services.PlayerServices;
 using DarkGalaxyProject.Services.SystemServices;
@@ -89,6 +89,10 @@ namespace DarkGalaxyProject
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute(
+                    name: "Areas",
+                    pattern: "/{area:exists}/{controller}/{action}/{id?}");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -1,4 +1,4 @@
-﻿@using DarkGalaxyProject.Services.PartialServices.Models
+﻿@using DarkGalaxyProject.Areas.Partials.Services.Models
 @model List<SystemPartialServiceModel>
 
 
@@ -8,7 +8,7 @@
         {
             <li>
                 @system.Position @(system.CurrentPlayerId != null ? "Currently chosen" : null)
-                <form method="post" action="@Url.Action("SwitchSystem", "System")">
+                <form method="post" action="@Url.Action("SwitchSystem", "System", new { Area = "" })">
                     <input hidden name="systemId" value=@system.Id />
                     <input type="submit" value="View system" />
                 </form>
@@ -16,3 +16,5 @@
         }
     </ul>
 </div>
+
+@*//action="@Url.Action("SwitchSystem", "System")*@

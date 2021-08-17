@@ -18,5 +18,7 @@ namespace DarkGalaxyProject.Services.PlayerServices.Models
         public DateTime? Time { get; set; }
 
         public string Title { get; set; }
+
+        public bool IsReceived { get; set; }
     }
 }

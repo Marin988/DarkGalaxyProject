@@ -36,11 +36,11 @@ namespace DarkGalaxyProject.BackgroundTasks
                         {
                             if (fleet.Outgoing)
                             {
-                                FleetReturn(fleet.SystemId, dbContext);
+                                FleetReturn(fleet.SystemId, dbContext, fleet.Id);
                             }
                             else
                             {
-                                FleetBoarding(fleet.SystemId, dbContext);
+                                FleetBoarding(fleet.SystemId, dbContext, fleet.Id);
                             }
                         }
                     }
@@ -61,11 +61,11 @@ namespace DarkGalaxyProject.BackgroundTasks
             }
         }
 
-        public bool FleetReturn(string systemId, ApplicationDbContext data)
+        public bool FleetReturn(string systemId, ApplicationDbContext data, string fleetId)
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
-            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId && f.ArrivalTime.HasValue).FirstOrDefault(f => f.ArrivalTime.Value <= DateTime.Now);
+            var fleet = data.Fleets.Include(f => f.Ships).First(f => f.Id == fleetId);
 
             string playerId = system.PlayerId;
 
@@ -81,7 +81,9 @@ namespace DarkGalaxyProject.BackgroundTasks
             var ShipsOnMission = fleet.Ships.OrderByDescending(s => s.Type).ToList();
 
             var flightLength = Math.Abs(system.Position - (int)fleet.DestinationSystemPoistion);
-            fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength);
+            var fleetSpeed = ShipsOnMission.Min(s => s.Speed);
+
+            fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength * 2000 / fleetSpeed);
             fleet.DestinationSystemPoistion = null;
 
             if (fleet.MissionType == MissionType.Attack) 
@@ -93,12 +95,16 @@ namespace DarkGalaxyProject.BackgroundTasks
             {
                 fleet = Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
                 ShipsOnMission = fleet.Ships.OrderByDescending(s => s.Type).ToList();
-                Colonize(playerId, fleet, destinationSystem, ShipsOnMission, data);
+                if(ShipsOnMission.Count > 0)
+                {
+                    Colonize(playerId, fleet, destinationSystem, ShipsOnMission, data);
+                    CargoUnload(playerId, destinationSystem, ShipsOnMission, data, fleet.MissionType);
+                }
             }
 
-            if ((fleet.MissionType == MissionType.Transport || fleet.MissionType == MissionType.Deploy || fleet.MissionType == MissionType.Colonize) && ShipsOnMission.Sum(s => s.Storage) > 0)
+            if ((fleet.MissionType == MissionType.Transport || fleet.MissionType == MissionType.Deploy) && ShipsOnMission.Sum(s => s.Storage) > 0)
             {
-                CargoUnload(playerId, destinationSystem, ShipsOnMission, data);
+                CargoUnload(playerId, destinationSystem, ShipsOnMission, data, fleet.MissionType);
             }
 
             if (fleet.MissionType == MissionType.Deploy)
@@ -109,7 +115,7 @@ namespace DarkGalaxyProject.BackgroundTasks
             if (fleet.MissionType == MissionType.Spy)
             {
                 var MessageTitle = $"Spy results on system {destinationSystem.Position}";
-                var MessageContent = $"Your espionage probe sent to system {destinationSystem.Position} determined their total strength of defence to be {destinationSystem.DefensiveStructures.Sum(d => d.HP) + destinationSystem.Ships.Where(s => !s.OnMission).Sum(s => s.HP)}.";
+                var MessageContent = $"Your espionage probe sent to system {destinationSystem.Position} found {destinationSystem.DefensiveStructures.Count()} defensive structures and {destinationSystem.Ships.Where(s => !s.OnMission).Count()} ships guarding the system.";
 
                 ReportMessage(playerId, MessageTitle, MessageContent, data);
             }
@@ -123,9 +129,8 @@ namespace DarkGalaxyProject.BackgroundTasks
             string messageTitle;
             string messageContent;
 
-            if (colonizer == null || ShipsOnMission.Count == 0)
+            if (colonizer == null)
             {
-                fleet.ArrivalTime = null;
                 messageTitle = $"Colonization failed";
                 messageContent = $"Your coloniser was destroyed at system {destinationSystem.Position}";
 
@@ -137,6 +142,7 @@ namespace DarkGalaxyProject.BackgroundTasks
             {
                 fleet.ArrivalTime = null;
             }
+
             destinationSystem.PlayerId = playerId;
             data.Ships.Remove(colonizer);
             messageTitle = $"Colonised system";
@@ -157,6 +163,12 @@ namespace DarkGalaxyProject.BackgroundTasks
                 ship.OnMission = false;
                 ship.PlayerId = destinationSystem.PlayerId;
             }
+
+            if(fleet.MissionType == MissionType.Colonize)
+            {
+                return;
+            }
+
             var recieverPlayerId = destinationSystem.PlayerId;
 
             var MessageTitle = $"Deployed ships";
@@ -166,11 +178,14 @@ namespace DarkGalaxyProject.BackgroundTasks
             ShipsOnMission.RemoveAll(p => !p.OnMission);
 
             ReportMessage(senderplayerId, MessageTitle, senderMessageContent, data);
-            ReportMessage(recieverPlayerId, MessageTitle, recieverMessageContent, data);
 
+            if(senderplayerId != recieverPlayerId)
+            {
+                ReportMessage(recieverPlayerId, MessageTitle, recieverMessageContent, data);
+            }
         }
 
-        private void CargoUnload(string PlayerId, Data.Models.System destinationSystem, List<Ship> ShipsOnMission, ApplicationDbContext data)
+        private void CargoUnload(string PlayerId, Data.Models.System destinationSystem, List<Ship> ShipsOnMission, ApplicationDbContext data, MissionType missionType)
         {
             var transportedResources = ShipsOnMission.Sum(s => s.Storage);
             var playerName = data.Players.First(p => p.Id == PlayerId).UserName;
@@ -184,14 +199,19 @@ namespace DarkGalaxyProject.BackgroundTasks
 
             data.Resources.First(r => r.SystemId == destinationSystem.Id && r.Type == ResourceType.MilkyCoin).Quantity += transportedResources;
 
+            if (missionType == MissionType.Colonize)
+                return;
+
             var SenderMessageTitle = "Transported resources";
             var SenderMessageContent = $"You've successfully transported {transportedResources} {ResourceType.MilkyCoin.ToString()} to system {destinationSystem.Position}.";
-
-            var RecieverMessageTitle = "Recieved resources";
-            var RecieverMessageContent = $"You have recieved {transportedResources} {ResourceType.MilkyCoin.ToString()} by {playerName} from system {systemPosition}.";
-
             ReportMessage(PlayerId, SenderMessageTitle, SenderMessageContent, data);
-            ReportMessage(destinationSystem.PlayerId, RecieverMessageTitle, RecieverMessageContent, data);
+
+            if(PlayerId != destinationSystem.PlayerId)
+            {
+                var RecieverMessageTitle = "Recieved resources";
+                var RecieverMessageContent = $"You have recieved {transportedResources} {ResourceType.MilkyCoin.ToString()} by {playerName} from system {systemPosition}.";
+                ReportMessage(destinationSystem.PlayerId, RecieverMessageTitle, RecieverMessageContent, data);
+            }
 
         }
 
@@ -219,11 +239,6 @@ namespace DarkGalaxyProject.BackgroundTasks
 
                 AttackerMessageContent += $"Attack on system {destinationSystem.Position} successful.{DefenderFleet.Count()} ships and {Defence.Count()} defensive structures were destroyed.";
                 DefenderMessageContent += $"You were attacked by {ShipsOnMission.Count} ships coming from planet {attackerSystemPosition}.All of your {DefenderFleet.Count()} ships and {Defence.Count()} defensive structures were destroyed.";
-
-                //data.DefensiveStructures.RemoveRange(Defence.Where(d => d.HP <= 0));
-                //data.Ships.RemoveRange(DefenderFleet.Where(d => d.HP <= 0));
-                //DefenderFleet.ToList().RemoveAll(s => !s.OnMission);
-                //Defence.ToList().RemoveAll(d => d.SystemId == destinationSystem.Id); //am I actually removing them?!? 
             }
             else
             {
@@ -267,10 +282,10 @@ namespace DarkGalaxyProject.BackgroundTasks
                     data.DefensiveStructures.RemoveRange(Defence.Where(d => d.HP <= 0));
                     Defence.ToList().RemoveAll(d => d.HP <= 0);
                 }
-                if (DefenderFleet.Any(s => s.HP <= 0 && s.Type != ShipType.Colonizer))
+                if (DefenderFleet.Any(s => s.HP <= 0))
                 {
-                    data.Ships.RemoveRange(DefenderFleet.Where(d => d.HP <= 0 && d.Type != ShipType.Colonizer));
-                    DefenderFleet.ToList().RemoveAll(s => s.HP <= 0 && s.Type != ShipType.Colonizer);
+                    data.Ships.RemoveRange(DefenderFleet.Where(d => d.HP <= 0));
+                    DefenderFleet.ToList().RemoveAll(s => s.HP <= 0);
                 }
 
             }
@@ -280,8 +295,8 @@ namespace DarkGalaxyProject.BackgroundTasks
                 data.DefensiveStructures.RemoveRange(Defence.Where(d => d.HP <= 0));
                 Defence.ToList().RemoveAll(d => d.HP <= 0);
 
-                AttackerMessageContent += $"Your {ShipsOnMission.Count} ships were destroyed by the enemy defences, surviving your attack with {Defence.Where(d => d.HP > 0).Sum(d => d.HP) + DefenderFleet.Where(d => d.HP > 0).Sum(d => d.HP)} HP left.";
-                DefenderMessageContent += $"Your defences destroyed all {ShipsOnMission.Count} of the enemy's ships, surviving the attack with {Defence.Where(d => d.HP > 0).Sum(d => d.HP) + DefenderFleet.Where(d => d.HP > 0).Sum(d => d.HP)} HP left.";
+                AttackerMessageContent += $"Your {ShipsOnMission.Count} ships were destroyed by the enemy defences, {Defence.Count(d => d.HP > 0)} defences and {DefenderFleet.Count(d => d.HP > 0)} ships, surviving your attack with a total of {Defence.Where(d => d.HP > 0).Sum(d => d.HP) + DefenderFleet.Where(d => d.HP > 0).Sum(d => d.HP)} HP left.";
+                DefenderMessageContent += $"Your defences destroyed all {ShipsOnMission.Count} of the enemy's ships, {Defence.Count(d => d.HP > 0)} defences and {DefenderFleet.Count(d => d.HP > 0)} ships survived the attack with {Defence.Where(d => d.HP > 0).Sum(d => d.HP) + DefenderFleet.Where(d => d.HP > 0).Sum(d => d.HP)} HP left.";
 
                 ShipsOnMission.RemoveAll(s => s.OnMission);
                 fleet.ArrivalTime = null;
@@ -293,7 +308,7 @@ namespace DarkGalaxyProject.BackgroundTasks
             }
             else
             {
-                foreach (var ship in ShipsOnMission.OrderBy(s => s.Storage))
+                foreach (var ship in ShipsOnMission.OrderByDescending(s => s.Type).ThenBy(s => s.Storage))
                 {
                     var shipHP = ship.HP;
                     if (ship.HP <= defenderDMG)
@@ -316,14 +331,14 @@ namespace DarkGalaxyProject.BackgroundTasks
                 }
             }
 
-            if (ShipsOnMission.Any()) //I presume that if there are any ships left all the defences have been wiped out
+            if (ShipsOnMission.Any()) 
             {
                 var systemResource = data.Resources.First(r => r.SystemId == destinationSystem.Id && r.Type == ResourceType.MilkyCoin);
                 var loot = 0;
 
                 foreach (var ship in ShipsOnMission)
                 {
-                    var availableStorage = ship.MaxStorage - ship.Storage; //may include that as a property
+                    var availableStorage = ship.MaxStorage - ship.Storage; 
 
                     if (ship.Storage < ship.MaxStorage)
                     {
@@ -376,11 +391,11 @@ namespace DarkGalaxyProject.BackgroundTasks
         }
 
 
-        public bool FleetBoarding(string systemId, ApplicationDbContext data)
+        public bool FleetBoarding(string systemId, ApplicationDbContext data, string fleetId)
         {
             var system = data.Systems.Include(s => s.Ships).First(s => s.Id == systemId);
 
-            var fleet = data.Fleets.Include(f => f.Ships).Where(f => f.SystemId == systemId && f.ArrivalTime.HasValue).FirstOrDefault(f => f.ArrivalTime.Value <= DateTime.Now);//here
+            var fleet = data.Fleets.Include(f => f.Ships).First(f => f.Id == fleetId);
 
             var systemMilkyCoin = data.Resources.First(r => r.SystemId == system.Id && r.Type == ResourceType.MilkyCoin);
 

@@ -8,6 +8,10 @@
 @{
     ViewData["Title"] = "Systems of the Dark Galaxy";
     var timerIndexc = 1;
+    var BattleShip = Model.Ships.FirstOrDefault(s => s.Type == ShipType.BattleShip.ToString());
+    var TransportShip = Model.Ships.FirstOrDefault(s => s.Type == ShipType.TransportShip.ToString());
+    var Espionage = Model.Ships.FirstOrDefault(s => s.Type == ShipType.Espionage.ToString());
+    var Colonizer = Model.Ships.FirstOrDefault(s => s.Type == ShipType.Colonizer.ToString());
 }
 
 @if (TempData["Message"] != null)
@@ -36,30 +40,31 @@
 
 @if (Model.HostSystemInfo.PlayerId == UserManager.GetUserId(User))
 {
+<div class="displayInline">
     <form>
-        <div class="form-group">
+        <div class="form-group control-label">
             <label asp-for="BattleShipCount" class="control-label">Battle ship</label>
-            <input id="battleShipCount" oninput="showFuelPrice()" class="form-control" />
+            <input id="battleShipCount" oninput="showFuelPrice()" class="form-control small-input" size="4" />
             <span asp-validation-for="BattleShipCount" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="TransportShipCount" class="control-label">Transport ship</label>
-            <input id="transportShipCount" oninput="showFuelPrice()" class="form-control" />
+            <input id="transportShipCount" oninput="showFuelPrice()" class="form-control small-input" size="4" />
             <span asp-validation-for="TransportShipCount" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="ColonizerCount" class="control-label">Colonizer</label>
-            <input id="colonizerCount" oninput="showFuelPrice()" class="form-control" />
+            <input id="colonizerCount" oninput="showFuelPrice()" class="form-control small-input" />
             <span asp-validation-for="ColonizerCount" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="DestinationSystemPosition" class="control-label">Targeted system's position</label>
-            <input id="destinationSystemPosition" oninput="showFuelPrice()" class="form-control" />
+            <input id="destinationSystemPosition" oninput="showFuelPrice()" class="form-control small-input" />
             <span asp-validation-for="DestinationSystemPosition" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Cargo" class="control-label">Cargo</label>
-            <input id="cargo" oninput="showFuelPrice()" class="form-control" />
+            <input id="cargo" oninput="showFuelPrice()" class="form-control small-input" />
             <span asp-validation-for="Cargo" class="text-danger"></span>
         </div>
         <div class="form-group">
@@ -69,7 +74,7 @@
             <input id="hostSystemPosition" hidden value=@Model.HostSystemInfo.HostSystemPosition class="form-control" />
         </div>
         <div class="form-group">
-            <select id="missionType" class="form-control" asp-items="Html.GetEnumSelectList<MissionType>()"></select>
+            <select id="missionType" onchange="showFuelPrice()" class="form-control" asp-items="Html.GetEnumSelectList<MissionType>()"></select>
         </div>
         <div class="form-group">
             <input value="Send" onclick="SendFleet()" class="btn btn-primary" />
@@ -77,6 +82,7 @@
         <div id="timers">
         </div>
     </form>
+</div>
 
     <p id="totalFuelPrice"></p>
 
@@ -92,7 +98,10 @@
 
 @section Scripts {
     <script>
-        var fuelPricePerSystemTravelled = @Model.Fleets.First().FuelPricePerSystemTravelled;
+        var BattleShipFuelExpense = @(BattleShip == null ? 0 : BattleShip.FuelExpense)
+        var TransportShipFuelExpense = @(TransportShip == null ? 0 : TransportShip.FuelExpense)
+        var EspionageFuelExpense = @(Espionage == null ? 0 : Espionage.FuelExpense)
+        var ColonizerFuelExpense = @(Colonizer == null ? 0 : Colonizer.FuelExpense)
 
         window.onload = function () {
             if ('@Model.Fleets.Any(f => f.ArrivalTime.HasValue)' == 'True') { //Model.Fleets.Any(ArrivaTime.HasValue)
@@ -181,8 +190,21 @@
         function showFuelPrice() {
             var destinationSystemPosition = document.getElementById('destinationSystemPosition').value;
             var hostSystemPosition = document.getElementById('hostSystemPosition').value;
+            var missionType = document.getElementById('missionType').value;
+            var battleShipCount = document.getElementById('battleShipCount').value;
+            var transportShipCount = document.getElementById('transportShipCount').value;
+            var colonizerCount = document.getElementById('colonizerCount').value;
 
-            var totalFuelCost = Math.abs(hostSystemPosition - destinationSystemPosition) * fuelPricePerSystemTravelled;
+            var fuelPrice = (battleShipCount * BattleShipFuelExpense) + (transportShipCount * TransportShipFuelExpense) + (colonizerCount * ColonizerFuelExpense);
+
+            if (missionType == 5) {
+                fuelPrice = EspionageFuelExpense;
+            }
+            else if (missionType == 4 && colonizerCount == 0) {
+                fuelPrice += ColonizerFuelExpense;
+            }
+
+            var totalFuelCost = Math.abs(hostSystemPosition - destinationSystemPosition) * fuelPrice;
 
             document.getElementById('totalFuelPrice').innerHTML = 'Total fuel needed for this mission: ' + totalFuelCost;
         }

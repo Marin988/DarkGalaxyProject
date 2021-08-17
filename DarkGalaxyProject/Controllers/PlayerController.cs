@@ -69,9 +69,21 @@ namespace DarkGalaxyProject.Controllers
         }
 
         [Authorize]
-        public IActionResult Messages(string playerId)
+        public IActionResult Messages(string playerId, int page)
         {
-            var messages = players.PlayerMessages(playerId);
+            if(page < 1)
+            {
+                TempData["Message"] = $"Page {page} doesn't exist";
+                return Redirect($"Messages?playerId={playerId}&page=1");
+            }
+
+            var messages = players.PlayerMessages(playerId, page);
+
+            if(page > messages.AllPagesCount)
+            {
+                TempData["Message"] = $"Page {page} doesn't exist";
+                return Redirect($"Messages?playerId={playerId}&page=1");
+            }
 
             return View(messages);
         }

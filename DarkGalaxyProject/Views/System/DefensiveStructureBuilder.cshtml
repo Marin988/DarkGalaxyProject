@@ -77,7 +77,6 @@
         var dateString = '@(Defence.FinishedBuildingTime.HasValue ? Defence.FinishedBuildingTime.Value : null)';
 
         function startBuilding() {
-            if (dateString == '') {
                     $(document).ready(function () {
                         var defenceType = $("#defenceType").val().toString();
                         var systemId = $("#systemId").val();
@@ -93,7 +92,7 @@
                             }
                         });
                     });
-            }
+            
         }
 
         function buildDefence() {
@@ -121,7 +120,7 @@
                     document.getElementById('timer').innerText = convertSeconds(timeleft - counter);
                     if (timeleft - counter <= 0) {
                         clearInterval(_tick);
-                        setTimeout(function () { location.reload(); }, 200);
+                        setTimeout(function () { location.reload(); }, 1200);
                     }
                 }, 1000);
             }

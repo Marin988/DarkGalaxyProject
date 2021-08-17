@@ -461,5 +461,5 @@ D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\DarkGalaxyProject.csproj.AssemblyReference.cache
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\System\AllFleets.cshtml.g.cs
 D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Player\AllPlayers.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Shared\PlayerSystemsOverview.cshtml.g.cs
-D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Views\Shared\SystemResources.cshtml.g.cs
+D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Areas\Partials\Views\Partial\SystemResources.cshtml.g.cs
+D:\softuni-WEB\DarkGalaxyProject\DarkGalaxyProject\obj\Debug\net5.0\Razor\Areas\Partials\Views\Partial\PlayerSystemsOverview.cshtml.g.cs
