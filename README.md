@@ -6,7 +6,7 @@ spy and colonisation. After each mission players would receive a report message.
 important note regarding that matter is that, resources belong to systems - not to players.In other words when a player chooses between his systems, he is going to be using the 
 resources of whichever system he has chosen. There is an auction in which you can make offers to buy and sell space ships.You can also create an alliance or join one.
 
-Seeded registrations with a lot of starting reources -
+Seeded registrations with a lot of starting resources -
 
 TheEmperor with 6 systems:
 Email - TheEmperor@abv.bg
