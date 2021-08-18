@@ -1,5 +1,5 @@
 # DarkGalaxyProject is a game project where players are initially in control of one system and have a quest to conquer the galaxy!
-Each system has planets (the number depends on how big the system is).On each planet (after terraformed) 3 types of buildings can be built, each producing different type of 
+Each system has planets (the number of planets depends on how big the system is).On each planet (after terraformed) 3 types of buildings can be built, each producing different type of 
 resources.Resources grow every second, the growth rate depending on the building levels in the system. 
 Players can build defensive structures and space ships (of different types).There are 5 types of missions a player can send their fleets on - transportation, deployment, attack, 
 spy and colonisation. After each mission players would receive a report message. Players can colonise other systems (if they don't belong to another player already) and an 
