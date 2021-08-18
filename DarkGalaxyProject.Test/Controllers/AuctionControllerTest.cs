@@ -15,6 +15,7 @@ namespace DarkGalaxyProject.Test.Controllers
 {
     using static Data.Auction;
     using static Data.Players;
+    using static GlobalConstants.AuctionConstants;
 
     public class AuctionControllerTest
     {
@@ -24,6 +25,7 @@ namespace DarkGalaxyProject.Test.Controllers
         const string systemId = "systemId";
         const string systemId2 = "systemId2";
         const int price = 5000;
+        const int dealPrice = 10000;
         const int shipCount = 1;
         const string shipTypeBattleship = nameof(ShipType.BattleShip);
 
@@ -90,7 +92,7 @@ namespace DarkGalaxyProject.Test.Controllers
                 .Instance(controller => controller
                 .WithUser(user => user.WithIdentifier(playerId))
                 .WithData(Player(playerId))
-                .WithData(Deal(dealId, playerId, shipTypeBattleship))
+                .WithData(Deal(dealId, playerId, shipTypeBattleship, dealPrice))
                 .WithData(ShipsInDeal(shipTypeBattleship, playerId, dealId)))
             .Calling(c => c.Delete(dealId))
             .ShouldHave()
@@ -116,7 +118,7 @@ namespace DarkGalaxyProject.Test.Controllers
                 .WithData(PlayerWithCurrentSystem(playerId2, systemId2))
                 .WithData(System(playerId, systemId))
                 .WithData(System(playerId2, systemId2))
-                .WithData(Deal(dealId, playerId2, shipTypeBattleship))
+                .WithData(Deal(dealId, playerId2, shipTypeBattleship, dealPrice))
                 .WithData(ShipsInDeal(shipTypeBattleship, playerId2, dealId)))
             .Calling(c => c.Buy(dealId))
             .ShouldHave()
@@ -134,5 +136,56 @@ namespace DarkGalaxyProject.Test.Controllers
             .AndAlso()
             .ShouldReturn()
             .Redirect("All");
+
+        [Fact]
+        public void BuyShouldReturnCorrectTempdataIfBuyerCantPay()
+            => MyController<AuctionController>
+                .Instance(controller => controller
+                .WithUser(user => user.WithIdentifier(playerId))
+                .WithData(PlayerWithCurrentSystem(playerId, systemId))
+                .WithData(PlayerWithCurrentSystem(playerId2, systemId2))
+                .WithData(System(playerId, systemId))
+                .WithData(System(playerId2, systemId2))
+                .WithData(Deal(dealId, playerId2, shipTypeBattleship, dealPrice))
+                .WithData(ShipsInDeal(shipTypeBattleship, playerId2, dealId)))
+            .Calling(c => c.Buy(dealId))
+            .ShouldHave()
+            .TempData(d => d.ContainingEntryWithValue(string.Format(NotEnoughCoin, dealPrice, ResourceType.MilkyCoin.ToString(), 5000)));
+
+        [Fact]
+        public void BuyShouldReturnCorrectTempdataUponSuccessfulPurchase()
+            => MyController<AuctionController>
+                .Instance(controller => controller
+                .WithUser(user => user.WithIdentifier(playerId))
+                .WithData(PlayerWithCurrentSystem(playerId, systemId))
+                .WithData(PlayerWithCurrentSystem(playerId2, systemId2))
+                .WithData(System(playerId, systemId))
+                .WithData(System(playerId2, systemId2))
+                .WithData(Deal(dealId, playerId2, shipTypeBattleship, price))
+                .WithData(ShipsInDeal(shipTypeBattleship, playerId2, dealId)))
+            .Calling(c => c.Buy(dealId))
+            .ShouldHave()
+            .TempData(d => d.ContainingEntryWithValue(string.Format(SuccessfulPurchase, 5, shipTypeBattleship)));
+
+        [Fact]
+        public void CreateDealWithNotEnoughShipsShouldReturnCorrectTempData()
+            => MyController<AuctionController>
+                .Instance(controller => controller
+                .WithUser(user => user.WithIdentifier(playerId2))
+                .WithData(PlayerWithCurrentSystem(playerId, systemId))
+                .WithData(PlayerWithCurrentSystem(playerId2, systemId2))
+                .WithData(System(playerId, systemId))
+                .WithData(System(playerId2, systemId2))
+                .WithData(Deal(dealId, playerId2, shipTypeBattleship, price))
+                .WithData(FiveShipsOfPlayer(shipTypeBattleship, playerId2)))
+            .Calling(c => c.Create(new CreateDealFormModel
+            {
+                Price = price,
+                SellerId = playerId2,
+                ShipCount = 10,
+                ShipType = shipTypeBattleship
+            }))
+            .ShouldHave()
+            .TempData(d => d.ContainingEntryWithValue(string.Format(NotEnoughShips, 5, shipTypeBattleship)));
     }
 }

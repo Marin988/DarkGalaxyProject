@@ -86,16 +86,16 @@ namespace DarkGalaxyProject.BackgroundTasks
             fleet.ArrivalTime = DateTime.Now.AddSeconds(flightLength * 2000 / fleetSpeed);
             fleet.DestinationSystemPoistion = null;
 
-            if (fleet.MissionType == MissionType.Attack) 
+            if (fleet.MissionType == MissionType.Attack)
             {
                 Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
-            } 
+            }
 
             if (fleet.MissionType == MissionType.Colonize)
             {
                 fleet = Battle(fleet, destinationSystem, ShipsOnMission, playerId, destinationSystem.PlayerId, data);
                 ShipsOnMission = fleet.Ships.OrderByDescending(s => s.Type).ToList();
-                if(ShipsOnMission.Count > 0)
+                if (ShipsOnMission.Count > 0)
                 {
                     Colonize(playerId, fleet, destinationSystem, ShipsOnMission, data);
                     CargoUnload(playerId, destinationSystem, ShipsOnMission, data, fleet.MissionType);
@@ -164,7 +164,7 @@ namespace DarkGalaxyProject.BackgroundTasks
                 ship.PlayerId = destinationSystem.PlayerId;
             }
 
-            if(fleet.MissionType == MissionType.Colonize)
+            if (fleet.MissionType == MissionType.Colonize)
             {
                 return;
             }
@@ -179,7 +179,7 @@ namespace DarkGalaxyProject.BackgroundTasks
 
             ReportMessage(senderplayerId, MessageTitle, senderMessageContent, data);
 
-            if(senderplayerId != recieverPlayerId)
+            if (senderplayerId != recieverPlayerId)
             {
                 ReportMessage(recieverPlayerId, MessageTitle, recieverMessageContent, data);
             }
@@ -206,7 +206,7 @@ namespace DarkGalaxyProject.BackgroundTasks
             var SenderMessageContent = $"You've successfully transported {transportedResources} {ResourceType.MilkyCoin.ToString()} to system {destinationSystem.Position}.";
             ReportMessage(PlayerId, SenderMessageTitle, SenderMessageContent, data);
 
-            if(PlayerId != destinationSystem.PlayerId)
+            if (PlayerId != destinationSystem.PlayerId)
             {
                 var RecieverMessageTitle = "Recieved resources";
                 var RecieverMessageContent = $"You have recieved {transportedResources} {ResourceType.MilkyCoin.ToString()} by {playerName} from system {systemPosition}.";
@@ -331,14 +331,14 @@ namespace DarkGalaxyProject.BackgroundTasks
                 }
             }
 
-            if (ShipsOnMission.Any()) 
+            if (ShipsOnMission.Any())
             {
                 var systemResource = data.Resources.First(r => r.SystemId == destinationSystem.Id && r.Type == ResourceType.MilkyCoin);
                 var loot = 0;
 
                 foreach (var ship in ShipsOnMission)
                 {
-                    var availableStorage = ship.MaxStorage - ship.Storage; 
+                    var availableStorage = ship.MaxStorage - ship.Storage;
 
                     if (ship.Storage < ship.MaxStorage)
                     {
@@ -358,16 +358,17 @@ namespace DarkGalaxyProject.BackgroundTasks
                     }
                 }
 
+                AttackerMessageContent += $"The enemy defences were destroyed.";
                 if(fleet.MissionType == MissionType.Attack)
                 {
-                    AttackerMessageContent += $"The enemy defences were destroyed, your fleet looted {loot} {systemResource.Type.ToString()}s and is coming back.";
-                    DefenderMessageContent += $"The enemy ships looted {loot} {systemResource.Type.ToString()}s.";
+                    AttackerMessageContent += $" Your fleet looted {loot} {systemResource.Type.ToString()}s and is coming back.";
+                }
+                DefenderMessageContent += $"The enemy ships looted {loot} {systemResource.Type.ToString()}s.";
 
-                    ReportMessage(playerId, messageTitle, AttackerMessageContent, data);
-                    if (destinationSystemPlayerId != null)
-                    {
-                        ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent, data);
-                    }
+                ReportMessage(playerId, messageTitle, AttackerMessageContent, data);
+                if (destinationSystemPlayerId != null)
+                {
+                    ReportMessage(destinationSystemPlayerId, messageTitle, DefenderMessageContent, data);
                 }
             }
 

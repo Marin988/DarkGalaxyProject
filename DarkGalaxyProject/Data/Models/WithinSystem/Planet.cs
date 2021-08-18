@@ -28,7 +28,7 @@ namespace DarkGalaxyProject.Data.Models.WithinSystem
 
         public int BuiltUpSpace { get; set; }
 
-        public int BuildingCap => BuildingCapConst * (int)Type;
+        public int BuildingCap => BuildingCapConst / (int)Type;
 
         public IEnumerable<Factories> Factories { get; set; }    
 

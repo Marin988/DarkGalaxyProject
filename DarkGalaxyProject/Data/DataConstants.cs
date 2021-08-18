@@ -30,7 +30,7 @@ namespace DarkGalaxyProject.Data
         public class Planet
         {
             public const int TerraformPriceConst = 120000;
-            public const int BuildingCapConst = 5000;
+            public const int BuildingCapConst = 15000;
         }
 
         public class Alliance

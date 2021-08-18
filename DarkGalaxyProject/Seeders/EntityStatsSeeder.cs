@@ -99,7 +99,7 @@ namespace DarkGalaxyProject.Seeders
             data.ShipStats.Add(new ShipStats(ShipType.BattleShip, 40000, 40000, 2000, 250, 20000, 6, 100));
             data.ShipStats.Add(new ShipStats(ShipType.TransportShip, 0, 15000, 20000, 180, 20000, 12, 200));
             data.ShipStats.Add(new ShipStats(ShipType.Espionage, 0, 100, 0, 1000, 20000, 5, 50));
-            data.ShipStats.Add(new ShipStats(ShipType.Colonizer, 0, 1000, 10000, 200, 20000, 60, 1000));
+            data.ShipStats.Add(new ShipStats(ShipType.Colonizer, 0, 1000, 10000, 200, 20000, 60, 300));
         }
 
         public void AddDefenceStats()

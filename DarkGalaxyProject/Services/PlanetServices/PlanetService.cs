@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Services.PlanetServices
 {
+    using static GlobalConstants.PlanetConstants;
+
     public class PlanetService : IPlanetService
     {
         private readonly ApplicationDbContext data;
@@ -58,7 +60,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             if (factory.UpgradeFinishTime != null)
             {
-                return "This building is already in the process of upgrading";
+                return BuildingAlreadyUpgrading;
             }
 
             var planet = data.Planets.First(p => p.Id == planetId);
@@ -69,23 +71,23 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             if(planet.BuiltUpSpace + factoryStats.BuildingSpace > planet.BuildingCap)
             {
-                return "You don't have enough space on this planet to build that";
+                return NotEnoughSpace;
             }
 
             if (milkyCoin.Quantity < factory.UpgradeCost)
             {
-                return $"You don't have enough {milkyCoin.Type.ToString()}.";
+                return string.Format(NotEnoughResource, milkyCoin.Type.ToString());
             }
             else if (energy.Quantity < factory.UpgradeCost / 10)
             {
-                return $"You don't have enough {energy.Type.ToString()}.";
+                return string.Format(NotEnoughResource, energy.Type.ToString());
             }
 
             var system = data.Systems.First(s => s.Id == systemId);
 
             if (system.PlayerId != playerId)
             {
-                return "You can only upgprade buildings built in your systems.";
+                return CanOnlyUpgradeBuildingsInOwnSystem;
             }
 
             milkyCoin.Quantity -= factory.UpgradeCost;
@@ -94,8 +96,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
             factory.UpgradeFinishTime = DateTime.Now.AddSeconds(factory.UpgradeTimeLength);
             data.SaveChanges();
 
-
-            return $"You have started an upgrade for {factory.UpgradeCost} {milkyCoin.Type.ToString()} and {factory.UpgradeCost / 10} {energy.Type.ToString()}";
+            return string.Format(UpgradeHasStarted, factory.UpgradeCost, milkyCoin.Type.ToString(), factory.UpgradeCost / 10, energy.Type.ToString());
         }
 
         public string Terraform(string planetId, string playerId)
@@ -105,12 +106,12 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             if (planet.IsTerraformed)
             {
-                return "This planet has already been terraformed";
+                return PlanetAlreadyTerraformed;
             }
 
             if (!terraformResearch.IsLearned)
             {
-                return "You have not yet learned the research required for terraforming";
+                return TerraformingResearchNotLearned;
             }
 
             var systemId = planet.SystemId;
@@ -119,7 +120,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             if (systemMilkyCoin.Quantity < planet.TerraformPrice)
             {
-                return $"You don't have enough {systemMilkyCoin.Type.ToString()} to terraform this planet";
+                return string.Format(NotEnoughResource, systemMilkyCoin.Type.ToString());
             }
 
             systemMilkyCoin.Quantity -= planet.TerraformPrice;
@@ -128,7 +129,7 @@ namespace DarkGalaxyProject.Services.PlanetServices
 
             data.SaveChanges();
 
-            return $"You have successfully terraformed this planet in exchange for {planet.TerraformPrice} {systemMilkyCoin.Type.ToString()}";
+            return string.Format(SuccessfullyTerraformedPlanet, planet.TerraformPrice, systemMilkyCoin.Type.ToString());
         }
     }
 }

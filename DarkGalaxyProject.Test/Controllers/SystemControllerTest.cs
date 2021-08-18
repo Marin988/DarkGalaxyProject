@@ -34,6 +34,8 @@ namespace DarkGalaxyProject.Test.Controllers
             int page)
            => MyController<SystemController>
             .Instance(instance => instance
+                .WithUser(user => user.WithIdentifier(playerId))
+                .WithData(Player(playerId))
                 .WithData(PageSystems()))
             .Calling(c => c.AllSystems(page))
             .ShouldHave()
@@ -52,7 +54,7 @@ namespace DarkGalaxyProject.Test.Controllers
         public void ViewSystemShouldReturnCorrectViewWithModelAndDataAndShouldBeForAuthorizedUsers()
             => MyController<SystemController>
             .Instance(controller => controller
-                .WithData(OneSystem(systemId)))
+                .WithData(SystemWithPosition3(systemId)))
             .Calling(c => c.ViewSystem(systemId))
             .ShouldHave()
             .ActionAttributes(attributes => attributes
@@ -66,7 +68,7 @@ namespace DarkGalaxyProject.Test.Controllers
         public void FleetShouldReturnCorrectViewWithModelAndDataAndShouldBeForAuthorizedUsers()
             => MyController<SystemController>
             .Instance(controller => controller
-                .WithData(OneSystem(systemId))
+                .WithData(SystemWithPosition3(systemId))
                 .WithData(Fleets())
                 .WithData(Ships()))
             .Calling(c => c.Fleet(systemId))
@@ -97,7 +99,7 @@ namespace DarkGalaxyProject.Test.Controllers
         public void ShipyardSystemsShouldReturnCorrectViewWithModelAndDataAndShouldBeForAuthorizedUsers()
            => MyController<SystemController>
             .Instance(instance => instance
-                .WithData(OneSystem(systemId)))
+                .WithData(SystemWithPosition3(systemId)))
             .Calling(c => c.Shipyard(systemId))
             .ShouldHave()
             .ActionAttributes(attributes => attributes
@@ -111,7 +113,7 @@ namespace DarkGalaxyProject.Test.Controllers
         public void DefensiveStructureBuilderShouldReturnCorrectViewWithModelAndDataAndShouldBeForAuthorizedUsers()
            => MyController<SystemController>
             .Instance(instance => instance
-                .WithData(OneSystem(systemId)))
+                .WithData(SystemWithPosition3(systemId)))
             .Calling(c => c.DefensiveStructureBuilder(systemId))
             .ShouldHave()
             .ActionAttributes(attributes => attributes
@@ -137,13 +139,13 @@ namespace DarkGalaxyProject.Test.Controllers
             .Data(data => data
                 .WithSet<Player>(players => players
                     .Any(p =>
-                        p.CurrentSystemId == systemId)))//should I test this here or in services?
+                        p.CurrentSystemId == systemId)))
             .AndAlso()
             .ShouldReturn()
             .Redirect($"ViewSystem/{systemId}");
 
         [Fact]
-        public void StartBuildingShouldBeForAuthorizedUsersAndRedirectToShipyardAndSetBuildingFinishTime()
+        public void StartBuildingShouldBeForAuthorizedUsersAndRedirectToShipyardAndSetBuildingFinishTime()//returns json
             => MyController<SystemController>
                 .Instance(controller => controller
                 .WithData(Player(playerId))
@@ -165,7 +167,7 @@ namespace DarkGalaxyProject.Test.Controllers
             .Redirect($"Shipyard?systemId={systemId}");
 
         [Fact]
-        public void StartBuildingDefenceShouldBeForAuthorizedUsersAndRedirectToDefenceStructureBuilderAndSetBuildingFinishTime()
+        public void StartBuildingDefenceShouldBeForAuthorizedUsersAndRedirectToDefenceStructureBuilderAndSetBuildingFinishTime()//returns Json
             => MyController<SystemController>
                 .Instance(controller => controller
                 .WithData(Player(playerId))
@@ -183,13 +185,13 @@ namespace DarkGalaxyProject.Test.Controllers
                         d.FinishedBuildingTime != null)))
             .AndAlso()
             .ShouldReturn()
-            .Redirect($"DefenceStructureBuilder?systemId={systemId}");
+            .Json();
 
         [Fact]
         public void SendFleetOnAttackShouldBeForAuthorizedUsersAndRedirectToFleetAndSetArrivalTime()
             => MyController<SystemController>
                 .Instance(controller => controller
-                .WithData(OneSystem("SystemWithPosition3"))
+                .WithData(SystemWithPosition3("SystemWithPosition3"))
                 .WithData(Player(playerId))
                 .WithData(SystemOfPlayer(playerId, systemId))
                 .WithData(Fleet(systemId))
@@ -208,6 +210,6 @@ namespace DarkGalaxyProject.Test.Controllers
                         f.MissionType == (MissionType)Enum.Parse(typeof(MissionType), missionTypeAttack))))
             .AndAlso()
             .ShouldReturn()
-            .Redirect($"Fleet?systemId={systemId}");
+            .Json();
     }
 }

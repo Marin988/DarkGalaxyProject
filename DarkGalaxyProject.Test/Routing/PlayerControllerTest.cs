@@ -46,7 +46,7 @@ namespace DarkGalaxyProject.Test.Routing
         public void MessagesShouldReturnCorrectRoute()
             => MyRouting
             .Configuration()
-            .ShouldMap("/Player/Messages?playerId=1")
+            .ShouldMap("/Player/Messages?playerId=1&page=1")
             .To<PlayerController>(c => c.Messages("1", 1));
 
         [Fact]

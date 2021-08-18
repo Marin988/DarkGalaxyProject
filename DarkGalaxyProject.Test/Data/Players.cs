@@ -1,6 +1,7 @@
 ﻿using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.Others;
+using DarkGalaxyProject.Data.Models.Stats;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using System;
 using System.Collections.Generic;
@@ -32,10 +33,13 @@ namespace DarkGalaxyProject.Test.Data
             });
 
         public static DarkGalaxyProject.Data.Models.System System(string playerId, string systemId)
-            => new DarkGalaxyProject.Data.Models.System { Id = systemId, PlayerId = playerId, Resources = new List<Resource>() { MilkyCoin(systemId) } };
+            => new DarkGalaxyProject.Data.Models.System { Id = systemId, PlayerId = playerId, Resources = new List<Resource>() { MilkyCoin(systemId), Paper(systemId) } };
 
         public static Resource MilkyCoin(string systemId)
             => new Resource { Quantity = 5000, SystemId = systemId, Type = ResourceType.MilkyCoin };
+
+        public static Resource Paper(string systemId)
+            => new Resource { Quantity = 5000, SystemId = systemId, Type = ResourceType.Paper };
 
         public static Alliance Alliance(string allianceId)
             => new Alliance("Demolishers") { Id = allianceId };
@@ -47,9 +51,12 @@ namespace DarkGalaxyProject.Test.Data
             => new Player { UserName = playerName };
 
         public static DarkGalaxyProject.Data.Models.System StartingSystem(string systemId)
-            => new DarkGalaxyProject.Data.Models.System { Id = systemId, Resources = new List<Resource>() { MilkyCoin(systemId) } };
+            => new DarkGalaxyProject.Data.Models.System { Id = systemId, Resources = new List<Resource>() { MilkyCoin(systemId) }, Type = SystemType.Small };
 
         public static int ResearchTypeCount()
             => (Enum.GetValues(typeof(ResearchType))).Length;
+
+        public static IEnumerable<ResearchTreeStats> ResearchTreesStats()
+            => Enumerable.Range(0, Enum.GetValues(typeof(ResearchType)).Length).Select(m => new ResearchTreeStats((ResearchType)m, false, null, null, 100));
     }
 }

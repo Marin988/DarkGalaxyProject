@@ -110,7 +110,7 @@ namespace DarkGalaxyProject.Seeders
                 {
                     resource.Quantity = 10000000;
                 }
-                AssignInitialShips(system, shipStats, playerId, 50, data);
+                AssignInitialShips(system, shipStats, playerId, 200, data);
             }
         }
 
@@ -119,6 +119,10 @@ namespace DarkGalaxyProject.Seeders
             system.PlayerId = playerId;
             var ships = Enumerable.Range(0, shipsNumber).Select(d => new Ship(shipStats.Type, system.Id, playerId, shipStats.Damage, shipStats.MaxHP, shipStats.MaxStorage, shipStats.Speed, shipStats.FuelExpense));
             data.Ships.AddRange(ships);
+            var ColonizerShipStats = data.ShipStats.First(s => s.Type == ShipType.Colonizer);
+            var colonizer = new Ship(ColonizerShipStats.Type, system.Id, playerId, ColonizerShipStats.Damage, ColonizerShipStats.MaxHP, ColonizerShipStats.MaxStorage, ColonizerShipStats.Speed, ColonizerShipStats.FuelExpense);
+            data.Ships.Add(colonizer);
+
         }
     }
 }

@@ -34,6 +34,9 @@ namespace DarkGalaxyProject.Test.Data
                 AllianceId = allianceId
             });
 
+        public static Alliance AllianceWithLeader(string leaderId, string allianceId)
+            => new Alliance("allianceName") { LeaderId = leaderId, Id = allianceId };
+
         public static Player AllianceMember(string playerId, string allianceId)
             => new Player { Id = playerId, AllianceId = allianceId };
 

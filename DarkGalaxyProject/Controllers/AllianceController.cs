@@ -111,8 +111,6 @@ namespace DarkGalaxyProject.Controllers
             var errorMessage = alliances.Send(message.AllianceId, message.Content, message.PlayerId);
 
             TempData["Message"] = errorMessage;
-            //TempData.Keep("Message");
-            //TempData.Peek("Message");
 
             return Redirect($"Chat?allianceId={message.AllianceId}");
         }

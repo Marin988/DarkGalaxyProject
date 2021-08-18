@@ -20,10 +20,12 @@
         <select asp-for="ShipType" class="form-control" asp-items="Html.GetEnumSelectList<ShipType>()"></select>
     </div>
     <div class="form-group">
+        <span asp-validation-for="ShipCount"></span>
         <label asp-for="ShipCount"></label>
         <input asp-for="ShipCount" class="form-control" />
     </div>
     <div class="form-group">
+        <span asp-validation-for="Price"></span>
         <label asp-for="Price"></label>
         <input asp-for="Price" class="form-control" />
     </div>
@@ -34,3 +36,7 @@
         <input type="submit" value="Create" class="btn btn-primary" />
     </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

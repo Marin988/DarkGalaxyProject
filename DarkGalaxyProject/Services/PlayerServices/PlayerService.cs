@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Services.PlayerServices
 {
+    using static GlobalConstants.PlayerConstants;
+
     public class PlayerService : IPlayerService
     {
         private readonly ApplicationDbContext data;
@@ -177,12 +179,12 @@ namespace DarkGalaxyProject.Services.PlayerServices
             var receiver = data.Players.FirstOrDefault(p => p.UserName == receiverName);
             if(receiver == null)
             {
-                return "There is no player with such name";
+                return NoPlayerWithSuchName;
             }
 
             if(receiver.Id == senderId)
             {
-                return "You can't send messages to yourself";
+                return CannotSendMessagesToOneself;
             }
 
             data.Messages.Add(new Message
@@ -214,12 +216,12 @@ namespace DarkGalaxyProject.Services.PlayerServices
 
             if(research.IsLearned == true)
             {
-                return "You have already done this research!";
+                return AlreadyLearnedResearch;
             }
 
             if(systemPaper.Quantity < research.Price)
             {
-                return $"You don't have enough {systemPaper.Type.ToString()}";
+                return string.Format(NotEnoughResource, systemPaper.Type.ToString());
             }
 
             systemPaper.Quantity -= research.Price;

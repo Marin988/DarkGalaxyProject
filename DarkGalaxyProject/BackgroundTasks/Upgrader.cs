@@ -70,6 +70,11 @@ namespace DarkGalaxyProject.BackgroundTasks
                     return;
                 }
 
+                if(planet.BuiltUpSpace + factoryStats.BuildingSpace > planet.BuildingCap)
+                {
+                    return;
+                }
+
                 factory.Level += 1;
                 factory.Income = factoryStats.Income;
                 factory.UpgradeCost = factoryStats.UpgradeCost;
@@ -82,12 +87,11 @@ namespace DarkGalaxyProject.BackgroundTasks
 
         private static void BuildDefences(ApplicationDbContext dbContext)
         {
-            List<DefensiveStructure> defences = new List<DefensiveStructure>();
             foreach (var defenceBuilder in dbContext.DefenceBuilders.Where(d => d.FinishedBuildingTime <= DateTime.Now))
             {
                 var defenceStats = dbContext.DefensiveStructureStats.First(d => d.Type == defenceBuilder.DefensiveStructureType);
 
-                defences.Add(new DefensiveStructure(defenceBuilder.DefensiveStructureType, defenceBuilder.SystemId, defenceStats.MaxHP, defenceStats.Damage));
+                var defence = new DefensiveStructure(defenceBuilder.DefensiveStructureType, defenceBuilder.SystemId, defenceStats.MaxHP, defenceStats.Damage);
 
                 defenceBuilder.Count--;
 
@@ -99,21 +103,18 @@ namespace DarkGalaxyProject.BackgroundTasks
                 {
                     defenceBuilder.FinishedBuildingTime = null;
                 }
+                dbContext.Add(defence);
             }
-
-            dbContext.AddRange(defences);
         }
 
         private static void BuildShips(ApplicationDbContext dbContext)
         {
-            List<Ship> ships = new List<Ship>();
-
             foreach (var shipBuilder in dbContext.ShipBuilders.Where(s => s.FinishedBuildingTime <= DateTime.Now))
             {
                 var playerId = dbContext.Systems.First(s => s.Id == shipBuilder.SystemId).PlayerId;
                 var shipStats = dbContext.ShipStats.First(s => s.Type == shipBuilder.ShipType);
 
-                ships.Add(new Ship(shipBuilder.ShipType, shipBuilder.SystemId, playerId, shipStats.Damage, shipStats.MaxHP, shipStats.MaxStorage, shipStats.Speed, shipStats.FuelExpense));
+                var ship = new Ship(shipBuilder.ShipType, shipBuilder.SystemId, playerId, shipStats.Damage, shipStats.MaxHP, shipStats.MaxStorage, shipStats.Speed, shipStats.FuelExpense);
 
                 shipBuilder.Count--;
 
@@ -125,9 +126,8 @@ namespace DarkGalaxyProject.BackgroundTasks
                 {
                     shipBuilder.FinishedBuildingTime = null;
                 }
+                dbContext.Add(ship);
             }
-
-            dbContext.AddRange(ships);
         }
     }
 }

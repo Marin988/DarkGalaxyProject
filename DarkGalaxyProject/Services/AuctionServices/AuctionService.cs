@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Services.AuctionServices
 {
+    using static GlobalConstants.AuctionConstants;
+
     public class AuctionService : IAuctionService
     {
         private readonly ApplicationDbContext data;
@@ -61,7 +63,7 @@ namespace DarkGalaxyProject.Services.AuctionServices
 
             if (buyerMilkyCoin.Quantity < deal.Price)
             {
-                return $"You need {deal.Price} {buyerMilkyCoin.Type.ToString()}, but only have {buyerMilkyCoin.Quantity}";
+                return string.Format(NotEnoughCoin, deal.Price, buyerMilkyCoin.Type.ToString(), buyerMilkyCoin.Quantity);
             }
 
             buyerMilkyCoin.Quantity -= deal.Price;
@@ -85,7 +87,7 @@ namespace DarkGalaxyProject.Services.AuctionServices
             ReportMessage(deal.SellerId, sellerMessageTitle, sellerMessageContent);
             ReportMessage(deal.BuyerId, buyerMessageTitle, buyerMessageContent);
 
-            return $"Successfully purchased {shipsCount} ships of type {shipsType}";
+            return string.Format(SuccessfulPurchase, shipsCount, shipsType);
         }
 
         public string CreateDeal(int price, string sellerId, int quantity, string shipType)
@@ -95,17 +97,8 @@ namespace DarkGalaxyProject.Services.AuctionServices
 
             if (shipsForSale.Count() != quantity)
             {
-                return $"You only have {shipsForSale.Count()} available ships of type {shipTypeEnum.ToString()}.";
+                return string.Format(NotEnoughShips, shipsForSale.Count(), shipTypeEnum.ToString());
             }
-            if(quantity <= 0)
-            {
-                return $"Ship count has to be more than 0.";
-            }
-            if(price < 100)
-            {
-                return $"Price has to be at least 100";
-            }
-
 
             var deal = new AuctionDeal
             {
@@ -142,7 +135,7 @@ namespace DarkGalaxyProject.Services.AuctionServices
 
             var DealShips = data.Ships.Where(s => s.DealId == dealId).ToList();
 
-            foreach (var ship in DealShips)//would that be taken care of by EF Core?
+            foreach (var ship in DealShips)
             {
                 ship.DealId = null;
             }

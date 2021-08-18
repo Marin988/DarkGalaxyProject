@@ -21,7 +21,7 @@ else
             <li>
                 <span>Ships count: @fleet.Ships.Count</span><br>
                 <span>ArrivalTime: @fleet.ArrivalTime</span><br>
-                <span>Destination system position: @(fleet.DestinationSystemPosition == null ? "None" : fleet.DestinationSystemPosition)</span><br>
+                <span>Destination system position: @(fleet.DestinationSystemPosition == null ? "Home" : fleet.DestinationSystemPosition)</span><br>
                 @if (fleet.ArrivalTime != null)
                 {
                     <span>@(fleet.Outgoing ? "Outgoing" : "Incoming")</span><br>

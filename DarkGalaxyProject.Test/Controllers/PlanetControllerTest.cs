@@ -24,7 +24,7 @@ namespace DarkGalaxyProject.Test.Controllers
         public void ViewPlanetShouldReturnCorrectViewWithModelAndDataAndShouldBeForAuthorizedUsers()
            => MyController<PlanetController>
             .Instance(instance => instance
-                .WithData(OneSystem(systemId))
+                .WithData(SystemWithPosition3(systemId))
                 .WithData(Planet(planetId, systemId))
                 .WithData(Factories(planetId, factoryId)))
             .Calling(c => c.ViewPlanet(planetId))
@@ -44,7 +44,8 @@ namespace DarkGalaxyProject.Test.Controllers
                 .WithData(Player(playerId))
                 .WithData(SystemOfPlayer(playerId, systemId))
                 .WithData(Planet(planetId, systemId))
-                .WithData(Factories(planetId, factoryId)))
+                .WithData(Factories(planetId, factoryId))
+                .WithData(FactoryStats()))
             .Calling(c => c.StartUpgrade(factoryId, planetId))
             .ShouldHave()
             .ActionAttributes(attributes => attributes
@@ -57,6 +58,6 @@ namespace DarkGalaxyProject.Test.Controllers
                         f.UpgradeFinishTime != null)))
             .AndAlso()
             .ShouldReturn()
-            .Redirect($"ViewPlanet?planetId={planetId}");
+            .Json();
     }
 }

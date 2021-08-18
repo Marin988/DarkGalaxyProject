@@ -9,6 +9,8 @@
     My systems
 </h1>
 
+<a asp-area="" asp-controller="System" asp-action="AllFleets">All fleet movement</a>
+
 <ul>
     @foreach (var system in Model)
     {
@@ -40,5 +42,3 @@
     </li>
     }
 </ul>
-
-    <a asp-area="" asp-controller="System" asp-action="AllFleets" >All fleet movement</a>

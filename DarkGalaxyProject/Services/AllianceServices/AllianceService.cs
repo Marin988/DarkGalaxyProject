@@ -6,9 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Services.AllianceServices.Models;
+using static DarkGalaxyProject.GlobalConstants;
 
 namespace DarkGalaxyProject.Services.AllianceServices
 {
+    using static AllianceConstants;
+
     public class AllianceService : IAllianceService
     {
         private readonly ApplicationDbContext data;
@@ -40,7 +43,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
             if(playerId != alliance.LeaderId)
             {
-                return "Only the leader can accept members!";
+                return OnlyLeaderCanAcceptMembers;
             }
 
             candidate.AllianceCandidateId = null;
@@ -59,7 +62,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
             if (playerId != alliance.LeaderId)
             {
-                return "Only the leader can reject members!";
+                return OnlyLeaderCanRejectMembers;
             }
 
             candidate.AllianceCandidateId = null;
@@ -78,7 +81,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
             data.SaveChanges();
 
-            return $"You have applied to {allianceName}";
+            return String.Format(ApplySuccess, allianceName);
         }
 
         public IEnumerable<ChatMessageServiceModel> ChatMessages(string allianceId)
@@ -101,10 +104,12 @@ namespace DarkGalaxyProject.Services.AllianceServices
         public bool Create(string playerId, string allianceName)
         {
             var player = data.Players.First(p => p.Id == playerId);
+            player.AllianceCandidateId = null;
 
             var alliance = new Alliance(allianceName);
 
             alliance.Members.ToList().Add(player);
+
 
             player.AllianceId = alliance.Id;
 
@@ -223,20 +228,22 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
             if(leaderId != alliance.LeaderId)
             {
-                return "Only the leader can promote other members";
+                return OnlyLeaderCanPromoteMembers;
             }
 
             if(player.AllianceId != allianceId)
             {
-                return "You can only promote members of this alliance";
+                return YouCanOnlyPromoteMembersOfThisAlliance;
             }
 
             if (player.Id == alliance.LeaderId)
             {
-                return "You are already the leader of this alliance";
+                return YouAreAlreadyTheLeaderOfThisAlliance;
             }
 
+
             alliance.LeaderId = playerId;
+            alliance.Leader = player;
 
             data.SaveChanges();
 
@@ -245,15 +252,15 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
         public string Send(string allianceId, string content, string playerId)
         {
-            if(content == null)
+            if(string.IsNullOrWhiteSpace(content))
             {
-                return "Message should contain at least one letter or digit";
+                return MessageShouldNotBeNullOrEmpty;
             }
 
             var player = data.Players.First(p => p.Id == playerId);
             if(player.AllianceId != allianceId)
             {
-                return "Only members of this alliance can participate in this chat!";
+                return OnlyMembersOfThisAllianceCanUseTheChat;
             }
 
             data.ChatMessages.Add(new ChatMessage
@@ -275,7 +282,7 @@ namespace DarkGalaxyProject.Services.AllianceServices
 
             if(description == null || description.Length < 6 || description.Length > 120)
             {
-                return "Description should be between 6 and 120 symbols!";
+                return DescriptionIsNotTheCorrectLength;
             }
 
             alliance.Description = description;

@@ -99,7 +99,7 @@ namespace DarkGalaxyProject.Test.Controllers
             .AndAlso()
             .ShouldReturn()
            .View(view => view
-               .WithModelOfType<IEnumerable<MessageListingServiceModel>>());
+               .WithModelOfType<AllMessagesServiceModel>());
 
         [Fact]
         public void ProfileShouldReturnCorrectViewWithModelAndDataAndShouldBeForAuthorizedUsers()
@@ -140,10 +140,11 @@ namespace DarkGalaxyProject.Test.Controllers
 
         //test if researches and a starting system are added to the player upon registering
         [Fact]
-        public void RegisteredPlayerStartsWithOneSystemAndListOfAllResearchesWhichAreNotLearned()
+        public void RegisteredPlayerStartsWithOneSystemAndListOfAllResearchesWhichAreNotLearned()//for some reason it goes in PlayerSeeder...
             => MyController<PlayerController>
                 .Instance(controller => controller
-                .WithData(StartingSystem(systemId)))
+                .WithData(StartingSystem(systemId))
+                .WithData(ResearchTreesStats()))
             .Calling(c => c.Register(new RegisterFormModel
             {
                 Username = playerName,

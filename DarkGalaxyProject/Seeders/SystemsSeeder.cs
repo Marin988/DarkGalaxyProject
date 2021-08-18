@@ -121,10 +121,5 @@ namespace DarkGalaxyProject.Seeders
                 data.SaveChanges();
             }
         }
-
-        public Task SeedUsers()
-        {
-            return null;
-        }
     }
 }
