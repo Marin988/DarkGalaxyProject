@@ -1,12 +1,10 @@
 ﻿using DarkGalaxyProject.Contracts;
 using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
-using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Seeders
 {

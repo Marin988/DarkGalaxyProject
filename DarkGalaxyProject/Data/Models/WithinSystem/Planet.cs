@@ -1,5 +1,4 @@
 ﻿using DarkGalaxyProject.Data.Enums;
-using DarkGalaxyProject.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,12 +1,7 @@
-﻿using DarkGalaxyProject.Data.Enums;
-using DarkGalaxyProject.Data.Models.Others;
-using DarkGalaxyProject.Data.Models.WithinSystem;
+﻿using DarkGalaxyProject.Data.Models.Others;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Data.Models
 {

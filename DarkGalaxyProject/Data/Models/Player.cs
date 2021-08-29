@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models.Others;
-using DarkGalaxyProject.Data.Models.WithinSystem;
 using Microsoft.AspNetCore.Identity;
 
 namespace DarkGalaxyProject.Data.Models

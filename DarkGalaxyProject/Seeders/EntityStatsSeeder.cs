@@ -2,10 +2,7 @@
 using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models.Stats;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Seeders
 {

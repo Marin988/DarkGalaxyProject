@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace DarkGalaxyProject.Models.Auction
+﻿namespace DarkGalaxyProject.Models.Auction
 {
     public class DealListView
     {

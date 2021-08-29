@@ -1,16 +1,9 @@
-﻿using DarkGalaxyProject.Data;
-using DarkGalaxyProject.Data.Enums;
-using DarkGalaxyProject.Data.Models;
-using DarkGalaxyProject.Data.Models.Others;
+﻿using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Models.Alliance;
 using DarkGalaxyProject.Services.AllianceServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Controllers
 {

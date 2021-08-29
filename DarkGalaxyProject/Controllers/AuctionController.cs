@@ -1,16 +1,8 @@
-﻿using DarkGalaxyProject.Data;
-using DarkGalaxyProject.Data.Models;
+﻿using DarkGalaxyProject.Data.Models;
 using DarkGalaxyProject.Models.Auction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore;
-using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Services.AuctionServices;
 
 namespace DarkGalaxyProject.Controllers

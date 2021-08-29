@@ -1,9 +1,5 @@
-﻿using DarkGalaxyProject.Services.AllianceServices;
-using DarkGalaxyProject.Services.AllianceServices.Models;
-using System;
+﻿using DarkGalaxyProject.Services.AllianceServices.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Models.Alliance
 {

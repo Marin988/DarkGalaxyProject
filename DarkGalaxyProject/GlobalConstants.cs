@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace DarkGalaxyProject
+﻿namespace DarkGalaxyProject
 {
     public class GlobalConstants
     {
@@ -45,6 +40,36 @@ namespace DarkGalaxyProject
             public const string CannotSendMessagesToOneself = "You can't send messages to yourself.";
             public const string AlreadyLearnedResearch = "You have already done this research!";
             public const string NotEnoughResource = "You don't have enough {0}.";
+        }
+
+        public class SystemConstants
+        {
+            public const string NoAvailableFleets = "You don't have available fleets";
+            public const string FleetShouldHaveAtLeastOneShip = "You cannot send a fleet of 0 ships";
+            public const string NoHostileMissionsOnOwnSystems = "You cannot attack, spy or colonize your own systems.";
+            public const string CannotFindSystemWithThisPosition = "A system with position {0} doesn't exist!";
+            public const string NoShipsOnSystemSuitableForThisMission = "You don't have any ships, suitable for {0} mission on this system!";
+            public const string CannotSendShipsToTheSameSystem = "You cannot send ships to their current location.";
+            public const string DeployAndTransportTargetSystemsShouldBelongToPlayer = "You cannot deploy ships and transport resources to systems not belonging to a player.";
+            public const string CannotColoniseSystemsBelongingToOtherPlayers = "You cannot colonise systems belonging to a player.";
+            public const string SpyAndAttackMissionsCannotTransport = "You cannot transport resources on spy or attack mission.";
+            public const string NeedsEspionageToSpy = "You can't spy without espionages.";
+            public const string OnlyEspionagesCanBeSentOnSpyMission = "You can only send epsionages to a spy mission. If you have one, it will automatically be added to your fleet.";
+            public const string InsufficientFuel = "You need {0} fuel for this mission, but only have {1}.";
+            public const string FleetSentOnMission = "Successfully sent {0} ships on mission {1} to system {2}.";
+            public const string NotEnoughShipsOfType = "You don't have any {0}s.";
+            public const string ValidCount = "Count has to be more than 0.";
+            public const string CanOnlyBuildOnOwnSystems = "Only the player, whom this system belongs to can build here.";
+            public const string DefenceIsAlreadyBuilding = "You are already building defences.";
+            public const string ShipIsAlreadyBuilding = "You are already building ships.";
+            public const string MustLearnResearchBeforeBuilding = "You must learn {0} to be able to build {1}.";
+            public const string InsufficientResourcesForBuilding = "You need {0} {1} to build {2} {3}s, but only have {4}.";
+            public const string StartedBuilding = "You have started building {0} {1}s for {2} {3}.";
+            public const string NeedResearchForBuildingShip = "You have to research {0} before building ship of type {1}.";
+            public const string AlreadyHaveFiveFleets = "You already have the maximum of 5 fleets.";
+            public const string ResearchNotLearned = "You have not yet learned the {0} research.";
+            public const string InsufficientResources = "You need {0} {1}, but you only have {2}.";
+            public const string NewFleetAdded = "You have successfully added a new fleet.";
         }
     }
 }

@@ -1,11 +1,6 @@
 ﻿using DarkGalaxyProject.Data;
 using DarkGalaxyProject.Data.Enums;
-using DarkGalaxyProject.Data.Models;
-using DarkGalaxyProject.Data.Models.Others;
 using DarkGalaxyProject.Data.Models.WithinSystem;
-using DarkGalaxyProject.Services.SystemServices;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;

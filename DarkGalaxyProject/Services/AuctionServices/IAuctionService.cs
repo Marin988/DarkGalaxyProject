@@ -1,10 +1,7 @@
 ﻿using DarkGalaxyProject.Data.Enums;
 using DarkGalaxyProject.Data.Models.WithinSystem;
 using DarkGalaxyProject.Services.AuctionServices.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarkGalaxyProject.Services.AuctionServices
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace DarkGalaxyProject.Services.SystemServices.Models
+﻿namespace DarkGalaxyProject.Services.SystemServices.Models
 {
     public class HostSystemInfoServiceModel
     {

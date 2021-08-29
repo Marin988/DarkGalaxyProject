@@ -1,5 +1,3 @@
-using System;
-
 namespace DarkGalaxyProject.Models
 {
     public class ErrorViewModel
