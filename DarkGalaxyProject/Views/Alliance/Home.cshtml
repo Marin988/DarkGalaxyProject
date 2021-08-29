@@ -48,21 +48,31 @@
     <script>
         function editDescription() {
             if ('@UserManager.GetUserId(User)' != '@Model.LeaderId') {
+                var errorMessagesDiv = document.getElementById('errorMessages');
+                if (errorMessagesDiv.childElementCount != 0) {
+                    return;
+                }
+
                 var errorMessage = document.createElement('h5');
                 errorMessage.textContent = 'Only the leader of this alliance can change its description';
-                var errorMessagesDiv = document.getElementById('errorMessages');
                 errorMessagesDiv.appendChild(errorMessage);
+
                 return;
             }
 
             var myDiv = document.getElementById('editDescription');
             var description = document.getElementById('description');
             description.removeAttribute('disabled');
-            var saveButton = document.createElement('button');
+            var saveButton = document.getElementById('save');
+
+            if (saveButton != null) {
+                return;
+            }
+
+            saveButton = document.createElement('button');
             saveButton.textContent = "Save";
             saveButton.setAttribute('id', 'save');
             saveButton.setAttribute('onclick', 'saveDescription()');
-
             myDiv.appendChild(saveButton);
         }
 

@@ -44,14 +44,18 @@
         }
         else
         {
-            <form asp-action="Terraform" method="post">
-                <div class="form-group">
-                    <input name="planetId" hidden value="@Model.Id" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Terraform" class="btn btn-primary" />
-                </div>
-            </form>
+            <span>This planet is not terraformed</span>
+            if (Model.PlayerId == UserManager.GetUserId(User))
+            {
+                <form asp-action="Terraform" method="post">
+                    <div class="form-group">
+                        <input name="planetId" hidden value="@Model.Id" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Terraform" class="btn btn-primary" />
+                    </div>
+                </form>
+            }
         }
     </div>
 </div>

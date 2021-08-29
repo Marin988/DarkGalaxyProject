@@ -388,7 +388,6 @@ namespace DarkGalaxyProject.BackgroundTasks
             };
 
             data.Messages.Add(reportMessage);
-            //data.SaveChanges();
         }
 
 
@@ -414,7 +413,6 @@ namespace DarkGalaxyProject.BackgroundTasks
 
                 fleet.ArrivalTime = null;
 
-                //data.SaveChanges();
                 return true;
             }
 
